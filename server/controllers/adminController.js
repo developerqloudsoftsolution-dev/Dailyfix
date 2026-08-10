@@ -207,7 +207,7 @@ export const resetPassword = async (req, res) => {
     }
 
     const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+      /[A-Za-z\d@$!%*?&]{8,}/;
 
     if (!passwordRegex.test(newPassword)) {
       return res.status(400).json({
