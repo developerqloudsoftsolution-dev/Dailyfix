@@ -193,32 +193,41 @@ export const resetPassword = async (req, res) => {
   try {
     const { email, otp, newPassword } = req.body;
 
+    // 1. Validate required fields to prevent undefined values
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Email, OTP, and new password are required",
+      });
+    }
+
     const admin = await Admin.findOne({ email });
 
     if (
       !admin ||
-      admin.otp !== otp ||
+      String(admin.otp) !== String(otp) ||
+      !admin.otpExpiry ||
       admin.otpExpiry < new Date()
     ) {
       return res.status(400).json({
         success: false,
-        message: "Invalid OTP",
+        message: "Invalid or expired OTP",
       });
     }
 
+    // 2. Correct regex enforcing 1 lowercase, 1 uppercase, 1 digit, 1 special char, min 8 chars
     const passwordRegex =
-      /[A-Za-z\d@$!%*?&]{8,}/;
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
     if (!passwordRegex.test(newPassword)) {
       return res.status(400).json({
         success: false,
         message:
-          "Password must contain uppercase, lowercase, number and special character",
+          "Password must be at least 8 characters long and contain uppercase, lowercase, number, and special character",
       });
     }
 
-    const hashedPassword =
-      await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
     admin.password = hashedPassword;
     admin.otp = null;
@@ -234,7 +243,7 @@ export const resetPassword = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "An error occurred during password reset",
     });
   }
 };
