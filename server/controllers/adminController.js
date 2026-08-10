@@ -90,55 +90,59 @@ export const sendOtp = async (req, res) => {
       to: email,
       subject: "Password Reset OTP",
       html: `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e5e5e5; border-radius: 10px; overflow: hidden;">
-      
-      <div style="background: #1f2937; padding: 20px; text-align: center;">
-        <h1 style="color: #ffffff; margin: 0;">
-          Admin Panel
-        </h1>
+    <div style="background-color: #f8fafc; padding: 40px 10px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <div style="max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;">
+    
+    <!-- Header / Brand -->
+    <div style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); padding: 32px 24px; text-align: center;">
+      <div style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2); border-radius: 12px; margin-bottom: 12px;">
+        <!-- Lock Icon SVG -->
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
       </div>
-
-      <div style="padding: 30px;">
-        <h2 style="color: #111827;">
-          Password Reset Request
-        </h2>
-
-        <p style="font-size: 16px; color: #4b5563; line-height: 1.6;">
-          We received a request to reset your password.
-          Use the OTP below to continue.
-        </p>
-
-        <div style="text-align: center; margin: 30px 0;">
-          <span style="
-            display: inline-block;
-            background: #f3f4f6;
-            padding: 15px 30px;
-            font-size: 32px;
-            font-weight: bold;
-            letter-spacing: 8px;
-            color: #2563eb;
-            border-radius: 8px;
-          ">
-            ${otp}
-          </span>
-        </div>
-
-        <p style="font-size: 15px; color: #4b5563;">
-          This OTP is valid for <strong>5 minutes</strong>.
-        </p>
-
-        <p style="font-size: 15px; color: #4b5563;">
-          If you did not request a password reset, you can safely ignore this email.
-        </p>
-      </div>
-
-      <div style="background: #f9fafb; padding: 15px; text-align: center;">
-        <p style="margin: 0; color: #6b7280; font-size: 13px;">
-          © ${new Date().getFullYear()} Admin Panel. All rights reserved.
-        </p>
-      </div>
-
+      <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.3px;">Admin Panel</h1>
     </div>
+
+    <!-- Body Content -->
+    <div style="padding: 36px 32px;">
+      <h2 style="color: #0f172a; font-size: 20px; font-weight: 700; margin: 0 0 12px 0; text-align: center;">Password Reset Request</h2>
+      
+      <p style="font-size: 15px; color: #475569; line-height: 1.6; margin: 0 0 28px 0; text-align: center;">
+        We received a request to reset your admin password. Use the verification code below to complete the process.
+      </p>
+
+      <!-- OTP Display Box -->
+      <div style="background: #f1f5f9; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 24px;">
+        <span style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #64748b; letter-spacing: 1px; display: block; margin-bottom: 8px;">Verification Code</span>
+        <div style="font-family: 'Courier New', Courier, monospace; font-size: 36px; font-weight: 800; letter-spacing: 10px; color: #4f46e5; margin-left: 10px;">
+          ${otp}
+        </div>
+      </div>
+
+      <!-- Expiry Notice -->
+      <div style="text-align: center; margin-bottom: 28px;">
+        <span style="display: inline-flex; align-items: center; background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 20px;">
+          ⏳ Valid for 5 minutes
+        </span>
+      </div>
+
+      <!-- Security Warning Box -->
+      <div style="background: #f8fafc; border-left: 4px solid #94a3b8; border-radius: 4px; padding: 12px 16px;">
+        <p style="font-size: 13px; color: #64748b; margin: 0; line-height: 1.5;">
+          <strong>Didn't request this?</strong> You can safely ignore this message. Your password will remain unchanged.
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="background-color: #f8fafc; border-top: 1px solid #f1f5f9; padding: 20px; text-align: center;">
+      <p style="margin: 0; color: #94a3b8; font-size: 12px; line-height: 1.5;">
+        © ${new Date().getFullYear()} Admin Panel. All rights reserved.<br>
+        This is an automated security notification.
+      </p>
+    </div>
+
+  </div>
+</div>
   `,
     });
 
@@ -311,7 +315,7 @@ export const getDashboardStats = async (req, res) => {
     const totalRevenue = revenueResult.length > 0 ? revenueResult[0].total : 0;
     const totalProducts = await Product.countDocuments();
     const totalCustomers = await Customer.countDocuments();
-    
+
     const monthlySales = await Order.aggregate([
       { $match: { createdAt: { $gte: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000) } } },
       { $group: { _id: { $dateToString: { format: '%Y-%m', date: '$createdAt' } }, sales: { $sum: '$total' } } },
@@ -340,10 +344,10 @@ export const getDashboardStats = async (req, res) => {
       }
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: 'Server error', 
-      error: error.message 
+    res.status(500).json({
+      success: false,
+      message: 'Server error',
+      error: error.message
     });
   }
 };

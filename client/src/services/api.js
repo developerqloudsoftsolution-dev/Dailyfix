@@ -43,9 +43,9 @@ export const adminAPI = {
       return { ok: false, data: err.response?.data || { message: 'OTP verification failed' } }
     }
   },
-  resetPassword: async (email, otp, password) => {
+  resetPassword: async (email, otp, newPassword) => {
     try {
-      const res = await api.post('/admin/reset-password', { email, otp, password })
+      const res = await api.post('/admin/reset-password', { email, otp, newPassword })
       return { ok: true, data: res.data }
     } catch (err) {
       return { ok: false, data: err.response?.data || { message: 'Password reset failed' } }
