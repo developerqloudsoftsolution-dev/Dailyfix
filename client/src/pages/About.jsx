@@ -88,7 +88,7 @@ const About = () => {
         <div className="absolute inset-0 opacity-10">
           <img
             src={banner}
-            alt="Dailyfix Banner"
+            alt="DailyFix Banner"
             loading="eager"
             className="w-full h-full object-cover"
           />
@@ -136,7 +136,7 @@ const About = () => {
                 <div className="relative w-72 sm:w-80 md:w-[450px] h-[380px] sm:h-[480px] md:h-[520px] bg-gradient-to-br from-stone-100 to-white rounded-3xl shadow-hard overflow-hidden transition-transform duration-500 group-hover:scale-[1.02] z-10">
                   <img
                     src={productBox}
-                    alt="Dailyfix Product"
+                    alt="DailyFix Product"
                     loading="lazy"
                     className="w-full h-full object-contain sm:object-cover p-3 sm:p-0"
                   />
@@ -169,13 +169,13 @@ const About = () => {
 
               <div className="space-y-6">
                 <p className="text-stone-600 text-xl leading-relaxed">
-                  Dailyfix was founded with a simple mission: to give men the tools they need to look and feel their absolute best. We believe that great grooming shouldn't be complicated - it should be simple, effective, and enjoyable.
+                  DailyFix was founded with a simple mission: to give men the tools they need to look and feel their absolute best. We believe that great grooming shouldn't be complicated - it should be simple, effective, and enjoyable.
                 </p>
                 <p className="text-stone-600 text-xl leading-relaxed">
                   After years of research and development, we created our signature beard colour - a product that combines the best of science and nature. Our formula is designed to give you natural-looking colour while nourishing your beard and skin.
                 </p>
                 <p className="text-stone-600 text-xl leading-relaxed">
-                  Today, Dailyfix is proud to serve thousands of men who trust us with their grooming needs. We're committed to continuous improvement and innovation to bring you the best products possible.
+                  Today, DailyFix is proud to serve thousands of men who trust us with their grooming needs. We're committed to continuous improvement and innovation to bring you the best products possible.
                 </p>
               </div>
 
@@ -221,7 +221,7 @@ const About = () => {
               <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
               <span className="text-xs font-bold tracking-widest uppercase">What Makes Us Different</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-stone-900">Why Choose Dailyfix</h2>
+            <h2 className="text-4xl md:text-5xl font-bold text-stone-900">Why Choose DailyFix</h2>
           </motion.div>
 
           {/* Features Grid */}
@@ -355,7 +355,7 @@ const About = () => {
               <span className="text-emerald-400 font-bold text-xs md:text-sm tracking-widest uppercase">Ready to Transform?</span>
             </div>
             <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight leading-tight mb-8">
-              Experience the Dailyfix Difference
+              Experience the DailyFix Difference
             </h2>
             <p className="text-xl md:text-2xl text-white/70 mb-12 max-w-3xl mx-auto leading-relaxed">
               Join thousands of happy customers who have transformed their look with our premium beard colour.

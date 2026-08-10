@@ -119,7 +119,7 @@ const Shop = () => {
       </div>
 
       {/* Products */}
-      <div className="max-w-9xl mx-auto px-6 md:px-12 py-24">
+      <div className="max-w-9xl mx-auto px-6 md:px-12 py-4">
         <div className="flex items-baseline justify-between mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-stone-900">All Shades</h2>
           <span className="text-stone-500 text-lg">

@@ -185,7 +185,7 @@ const Home = () => {
       </section>
 
       {/* Product Showcase Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-stone-100">
+      <section className="py-14 px-4 sm:px-6 lg:px-8 bg-stone-100">
         <div className="max-w-9xl mx-auto">
           <div className="mb-16 flex flex-col md:flex-row md:items-end md:justify-between gap-8 pb-4">
             <div className="space-y-4">
@@ -384,8 +384,8 @@ const Home = () => {
             </div>
 
             <div className="my-6 lg:my-0 flex justify-center">
-              <div className="w-full max-w-md lg:max-w-none bg-gradient-to-br from-gray-200 to-gray-300 rounded-3xl overflow-hidden shadow-2xl">
-                <img src={banners} alt="Dailyfix Product" loading="lazy" className="w-full h-[520px] object-cover" />
+              <div className="w-full  lg:max-w-none  rounded-xl overflow-hidden">
+                <img src={banners} alt="Dailyfix Product" loading="lazy" className="w-full h-[420px] object-contain rounded-xl" />
               </div>
             </div>
 
@@ -414,7 +414,7 @@ const Home = () => {
       </section>
 
       {/* Get Started Section */}
-      <section className="py-20 px-4 sm:px-8 md:px-16 bg-white relative overflow-hidden">
+      <section className="py-5 px-4 sm:px-8 md:px-16 bg-white relative overflow-hidden">
         <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-black absolute inset-0 opacity-90"></div>
         <div className="max-w-9xl mx-auto relative z-10">
           <motion.div 
