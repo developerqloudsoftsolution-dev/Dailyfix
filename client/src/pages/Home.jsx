@@ -47,7 +47,7 @@ const Home = () => {
         setProducts(mappedProducts);
       } catch (error) {
         console.error('Failed to fetch products:', error);
-        toast.error('Unable to load products. Verify API server is running on port 5001.', { duration: 5000 });
+        toast.error('Unable to load products. Verify API server is running on port 5000.', { duration: 5000 });
       } finally {
         setLoading(false);
       }

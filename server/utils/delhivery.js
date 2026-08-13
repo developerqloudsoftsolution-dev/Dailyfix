@@ -27,7 +27,7 @@ const delhiveryService = {
   async checkServiceability({ pickupPin, deliveryPin, weight, cod }) {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/kinko/v1/courier/serviceability/`,
+        `${BASE_URL}/api/pin-codes/json/?filter_codes=194103`,
         {
           params: {
             origin_pin: pickupPin,
@@ -52,7 +52,7 @@ const delhiveryService = {
   async calculateShipping({ pickupPin, deliveryPin, weight }) {
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/kinko/v1/courier/serviceability/`,
+        `${BASE_URL}/api/kinko/v1/invoice/charges/.json?md=E&ss=Delivered&d_pin=${pickupPin}&o_pin=${deliveryPin}&cgm=10&pt=Pre-paid`,
         {
           params: {
             origin_pin: pickupPin,
@@ -202,9 +202,8 @@ const delhiveryService = {
     if (!waybill) throw new Error("Waybill is required");
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/p/packing_slip/pdf`,
+        `${BASE_URL}/api/p/packing_slip/${waybill}?pdf=true&pdf_size=4R`,
         {
-          params: { waybill: waybill, format: "pdf" },
           headers: { Authorization: `Token ${API_KEY}` },
           responseType: "arraybuffer",
           timeout: TIMEOUT,
@@ -220,10 +219,9 @@ const delhiveryService = {
     if (!waybill) throw new Error("Waybill required");
     try {
       const response = await axios.get(
-        `${BASE_URL}/api/v1/packages/json/`,
+        `${BASE_URL}/api/v1/packages/json/?waybill=${waybill}`,
         {
-          params: { waybill: waybill, token: API_KEY },
-          timeout: TIMEOUT,
+          headers: {'Content-Type': 'application/json', Authorization: `Token ${API_KEY}`}   
         }
       );
       return response.data;

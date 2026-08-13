@@ -49,10 +49,10 @@ const Shop = () => {
         const status = error?.response?.status;
         const msg =
           status === 404
-            ? 'Products endpoint not found — check API server is running on port 5001'
+            ? 'Products endpoint not found — check API server is running on port 5000'
             : status && status >= 500
               ? 'Server error while loading products — please refresh in a moment'
-              : 'Unable to load products. Verify that the Dailyfix API server is running on port 5001';
+              : 'Unable to load products. Verify that the Dailyfix API server is running on port 5000';
         toast.error(msg, { duration: 6000 });
       } finally {
         setLoading(false);

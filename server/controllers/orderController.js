@@ -67,24 +67,11 @@ export const createOrder = async (req, res) => {
 
   try {
     console.log("========== NEW ORDER ==========");
+    const { customer, items, shippingAddress, shipping_address, paymentMethod, payment_method, paymentDetails } = req.body;
 
-    const {
-      customer,
-      items,
-      shippingAddress,
-      shipping_address,
-      paymentMethod,
-      payment_method,
-    } = req.body;
+    const finalShippingAddress = shippingAddress || shipping_address;
 
-    const finalShippingAddress =
-      shippingAddress || shipping_address;
-
-    const payment =
-      paymentMethod ||
-      payment_method ||
-      "COD";
-
+    const payment = (paymentMethod || payment_method || "COD").toUpperCase();
     if (!customer) {
       return res.status(400).json({
         success: false,
@@ -129,11 +116,23 @@ export const createOrder = async (req, res) => {
         message: "Cart is empty",
       });
     }
+    if (payment !== "COD") {
+      const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = paymentDetails || req.body;
+      if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
+        return res.status(400).json({ success: false, message: "Payment details missing" });
+      }
+      const generatedSignature = crypto
+        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+        .update(`${razorpayOrderId}|${razorpayPaymentId}`)
+        .digest("hex");
+
+      if (generatedSignature !== razorpaySignature) {
+        return res.status(400).json({ success: false, message: "Payment verification failed" });
+      }
+    }
 
     let subtotal = 0;
-
     const orderItems = [];
-
     const dbItems = [];
 
     for (const item of items) {
@@ -194,7 +193,6 @@ export const createOrder = async (req, res) => {
 
     order = await Order.create({
       orderId: generateOrderId(),
-
       customer,
 
       shippingAddress:
@@ -206,28 +204,16 @@ export const createOrder = async (req, res) => {
         width: dimensions.width,
         height: dimensions.height,
       },
-
-      paymentMethod:
-        payment.toUpperCase() === "COD"
-          ? "COD"
-          : "Online",
-
-      paymentStatus:
-        payment.toUpperCase() === "COD"
-          ? "Pending (COD)"
-          : "Paid",
-
+      paymentMethod: payment === "COD" ? "COD" : "Online",
+      paymentStatus: payment === "COD" ? "Pending (COD)" : "Paid",
       razorpayOrderId: req.body.paymentDetails?.razorpayOrderId || req.body.razorpayOrderId || "",
       razorpayPaymentId: req.body.paymentDetails?.razorpayPaymentId || req.body.razorpayPaymentId || "",
       razorpaySignature: req.body.paymentDetails?.razorpaySignature || req.body.razorpaySignature || "",
       paymentDetails: req.body.paymentDetails || {},
-
       total,
       tax,
       shipping,
-
       status: "Confirmed",
-
       items: dbItems,
     });
 
@@ -291,7 +277,7 @@ export const createOrder = async (req, res) => {
       success: true,
       message:
         order.paymentMethod === "COD"
-          ? "Order placed successfully. Pay on delivery."
+          ? "Order placed successfully. Please pay on delivery."
           : "Payment successful! Order confirmed.",
       order: {
         orderId: order.orderId,
@@ -323,12 +309,12 @@ export const createOrder = async (req, res) => {
         payment:
           order.paymentMethod === "Online"
             ? {
-                razorpayOrderId: order.razorpayOrderId,
-                razorpayPaymentId: order.razorpayPaymentId,
-              }
+              razorpayOrderId: order.razorpayOrderId,
+              razorpayPaymentId: order.razorpayPaymentId,
+            }
             : {
-                codAmount: order.total,
-              },
+              codAmount: order.total,
+            },
       },
     });
 
@@ -337,79 +323,69 @@ export const createOrder = async (req, res) => {
     DELHIVERY INTEGRATION (BACKGROUND, NON-BLOCKING)
     ==========================================
     */
-    (async () => {
-      try {
-        // Check Serviceability (optional)
-        try {
-          console.log("📍 Checking serviceability...");
-          const serviceability = await delhiveryService.checkServiceability({
-            pickupPin: process.env.DELHIVERY_PICKUP_PIN,
-            deliveryPin: finalShippingAddress.pincode,
-            weight,
-            cod: payment === "COD",
-          });
-          console.log("✅ Serviceability Response:", JSON.stringify(serviceability, null, 2));
-        } catch (serviceErr) {
-          console.log("⚠ Serviceability check failed (skipping):", serviceErr.message);
-        }
 
-        // Calculate Shipping (optional)
-        try {
-          console.log("💰 Calculating shipping...");
+    try {
+      const shipmentPayload = delhiveryService.buildShipmentPayload(order);
+      console.log("📦 Delhivery Payload:", JSON.stringify(shipmentPayload, null, 2));
+
+      const shipmentResponse = await delhiveryService.createShipment(shipmentPayload);
+      console.log("Shipment Response:", JSON.stringify(shipmentResponse, null, 2));
+
+      const waybill = delhiveryService.extractWaybill(shipmentResponse);
+      console.log("AWB :", waybill);
+
+      if (!waybill) {
+        console.error("❌ Delhivery did not return a waybill");
+        throw new Error("Delhivery shipment created but AWB was not returned");
+      }
+
+      order.delhivery = {
+        waybill: String(waybill),
+        shipmentId: delhiveryService.getShipmentId(shipmentResponse) || "",
+        pickupRequestId: delhiveryService.getPickupRequestId(shipmentResponse) || "",
+        currentStatus: "Manifested",
+        labelUrl: delhiveryService.getLabelURL(shipmentResponse) || "",
+        invoiceUrl: delhiveryService.getInvoiceURL(shipmentResponse) || "",
+        expectedDelivery: delhiveryService.getEstimatedDelivery(shipmentResponse) || "",
+        shipmentResponse,
+        trackingHistory: [],
+        lastSynced: new Date(),
+      };
+      try {
+        const label = await delhiveryService.generateShippingLabel(waybill);
+        console.log("✅ Shipping Label Generated");
+        order.delhivery.label = label;
+        console.log("✅ Shipping Label Saved");
+      } catch (labelErr) {
+        console.log("⚠ Shipping Label Generation Failed:", labelErr.message);
+      }
+
+      await order.save();
+      console.log("✅ Delhivery Details Saved");
+
+
+      try {
+        const deliveryPin = order.shippingAddress?.pincode || order.pincode;
+        const itemWeight = order.totalWeight || order.weight || 0.5; // Fallback weight if omitted
+
+        if (deliveryPin) {
           const shippingRate = await delhiveryService.calculateShipping({
             pickupPin: process.env.DELHIVERY_PICKUP_PIN,
-            deliveryPin: finalShippingAddress.pincode,
-            weight,
+            deliveryPin: deliveryPin,
+            weight: itemWeight,
           });
           console.log("✅ Shipping Response:", JSON.stringify(shippingRate, null, 2));
-        } catch (shippingErr) {
-          console.log("⚠ Shipping calculation failed (skipping):", shippingErr.message);
         }
-
-        console.log("📦 Building shipment payload...");
-        const shipmentPayload = delhiveryService.buildShipmentPayload(order);
-        console.log(JSON.stringify(shipmentPayload, null, 2));
-
-        console.log("🚚 Creating shipment...");
-        const shipmentResponse = await delhiveryService.createShipment(shipmentPayload);
-        console.log("Shipment Response:", JSON.stringify(shipmentResponse, null, 2));
-
-        const waybill = delhiveryService.extractWaybill(shipmentResponse);
-        console.log("AWB :", waybill);
-
-        order.delhivery = {
-          waybill,
-          shipmentId: delhiveryService.getShipmentId(shipmentResponse),
-          pickupRequestId: delhiveryService.getPickupRequestId(shipmentResponse),
-          currentStatus: "Manifested",
-          labelUrl: delhiveryService.getLabelURL(shipmentResponse),
-          invoiceUrl: delhiveryService.getInvoiceURL(shipmentResponse),
-          expectedDelivery: delhiveryService.getEstimatedDelivery(shipmentResponse),
-          shipmentResponse,
-          trackingHistory: [],
-          lastSynced: new Date(),
-        };
-        await order.save();
-        console.log("✅ Delhivery Details Saved");
-
-        // Try to generate label
-        try {
-          const label = await delhiveryService.generateShippingLabel(waybill);
-          console.log("✅ Shipping Label Generated");
-          order.delhivery.label = label;
-          await order.save();
-        } catch (labelErr) {
-          console.log("⚠ Shipping Label Generation Failed:", labelErr.message);
-        }
-      } catch (delhiveryErr) {
-        console.error("⚠ Delhivery Integration Failed (Non-Blocking):", delhiveryErr.message);
+      } catch (shippingErr) {
+        console.warn("⚠️ Shipping calculation failed (skipping):", shippingErr.message);
       }
-    })();
 
-  } catch (error) {
-
-    console.error("❌ CREATE ORDER ERROR");
-    console.error(error);
+    } catch (delhiveryErr) {
+      console.error("❌ DELHIVERY SHIPMENT CREATION FAILED:");
+      console.error(delhiveryErr.message);
+    }
+  }catch (error) {
+    console.error("❌ Order creation failed:", error.message);
 
     /*
     ==========================================
@@ -523,18 +499,21 @@ export const createManualShipment = async (req, res) => {
     }
 
     order.delhivery = {
-      waybill,
-      shipmentId: delhiveryService.getShipmentId(shipmentResponse),
-      pickupRequestId: delhiveryService.getPickupRequestId(shipmentResponse),
+      waybill: String(waybill),
+      shipmentId: delhiveryService.getShipmentId(shipmentResponse) || "",
+      pickupRequestId: delhiveryService.getPickupRequestId(shipmentResponse) || "",
       currentStatus: "Manifested",
-      labelUrl: delhiveryService.getLabelURL(shipmentResponse),
-      invoiceUrl: delhiveryService.getInvoiceURL(shipmentResponse),
-      expectedDelivery: delhiveryService.getEstimatedDelivery(shipmentResponse),
+      labelUrl: delhiveryService.getLabelURL(shipmentResponse) || "",
+      invoiceUrl: delhiveryService.getInvoiceURL(shipmentResponse) || "",
+      expectedDelivery: delhiveryService.getEstimatedDelivery(shipmentResponse) || "",
       shipmentResponse,
       trackingHistory: [],
       lastSynced: new Date(),
     };
     await order.save();
+    console.log(
+      "✅ DELHIVERY DETAILS SAVED TO MONGODB"
+    );
 
     try {
       const label = await delhiveryService.generateShippingLabel(waybill);
@@ -948,7 +927,7 @@ GET SHIPPING RATE
 =================================================
 */
 
-export const getShippingRate = async ( req,res) => {
+export const getShippingRate = async (req, res) => {
   try {
     const { destinationPin, pincode, weight } = req.query;
     const deliveryPin = destinationPin || pincode;
@@ -1029,7 +1008,7 @@ export const getShippingRate = async ( req,res) => {
       message: error.message,
     });
   }
-};  
+};
 
 /*
 =================================================
@@ -1167,13 +1146,13 @@ export const getDashboardStats = async (req, res) => {
         month: m.month,
         sales: totalRevenue > 0
           ? paidOrders
-              .filter(
-                (o) =>
-                  new Date(o.createdAt) >= m.start &&
-                  new Date(o.createdAt) <= m.end
-              )
-              .reduce((s, o) => s + Number(o.total || 0), 0) ||
-            Math.floor(Math.random() * 20000 + 10000)
+            .filter(
+              (o) =>
+                new Date(o.createdAt) >= m.start &&
+                new Date(o.createdAt) <= m.end
+            )
+            .reduce((s, o) => s + Number(o.total || 0), 0) ||
+          Math.floor(Math.random() * 20000 + 10000)
           : Math.floor(Math.random() * 20000 + 10000),
       }));
     })();
@@ -1222,9 +1201,8 @@ export const getDashboardStats = async (req, res) => {
       paymentMethod: o.paymentMethod,
       paymentStatus: o.paymentStatus,
       total: o.total,
-      customerName: `${o.customer?.firstName || ""} ${
-        o.customer?.lastName || ""
-      }`.trim(),
+      customerName: `${o.customer?.firstName || ""} ${o.customer?.lastName || ""
+        }`.trim(),
       customerEmail: o.customer?.email,
       customerPhone: o.customer?.phone,
       createdAt: o.createdAt,

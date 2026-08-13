@@ -60,7 +60,7 @@ export default function Products() {
         toast.error("Login session expired. Please sign in again to manage products.");
       } else {
         toast.error(
-          "Unable to load products. Verify Dailyfix API server is running on port 5001.",
+          "Unable to load products. Verify Dailyfix API server is running on port 5000.",
           { duration: 5000 }
         );
       }
