@@ -32,6 +32,8 @@ import AdminDashboard from './pages/admin/Dashboard'
 import AdminProducts from './pages/admin/Products'
 import AdminOrders from './pages/admin/Orders'
 import AdminCustomers from './pages/admin/Customer'
+import AdminManagement from './pages/admin/AdminManagement'
+import WhatsAppConnect from './pages/admin/WhatsAppConnect'
 
 import AdminLayout from './layouts/AdminLayout'
 import MainLayout from './layouts/MainLayout'
@@ -69,7 +71,8 @@ function App() {
               <Route path="/admin/products" element={<AdminProducts />} />
               <Route path="/admin/orders" element={<AdminOrders />} />
               <Route path="/admin/customers" element={<AdminCustomers />} />
-
+              <Route path="/admin/admins" element={<AdminManagement />} />
+              <Route path="/admin/whatsapp" element={<WhatsAppConnect />} />
             </Route>
           </Routes>
         </Router>

@@ -71,6 +71,46 @@ export const adminAPI = {
     } catch (err) {
       return { ok: false, data: err.response?.data || { message: 'Password reset failed' } }
     }
+  },
+  getAllAdmins: async () => {
+    try {
+      const res = await api.get('/admin/admins')
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: 'Failed to fetch admins' } }
+    }
+  },
+  createAdmin: async (data) => {
+    try {
+      const res = await api.post('/admin/admins', data)
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: err.message || 'Failed to create admin' } }
+    }
+  },
+  updateAdmin: async (id, data) => {
+    try {
+      const res = await api.put(`/admin/admins/${id}`, data)
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: err.message || 'Failed to update admin' } }
+    }
+  },
+  updateAdminPassword: async (id, newPassword) => {
+    try {
+      const res = await api.put(`/admin/admins/${id}/password`, { newPassword })
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: err.message || 'Failed to update password' } }
+    }
+  },
+  deleteAdmin: async (id) => {
+    try {
+      const res = await api.delete(`/admin/admins/${id}`)
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: err.message || 'Failed to delete admin' } }
+    }
   }
 }
 
@@ -160,6 +200,127 @@ export const contactAPI = {
       return { ok: false, data: err.response?.data || { message: 'Failed to send message' } }
     }
   }
+}
+
+// WhatsApp API functions
+export const whatsappAPI = {
+  getStatus: async () => {
+    try {
+      const res = await api.get('/admin/whatsapp/status')
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: 'Failed to get WhatsApp status' } }
+    }
+  },
+  getQr: async () => {
+    try {
+      const res = await api.get('/admin/whatsapp/qr')
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: 'QR code not available' } }
+    }
+  },
+  connect: async () => {
+    try {
+      const res = await api.post('/admin/whatsapp/connect')
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: 'Failed to initiate connection' } }
+    }
+  },
+  logout: async () => {
+    try {
+      const res = await api.post('/admin/whatsapp/logout')
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: 'Failed to logout WhatsApp' } }
+    }
+  },
+  getSettings: async () => {
+    try {
+      const res = await api.get('/admin/whatsapp/settings')
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: 'Failed to fetch WhatsApp settings' } }
+    }
+  },
+  updateSettings: async (settings) => {
+    try {
+      const res = await api.put('/admin/whatsapp/settings', settings)
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: 'Failed to save settings' } }
+    }
+  },
+  sendTestMessage: async (phone, message) => {
+    try {
+      const res = await api.post('/admin/whatsapp/test-message', { phone, message })
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: 'Failed to send test message' } }
+    }
+  }
+}
+
+// Product Management API functions
+export const productAPI = {
+  getAllProducts: async (params = {}) => {
+    try {
+      const res = await api.get('/products', { params })
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: 'Failed to fetch products' } }
+    }
+  },
+  getProductById: async (id) => {
+    try {
+      const res = await api.get(`/products/${id}`)
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: 'Failed to fetch product' } }
+    }
+  },
+  createProduct: async (productData) => {
+    try {
+      const res = await api.post('/products', productData)
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: err.response?.data?.message || 'Failed to create product' } }
+    }
+  },
+  updateProduct: async (id, productData) => {
+    try {
+      const res = await api.put(`/products/${id}`, productData)
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: err.response?.data?.message || 'Failed to update product' } }
+    }
+  },
+  deleteProduct: async (id) => {
+    try {
+      const res = await api.delete(`/products/${id}`)
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: err.response?.data?.message || 'Failed to delete product' } }
+    }
+  },
+  uploadProductImage: async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      const res = await api.post('/products/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return { ok: true, data: res.data };
+    } catch (err) {
+      return {
+        ok: false,
+        data: err.response?.data || { message: err.message || 'Failed to upload image' },
+      };
+    }
+  },
 }
 
 export default api

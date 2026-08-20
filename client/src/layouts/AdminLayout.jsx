@@ -1,5 +1,5 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, Package, ShoppingCart, Users, LogOut } from 'lucide-react'
+import { LayoutDashboard, Package, ShoppingCart, Users, LogOut, ShieldCheck, MessageSquare } from 'lucide-react'
 import api from '../services/api'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -76,7 +76,18 @@ function AdminLayout() {
                 Customers
               </Link>
             </li>
-
+            <li>
+              <Link to="/admin/whatsapp" className="flex items-center gap-3 p-3 rounded hover:bg-gray-800">
+                <MessageSquare size={20} />
+                WhatsApp Bot
+              </Link>
+            </li>
+            <li>
+              <Link to="/admin/admins" className="flex items-center gap-3 p-3 rounded hover:bg-gray-800">
+                <ShieldCheck size={20} />
+                Manage Admins
+              </Link>
+            </li>
           </ul>
         </nav>
         <div className="p-4 border-t border-gray-800 flex-shrink-0">

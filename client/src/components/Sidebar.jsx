@@ -13,6 +13,8 @@ import {
   ChevronLeft,
   ChevronRight,
   HeartPulse,
+  ShieldCheck,
+  MessageSquare,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
@@ -37,6 +39,16 @@ const menuItems = [
     title: "Customers",
     icon: Users,
     path: "/admin/customers",
+  },
+  {
+    title: "WhatsApp Bot",
+    icon: MessageSquare,
+    path: "/admin/whatsapp",
+  },
+  {
+    title: "Manage Admins",
+    icon: ShieldCheck,
+    path: "/admin/admins",
   },
   {
     title: "Categories",

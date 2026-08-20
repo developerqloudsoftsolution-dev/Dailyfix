@@ -1,9 +1,10 @@
 import sendEmail from '../utils/sendEmail.js';
 import contactEmailTemplate from '../templates/contactEmailTemplate.js';
+import whatsappService from '../utils/whatsappService.js';
 
 export const sendContactForm = async (req, res) => {
   try {
-    const { name, email, subject, message } = req.body;
+    const { name, email, phone, subject, message } = req.body;
 
     if (!name || !email || !subject || !message) {
       return res.status(400).json({
@@ -22,13 +23,18 @@ export const sendContactForm = async (req, res) => {
 
     const recipientEmail = process.env.ADMIN_EMAIL || 'orders@dailyfixcare.com';
 
-    const emailHtml = contactEmailTemplate({ name, email, subject, message });
+    const emailHtml = contactEmailTemplate({ name, email, phone, subject, message });
 
     const result = await sendEmail({
       to: recipientEmail,
       subject: `[Contact Form] ${subject}`,
       html: emailHtml,
-      text: `New Contact Form Submission:\n\nFrom: ${name} <${email}>\nSubject: ${subject}\n\nMessage:\n${message}`
+      text: `New Contact Form Submission:\n\nFrom: ${name} <${email}>\nPhone: ${phone || 'N/A'}\nSubject: ${subject}\n\nMessage:\n${message}`
+    });
+
+    // Trigger WhatsApp notification for admin
+    whatsappService.notifyContactInquiryAdmin({ name, email, phone, subject, message }).catch((e) => {
+      console.log('[WhatsApp] Contact alert skipped:', e.message);
     });
 
     if (!result) {

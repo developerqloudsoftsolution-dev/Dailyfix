@@ -248,13 +248,14 @@ const delhiveryService = {
   async cancelShipment(waybill) {
     if (!waybill) throw new Error("Waybill required");
     const payload = {
-      waybill: waybill,
-      cancellation_reason: "Order cancelled by user",
+      waybill: String(waybill).trim(),
+      cancellation: "true",
+      cancellation_reason: "Order cancelled by store admin",
     };
     try {
       const response = await axios.post(
         `${BASE_URL}/api/p/edit`,
-        { ...payload, client: CLIENT_NAME },
+        payload,
         {
           headers: {
             Authorization: `Token ${API_KEY}`,
@@ -267,6 +268,8 @@ const delhiveryService = {
     } catch (err) {
       throw new Error(
         err.response?.data?.rmk ||
+          err.response?.data?.remark ||
+          err.response?.data?.message ||
           err.message ||
           "Shipment cancellation failed"
       );

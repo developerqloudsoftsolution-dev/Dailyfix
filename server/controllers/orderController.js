@@ -7,6 +7,7 @@ import customerOrderTemplate from "../templates/customerOrderTemplate.js";
 import adminOrderTemplate from "../templates/adminOrderTemplate.js";
 import delhiveryService from "../utils/delhivery.js";
 import razorpay, { isRazorpayConfigured } from "../utils/razorpay.js";
+import whatsappService from "../utils/whatsappService.js";
 
 const isValidObjectId = (id) => {
   if (!id) return false;
@@ -269,6 +270,18 @@ export const createOrder = async (req, res) => {
 
     /*
     ==========================================
+    SEND WHATSAPP NOTIFICATIONS (AUTOMATED)
+    ==========================================
+    */
+    whatsappService.notifyNewOrderCustomer(order).catch((err) => {
+      console.log("[WhatsApp] Customer notification skipped:", err.message);
+    });
+    whatsappService.notifyNewOrderAdmin(order).catch((err) => {
+      console.log("[WhatsApp] Admin notification skipped:", err.message);
+    });
+
+    /*
+    ==========================================
     SUCCESS RESPONSE (SEND BEFORE DELHIVERY!)
     ==========================================
     */
@@ -523,6 +536,11 @@ export const createManualShipment = async (req, res) => {
       console.log("Label generation skipped:", labelErr.message);
     }
 
+    // Trigger WhatsApp tracking notification to customer
+    whatsappService.notifyShipmentTrackCustomer(order).catch((err) => {
+      console.log("[WhatsApp] Shipment notification skipped:", err.message);
+    });
+
     return res.json({
       success: true,
       message: "Shipment created successfully",
@@ -586,6 +604,11 @@ export const updateOrderWaybill = async (req, res) => {
     order.delhivery.lastSynced = new Date();
     await order.save();
 
+    // Trigger WhatsApp tracking notification to customer
+    whatsappService.notifyShipmentTrackCustomer(order).catch((err) => {
+      console.log("[WhatsApp] Shipment notification skipped:", err.message);
+    });
+
     return res.json({
       success: true,
       message: "AWB/Waybill updated successfully",
@@ -638,43 +661,83 @@ UPDATE ORDER STATUS
 */
 
 export const updateOrderStatus = async (req, res) => {
-
   try {
-
     const { status } = req.body;
-
     const order = await Order.findById(req.params.id);
 
     if (!order) {
-
       return res.status(404).json({
         success: false,
         message: "Order not found",
       });
-
     }
 
+    const previousStatus = order.status;
     order.status = status;
+
+    let delhiveryMsg = "";
+    let delhiverySuccess = false;
+
+    // If order is changed to Cancelled
+    if (status === "Cancelled" && previousStatus !== "Cancelled") {
+      // 1. If waybill is present, automatically cancel on Delhivery
+      if (order.delhivery?.waybill && order.delhivery.currentStatus !== "Cancelled") {
+        try {
+          console.log(`[Delhivery] Auto-cancelling shipment for order ${order.orderId} (Waybill: ${order.delhivery.waybill})...`);
+          const delhiveryRes = await delhiveryService.cancelShipment(order.delhivery.waybill);
+          order.delhivery.currentStatus = "Cancelled";
+          delhiverySuccess = true;
+          delhiveryMsg = ` Delhivery shipment (AWB: ${order.delhivery.waybill}) was cancelled on courier portal.`;
+          console.log(`[Delhivery] Shipment cancelled successfully:`, delhiveryRes);
+        } catch (delhiveryErr) {
+          console.warn(`[Delhivery] Auto-cancellation notice:`, delhiveryErr.message);
+          delhiveryMsg = ` (Courier notice: ${delhiveryErr.message})`;
+        }
+      }
+
+      // 2. Restock product quantities
+      try {
+        if (order.items && order.items.length > 0) {
+          for (const item of order.items) {
+            const productRef = item.product || item.productId;
+            if (productRef) {
+              await Product.findByIdAndUpdate(productRef, {
+                $inc: { stock: Number(item.quantity || 1) },
+              });
+            }
+          }
+          console.log(`[Inventory] Restocked items for cancelled order ${order.orderId}`);
+        }
+      } catch (stockErr) {
+        console.warn(`[Inventory] Failed to restock:`, stockErr.message);
+      }
+    }
 
     await order.save();
 
+    // 3. Dispatch WhatsApp notifications (Non-blocking)
+    if (status !== previousStatus) {
+      whatsappService.notifyOrderStatusCustomer(order, status).catch((err) => {
+        console.warn(`[WhatsApp] Failed to notify customer of status change:`, err.message);
+      });
+      whatsappService.notifyOrderStatusAdmin(order, status, previousStatus).catch((err) => {
+        console.warn(`[WhatsApp] Failed to notify admin of status change:`, err.message);
+      });
+    }
+
     return res.json({
       success: true,
-      message: "Order updated successfully.",
+      message: `Order status updated to ${status}.${delhiveryMsg}`,
       order,
+      delhiveryCancelled: delhiverySuccess,
     });
-
   } catch (error) {
-
     console.error(error);
-
     return res.status(500).json({
       success: false,
       message: error.message,
     });
-
   }
-
 };
 /*
 =================================================
@@ -1038,7 +1101,7 @@ export const getDashboardStats = async (req, res) => {
         .sort({ createdAt: -1 })
         .limit(50)
         .select(
-          "orderId status paymentMethod paymentStatus total customer items createdAt delhivery.waybill"
+          "orderId status paymentMethod paymentStatus total customer shippingAddress items createdAt delhivery"
         )
         .lean(),
       Product.find().select(

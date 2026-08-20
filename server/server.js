@@ -36,6 +36,7 @@ import categoryRoutes from './routes/categoryRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 import instagramRoute from "./routes/instagram.js";
+import whatsappRoutes from './routes/whatsappRoutes.js';
 
 const app = express();
 
@@ -45,14 +46,19 @@ app.set('trust proxy', 1);
 // ===============================
 // RATE LIMITER
 // ===============================
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 2000, // Allow up to 2000 requests per 15 minutes per IP
   standardHeaders: true,
-  legacyHeaders: false
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many requests from this IP, please try again after 15 minutes.'
+  }
 });
 
-app.use(limiter);
+// Apply rate limiting specifically to /api routes
+app.use('/api', apiLimiter);
 
 // ===============================
 // SECURITY
@@ -94,6 +100,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/contact', contactRoutes);
 app.use("/api/instagram", instagramRoute);
+app.use('/api/admin/whatsapp', whatsappRoutes);
 // ===============================
 // FRONTEND (dist folder serving)
 //   Supports 3 paths, checked in this order:

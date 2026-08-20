@@ -117,46 +117,44 @@ export default function RecentOrders({
 
               const Icon = status.icon;
 
-              return (
+              const customerDisplayName =
+                order.customerName ||
+                (order.customer
+                  ? `${order.customer.firstName || ""} ${order.customer.lastName || ""}`.trim()
+                  : "") ||
+                "Customer";
 
+              const customerContact =
+                order.customerPhone ||
+                order.customer?.phone ||
+                order.customerEmail ||
+                order.customer?.email ||
+                "—";
+
+              return (
                 <tr
-                  key={order._id}
+                  key={order._id || order.id || order.orderId}
                   className="border-b hover:bg-slate-50 transition"
                 >
-
                   {/* Customer */}
-
                   <td className="px-6 py-4">
-
                     <div className="flex items-center gap-3">
-
                       <img
                         src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                          order.customerName ||
-                          "Customer"
+                          customerDisplayName
                         )}&background=10b981&color=fff`}
                         alt=""
-                        className="w-11 h-11 rounded-full"
+                        className="w-10 h-10 rounded-full"
                       />
-
                       <div>
-
-                        <div className="font-semibold">
-
-                          {order.customerName || "—"}
-
+                        <div className="font-semibold text-slate-900 text-sm">
+                          {customerDisplayName}
                         </div>
-
-                        <div className="text-xs text-slate-500">
-
-                          {order.customerPhone || order.customerEmail || "—"}
-
+                        <div className="text-xs text-slate-500 font-mono">
+                          {customerContact}
                         </div>
-
                       </div>
-
                     </div>
-
                   </td>
 
                   {/* Order */}

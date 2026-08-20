@@ -321,6 +321,31 @@ export const getAllCustomers = async (req, res) => {
   }
 };
 
+export const getCustomerOrders = async (req, res) => {
+  try {
+    const { email } = req.params;
+    const orders = await Order.find({
+      $or: [
+        { 'customer.email': email },
+        { 'customer.email': email.toLowerCase() },
+        { 'customer.phone': email }
+      ]
+    }).sort({ createdAt: -1 });
+
+    return res.json({
+      success: true,
+      count: orders.length,
+      data: orders
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch customer orders',
+      error: error.message
+    });
+  }
+};
+
 export const getDashboardStats = async (req, res) => {
   try {
     const totalOrders = await Order.countDocuments();
@@ -364,6 +389,211 @@ export const getDashboardStats = async (req, res) => {
       success: false,
       message: 'Server error',
       error: error.message
+    });
+  }
+};
+
+/*
+=================================================
+ADMIN MANAGEMENT (CRUD)
+=================================================
+*/
+
+export const getAllAdmins = async (req, res) => {
+  try {
+    const admins = await Admin.find().select('-password -otp -otpExpiry').sort({ createdAt: -1 });
+    return res.status(200).json({
+      success: true,
+      count: admins.length,
+      data: admins,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch admins',
+      error: error.message,
+    });
+  }
+};
+
+export const createAdmin = async (req, res) => {
+  try {
+    const { name, email, password, role, status } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: 'Username / Email and Password are required',
+      });
+    }
+
+    const trimmedEmail = email.trim();
+    const existing = await Admin.findOne({
+      $or: [
+        { email: trimmedEmail },
+        { email: trimmedEmail.toLowerCase() }
+      ]
+    });
+
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        message: 'An admin with this username or email already exists',
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newAdmin = await Admin.create({
+      name: name?.trim() || 'Admin User',
+      email: trimmedEmail,
+      password: hashedPassword,
+      role: role || 'Admin',
+      status: status || 'Active',
+    });
+
+    const adminData = newAdmin.toObject();
+    delete adminData.password;
+
+    return res.status(201).json({
+      success: true,
+      message: 'Admin account created successfully',
+      data: adminData,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to create admin',
+      error: error.message,
+    });
+  }
+};
+
+export const updateAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, role, status } = req.body;
+
+    const admin = await Admin.findById(id);
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        message: 'Admin not found',
+      });
+    }
+
+    if (email && email.trim() !== admin.email) {
+      const trimmedEmail = email.trim();
+      const existing = await Admin.findOne({
+        _id: { $ne: id },
+        $or: [
+          { email: trimmedEmail },
+          { email: trimmedEmail.toLowerCase() }
+        ]
+      });
+      if (existing) {
+        return res.status(400).json({
+          success: false,
+          message: 'This email/username is already in use by another admin',
+        });
+      }
+      admin.email = trimmedEmail;
+    }
+
+    if (name) admin.name = name.trim();
+    if (role) admin.role = role;
+    if (status) admin.status = status;
+
+    await admin.save();
+
+    const adminData = admin.toObject();
+    delete adminData.password;
+
+    return res.status(200).json({
+      success: true,
+      message: 'Admin details updated successfully',
+      data: adminData,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update admin',
+      error: error.message,
+    });
+  }
+};
+
+export const updateAdminPassword = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { newPassword } = req.body;
+
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 6 characters long',
+      });
+    }
+
+    const admin = await Admin.findById(id);
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        message: 'Admin not found',
+      });
+    }
+
+    admin.password = await bcrypt.hash(newPassword, 10);
+    await admin.save();
+
+    return res.status(200).json({
+      success: true,
+      message: `Password for ${admin.email} updated successfully`,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update password',
+      error: error.message,
+    });
+  }
+};
+
+export const deleteAdmin = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const totalAdmins = await Admin.countDocuments();
+    if (totalAdmins <= 1) {
+      return res.status(400).json({
+        success: false,
+        message: 'Cannot delete the only remaining admin account',
+      });
+    }
+
+    if (req.admin && (req.admin.id === id || req.admin._id === id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'You cannot delete your own logged-in admin account',
+      });
+    }
+
+    const admin = await Admin.findByIdAndDelete(id);
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        message: 'Admin not found',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `Admin ${admin.email} deleted successfully`,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to delete admin',
+      error: error.message,
     });
   }
 };
