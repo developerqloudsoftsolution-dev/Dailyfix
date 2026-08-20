@@ -1,8 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import api from "../../services/api";
-import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+import Avatar from "../../components/Avatar";
+import Modal from "../../components/Modal";
 import {
   Users,
   Search,
@@ -240,12 +237,9 @@ export default function Customers() {
                     {/* Customer */}
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <img
-                          src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                            customer.name || "User"
-                          )}&background=10b981&color=fff`}
-                          alt={customer.name}
-                          className="w-11 h-11 rounded-full border border-emerald-100 shadow-sm"
+                        <Avatar
+                          name={customer.name || "Customer"}
+                          size="lg"
                         />
                         <div>
                           <h3 className="font-semibold text-slate-900">
@@ -329,244 +323,235 @@ export default function Customers() {
       {/* ========================================= */}
       {/* CUSTOMER DETAILS MODAL (VIEW)            */}
       {/* ========================================= */}
-      <AnimatePresence>
+      <Modal
+        isOpen={Boolean(selectedCustomer)}
+        onClose={() => setSelectedCustomer(null)}
+        maxWidth="max-w-lg"
+      >
         {selectedCustomer && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-100 overflow-hidden"
-            >
-              {/* Header */}
-              <div className="flex justify-between items-center px-6 py-4 border-b bg-slate-50">
-                <div className="flex items-center gap-3">
-                  <img
-                    src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                      selectedCustomer.name || "User"
-                    )}&background=10b981&color=fff`}
-                    alt={selectedCustomer.name}
-                    className="w-10 h-10 rounded-full border border-emerald-100"
-                  />
-                  <div>
-                    <h2 className="text-base font-bold text-slate-900">
-                      {selectedCustomer.name}
-                    </h2>
-                    <p className="text-xs text-slate-500">Customer Profile</p>
-                  </div>
+          <div>
+            {/* Header */}
+            <div className="flex justify-between items-center px-6 py-4 border-b bg-slate-50">
+              <div className="flex items-center gap-3">
+                <Avatar
+                  name={selectedCustomer.name || "Customer"}
+                  size="md"
+                />
+                <div>
+                  <h2 className="text-base font-bold text-slate-900">
+                    {selectedCustomer.name}
+                  </h2>
+                  <p className="text-xs text-slate-500">Customer Profile</p>
                 </div>
-                <button
-                  onClick={() => setSelectedCustomer(null)}
-                  className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded-lg transition"
-                >
-                  <X size={18} />
-                </button>
               </div>
+              <button
+                onClick={() => setSelectedCustomer(null)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded-lg transition"
+              >
+                <X size={18} />
+              </button>
+            </div>
 
-              {/* Body */}
-              <div className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
-                {/* Stats row */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
-                    <span className="text-xs text-slate-500 block">Total Orders</span>
-                    <span className="text-xl font-bold text-slate-900 mt-0.5 block">
-                      {selectedCustomer.totalOrders || 0}
-                    </span>
-                  </div>
-                  <div className="p-3.5 bg-emerald-50/60 rounded-xl border border-emerald-100">
-                    <span className="text-xs text-emerald-700 font-medium block">Lifetime Spend</span>
-                    <span className="text-xl font-bold text-emerald-800 mt-0.5 block">
-                      ₹{Number(selectedCustomer.totalSpent || 0).toLocaleString("en-IN")}
-                    </span>
-                  </div>
+            {/* Body */}
+            <div className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
+              {/* Stats row */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100">
+                  <span className="text-xs text-slate-500 block">Total Orders</span>
+                  <span className="text-xl font-bold text-slate-900 mt-0.5 block">
+                    {selectedCustomer.totalOrders || 0}
+                  </span>
                 </div>
-
-                {/* Contact Information */}
-                <div className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 space-y-2.5">
-                  <h3 className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                    Contact Details
-                  </h3>
-                  <div className="flex items-center justify-between text-xs py-1 border-b border-slate-100">
-                    <span className="text-slate-500 flex items-center gap-1.5">
-                      <Mail size={13} /> Email:
-                    </span>
-                    <a
-                      href={`mailto:${selectedCustomer.email}`}
-                      className="font-medium text-blue-600 hover:underline"
-                    >
-                      {selectedCustomer.email || "N/A"}
-                    </a>
-                  </div>
-                  <div className="flex items-center justify-between text-xs py-1">
-                    <span className="text-slate-500 flex items-center gap-1.5">
-                      <Phone size={13} /> Phone:
-                    </span>
-                    <a
-                      href={`tel:${selectedCustomer.phone}`}
-                      className="font-medium text-emerald-700 hover:underline"
-                    >
-                      {selectedCustomer.phone || "N/A"}
-                    </a>
-                  </div>
-                </div>
-
-                {/* Delivery Address */}
-                <div className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 space-y-2">
-                  <h3 className="text-xs font-semibold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                    <MapPin size={13} className="text-slate-400" /> Default Delivery Address
-                  </h3>
-                  <p className="text-xs text-slate-800 leading-relaxed">
-                    {selectedCustomer.address || "Address details not available"}
-                    <br />
-                    {selectedCustomer.city && `${selectedCustomer.city}, `}
-                    {selectedCustomer.state && `${selectedCustomer.state} `}
-                    {selectedCustomer.pincode && `- ${selectedCustomer.pincode}`}
-                  </p>
+                <div className="p-3.5 bg-emerald-50/60 rounded-xl border border-emerald-100">
+                  <span className="text-xs text-emerald-700 font-medium block">Lifetime Spend</span>
+                  <span className="text-xl font-bold text-emerald-800 mt-0.5 block">
+                    ₹{Number(selectedCustomer.totalSpent || 0).toLocaleString("en-IN")}
+                  </span>
                 </div>
               </div>
 
-              {/* Footer */}
-              <div className="px-6 py-4 bg-slate-50 border-t flex justify-between items-center">
-                <button
-                  onClick={() => {
-                    const cust = selectedCustomer;
-                    setSelectedCustomer(null);
-                    openCustomerOrders(cust);
-                  }}
-                  className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-xl transition"
-                >
-                  <ShoppingBag size={14} /> View Order History
-                </button>
-                <button
-                  onClick={() => setSelectedCustomer(null)}
-                  className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-semibold transition"
-                >
-                  Close
-                </button>
+              {/* Contact Information */}
+              <div className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 space-y-2.5">
+                <h3 className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                  Contact Details
+                </h3>
+                <div className="flex items-center justify-between text-xs py-1 border-b border-slate-100">
+                  <span className="text-slate-500 flex items-center gap-1.5">
+                    <Mail size={13} /> Email:
+                  </span>
+                  <a
+                    href={`mailto:${selectedCustomer.email}`}
+                    className="font-medium text-blue-600 hover:underline"
+                  >
+                    {selectedCustomer.email || "N/A"}
+                  </a>
+                </div>
+                <div className="flex items-center justify-between text-xs py-1">
+                  <span className="text-slate-500 flex items-center gap-1.5">
+                    <Phone size={13} /> Phone:
+                  </span>
+                  <a
+                    href={`tel:${selectedCustomer.phone}`}
+                    className="font-medium text-emerald-700 hover:underline"
+                  >
+                    {selectedCustomer.phone || "N/A"}
+                  </a>
+                </div>
               </div>
-            </motion.div>
+
+              {/* Delivery Address */}
+              <div className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 space-y-2">
+                <h3 className="text-xs font-semibold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                  <MapPin size={13} className="text-slate-400" /> Default Delivery Address
+                </h3>
+                <p className="text-xs text-slate-800 leading-relaxed">
+                  {selectedCustomer.address || "Address details not available"}
+                  <br />
+                  {selectedCustomer.city && `${selectedCustomer.city}, `}
+                  {selectedCustomer.state && `${selectedCustomer.state} `}
+                  {selectedCustomer.pincode && `- ${selectedCustomer.pincode}`}
+                </p>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 bg-slate-50 border-t flex justify-between items-center">
+              <button
+                onClick={() => {
+                  const cust = selectedCustomer;
+                  setSelectedCustomer(null);
+                  openCustomerOrders(cust);
+                }}
+                className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-xl transition"
+              >
+                <ShoppingBag size={14} /> View Order History
+              </button>
+              <button
+                onClick={() => setSelectedCustomer(null)}
+                className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-semibold transition"
+              >
+                Close
+              </button>
+            </div>
           </div>
         )}
-      </AnimatePresence>
+      </Modal>
 
       {/* ========================================= */}
       {/* CUSTOMER ORDERS MODAL                     */}
       {/* ========================================= */}
-      <AnimatePresence>
+      <Modal
+        isOpen={Boolean(ordersModalCustomer)}
+        onClose={() => setOrdersModalCustomer(null)}
+        maxWidth="max-w-3xl"
+      >
         {ordersModalCustomer && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl border border-slate-100 overflow-hidden my-8"
-            >
-              {/* Header */}
-              <div className="flex justify-between items-center px-6 py-4 border-b bg-slate-50">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-                    <ShoppingBag size={20} />
-                  </div>
-                  <div>
-                    <h2 className="text-base font-bold text-slate-900">
-                      Orders Placed by {ordersModalCustomer.name}
-                    </h2>
-                    <p className="text-xs text-slate-500">
-                      {ordersModalCustomer.email || ordersModalCustomer.phone}
-                    </p>
-                  </div>
+          <div>
+            {/* Header */}
+            <div className="flex justify-between items-center px-6 py-4 border-b bg-slate-50">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                  <ShoppingBag size={20} />
                 </div>
-                <button
-                  onClick={() => setOrdersModalCustomer(null)}
-                  className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded-lg transition"
-                >
-                  <X size={18} />
-                </button>
+                <div>
+                  <h2 className="text-base font-bold text-slate-900">
+                    Orders Placed by {ordersModalCustomer.name}
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    {ordersModalCustomer.email || ordersModalCustomer.phone}
+                  </p>
+                </div>
               </div>
+              <button
+                onClick={() => setOrdersModalCustomer(null)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded-lg transition"
+              >
+                <X size={18} />
+              </button>
+            </div>
 
-              {/* Body */}
-              <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
-                {loadingOrders ? (
-                  <div className="py-12 text-center text-slate-400 text-xs flex items-center justify-center gap-2">
-                    <RefreshCw className="animate-spin" size={16} /> Loading customer orders...
-                  </div>
-                ) : customerOrders.length === 0 ? (
-                  <div className="py-12 text-center text-slate-500">
-                    <Package className="mx-auto text-slate-300 mb-2" size={36} />
-                    <p className="font-medium text-slate-600">No Orders Found</p>
-                    <p className="text-xs text-slate-400 mt-1">This customer has not completed any orders yet.</p>
-                  </div>
-                ) : (
-                  <div className="border border-slate-100 rounded-xl overflow-hidden divide-y divide-slate-100">
-                    {customerOrders.map((order) => (
-                      <div
-                        key={order._id}
-                        className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 hover:bg-slate-50/80 transition"
-                      >
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold text-slate-900 text-sm">{order.orderId}</span>
-                            <span
-                              className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
-                                order.status === "Delivered"
-                                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                                  : order.status === "Shipped"
-                                  ? "bg-purple-50 text-purple-700 border border-purple-200"
-                                  : order.status === "Cancelled"
-                                  ? "bg-rose-50 text-rose-700 border border-rose-200"
-                                  : "bg-slate-100 text-slate-700"
-                              }`}
-                            >
-                              {order.status}
-                            </span>
-                          </div>
-                          <p className="text-xs text-slate-400">
-                            {order.createdAt
-                              ? new Date(order.createdAt).toLocaleString("en-IN")
-                              : "Recent"}
-                            {" • "}
-                            {order.paymentMethod || "COD"}
-                            {order.delhivery?.waybill && (
-                              <span className="text-emerald-600 font-mono ml-2">
-                                AWB: {order.delhivery.waybill}
-                              </span>
-                            )}
-                          </p>
-                        </div>
-
-                        <div className="flex items-center gap-4">
-                          <span className="font-bold text-slate-900 text-sm">
-                            ₹{order.total || order.totalAmount || 0}
-                          </span>
-                          <button
-                            onClick={() => {
-                              setOrdersModalCustomer(null);
-                              navigate(`/admin/orders?search=${order.orderId}`);
-                            }}
-                            className="inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition"
+            {/* Body */}
+            <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+              {loadingOrders ? (
+                <div className="py-12 text-center text-slate-400 text-xs flex items-center justify-center gap-2">
+                  <RefreshCw className="animate-spin" size={16} /> Loading customer orders...
+                </div>
+              ) : customerOrders.length === 0 ? (
+                <div className="py-12 text-center text-slate-500">
+                  <Package className="mx-auto text-slate-300 mb-2" size={36} />
+                  <p className="font-medium text-slate-600">No Orders Found</p>
+                  <p className="text-xs text-slate-400 mt-1">This customer has not completed any orders yet.</p>
+                </div>
+              ) : (
+                <div className="border border-slate-100 rounded-xl overflow-hidden divide-y divide-slate-100">
+                  {customerOrders.map((order) => (
+                    <div
+                      key={order._id}
+                      className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 hover:bg-slate-50/80 transition"
+                    >
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-slate-900 text-sm">{order.orderId}</span>
+                          <span
+                            className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                              order.status === "Delivered"
+                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                : order.status === "Shipped"
+                                ? "bg-purple-50 text-purple-700 border border-purple-200"
+                                : order.status === "Cancelled"
+                                ? "bg-rose-50 text-rose-700 border border-rose-200"
+                                : "bg-slate-100 text-slate-700"
+                            }`}
                           >
-                            View in Orders <ExternalLink size={11} />
-                          </button>
+                            {order.status}
+                          </span>
                         </div>
+                        <p className="text-xs text-slate-400">
+                          {order.createdAt
+                            ? new Date(order.createdAt).toLocaleString("en-IN")
+                            : "Recent"}
+                          {" • "}
+                          {order.paymentMethod || "COD"}
+                          {order.delhivery?.waybill && (
+                            <span className="text-emerald-600 font-mono ml-2">
+                              AWB: {order.delhivery.waybill}
+                            </span>
+                          )}
+                        </p>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
 
-              {/* Footer */}
-              <div className="px-6 py-4 bg-slate-50 border-t flex justify-end">
-                <button
-                  onClick={() => setOrdersModalCustomer(null)}
-                  className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-semibold transition"
-                >
-                  Close
-                </button>
-              </div>
-            </motion.div>
+                      <div className="flex items-center gap-4">
+                        <span className="font-bold text-slate-900 text-sm">
+                          ₹{order.total || order.totalAmount || 0}
+                        </span>
+                        <button
+                          onClick={() => {
+                            setOrdersModalCustomer(null);
+                            navigate(`/admin/orders?search=${order.orderId}`);
+                          }}
+                          className="inline-flex items-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-lg transition"
+                        >
+                          View in Orders <ExternalLink size={11} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 bg-slate-50 border-t flex justify-end">
+              <button
+                onClick={() => setOrdersModalCustomer(null)}
+                className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-semibold transition"
+              >
+                Close
+              </button>
+            </div>
           </div>
         )}
-      </AnimatePresence>
+      </Modal>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import Avatar from "../../../components/Avatar";
 import {
   Eye,
   Package,
@@ -139,12 +140,9 @@ export default function RecentOrders({
                   {/* Customer */}
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <img
-                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                          customerDisplayName
-                        )}&background=10b981&color=fff`}
-                        alt=""
-                        className="w-10 h-10 rounded-full"
+                      <Avatar
+                        name={customerDisplayName}
+                        size="md"
                       />
                       <div>
                         <div className="font-semibold text-slate-900 text-sm">

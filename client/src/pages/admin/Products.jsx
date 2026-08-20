@@ -22,6 +22,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { productAPI } from "../../services/api";
 import toast from "react-hot-toast";
 import { getProductImageSrc } from "../../utils/productImages";
+import Modal from "../../components/Modal";
 
 const initialProductForm = {
   name: "",
@@ -543,34 +544,31 @@ export default function Products() {
       {/* ======================================================== */}
       {/* MODAL 1: ADD PRODUCT                                     */}
       {/* ======================================================== */}
-      <AnimatePresence>
-        {showAddModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-2xl shadow-xl max-w-2xl w-full p-6 space-y-5 max-h-[90vh] overflow-y-auto my-8"
-            >
-              <div className="flex items-center justify-between border-b pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-                    <Plus size={20} />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-slate-900 text-base">Add New Product</h3>
-                    <p className="text-xs text-slate-400">Add a new item to your store catalog</p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setShowAddModal(false)}
-                  className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg"
-                >
-                  <X size={18} />
-                </button>
+      <Modal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        maxWidth="max-w-2xl"
+      >
+        <div className="p-6 space-y-5 max-h-[90vh] overflow-y-auto">
+          <div className="flex items-center justify-between border-b pb-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                <Plus size={20} />
               </div>
+              <div>
+                <h3 className="font-bold text-slate-900 text-base">Add New Product</h3>
+                <p className="text-xs text-slate-400">Add a new item to your store catalog</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowAddModal(false)}
+              className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg"
+            >
+              <X size={18} />
+            </button>
+          </div>
 
-              <form onSubmit={handleCreateProduct} className="space-y-4 text-xs">
+          <form onSubmit={handleCreateProduct} className="space-y-4 text-xs">
                 {/* Name */}
                 <div>
                   <label className="font-bold text-slate-700 block mb-1">Product Title *</label>
@@ -785,42 +783,38 @@ export default function Products() {
                   </button>
                 </div>
               </form>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+            </div>
+      </Modal>
 
       {/* ======================================================== */}
       {/* MODAL 2: EDIT PRODUCT                                    */}
       {/* ======================================================== */}
-      <AnimatePresence>
-        {showEditModal && currentProduct && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-2xl shadow-xl max-w-2xl w-full p-6 space-y-5 max-h-[90vh] overflow-y-auto my-8"
-            >
-              <div className="flex items-center justify-between border-b pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-                    <Pencil size={18} />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-slate-900 text-base">Edit Product</h3>
-                    <p className="text-xs text-slate-400">Modify product pricing, details & stock</p>
-                  </div>
+      <Modal
+        isOpen={Boolean(showEditModal && currentProduct)}
+        onClose={() => setShowEditModal(false)}
+        maxWidth="max-w-2xl"
+      >
+        {currentProduct && (
+          <div className="p-6 space-y-5 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                  <Pencil size={18} />
                 </div>
-                <button
-                  onClick={() => setShowEditModal(false)}
-                  className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg"
-                >
-                  <X size={18} />
-                </button>
+                <div>
+                  <h3 className="font-bold text-slate-900 text-base">Edit Product</h3>
+                  <p className="text-xs text-slate-400">Modify product pricing, details & stock</p>
+                </div>
               </div>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg"
+              >
+                <X size={18} />
+              </button>
+            </div>
 
-              <form onSubmit={handleUpdateProduct} className="space-y-4 text-xs">
+            <form onSubmit={handleUpdateProduct} className="space-y-4 text-xs">
                 {/* Name */}
                 <div>
                   <label className="font-bold text-slate-700 block mb-1">Product Title *</label>
@@ -1031,161 +1025,154 @@ export default function Products() {
                   </button>
                 </div>
               </form>
-            </motion.div>
-          </div>
+            </div>
         )}
-      </AnimatePresence>
+      </Modal>
 
       {/* ======================================================== */}
       {/* MODAL 3: VIEW PRODUCT DETAILS                            */}
       {/* ======================================================== */}
-      <AnimatePresence>
-        {showViewModal && currentProduct && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 space-y-5 my-8"
-            >
-              <div className="flex items-center justify-between border-b pb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
-                    <Eye size={18} />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-slate-900 text-base">Product Overview</h3>
-                    <p className="text-xs text-slate-400">ID: {currentProduct._id || currentProduct.id}</p>
-                  </div>
+      <Modal
+        isOpen={Boolean(showViewModal && currentProduct)}
+        onClose={() => setShowViewModal(false)}
+        maxWidth="max-w-lg"
+      >
+        {currentProduct && (
+          <div className="p-6 space-y-5">
+            <div className="flex items-center justify-between border-b pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center font-bold">
+                  <Eye size={18} />
                 </div>
-                <button
-                  onClick={() => setShowViewModal(false)}
-                  className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg"
-                >
-                  <X size={18} />
-                </button>
+                <div>
+                  <h3 className="font-bold text-slate-900 text-base">Product Overview</h3>
+                  <p className="text-xs text-slate-400">ID: {currentProduct._id || currentProduct.id}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowViewModal(false)}
+                className="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              <div className="flex gap-4 items-center p-3.5 bg-slate-50 rounded-xl border border-slate-100">
+                <img
+                  src={getProductImageSrc(currentProduct)}
+                  alt={currentProduct.name}
+                  className="w-20 h-20 rounded-xl object-cover border border-slate-200 bg-white"
+                />
+                <div className="space-y-1">
+                  <span className="text-[10px] uppercase font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+                    {currentProduct.category || "Beard Care"}
+                  </span>
+                  <h4 className="font-bold text-slate-900 text-sm">{currentProduct.name}</h4>
+                  <p className="text-xs font-bold text-slate-800">
+                    ₹{currentProduct.price}
+                  </p>
+                </div>
               </div>
 
-              <div className="space-y-4 text-xs">
-                <div className="flex gap-4 items-center p-3.5 bg-slate-50 rounded-xl border border-slate-100">
-                  <img
-                    src={getProductImageSrc(currentProduct)}
-                    alt={currentProduct.name}
-                    className="w-20 h-20 rounded-xl object-cover border border-slate-200 bg-white"
-                  />
-                  <div className="space-y-1">
-                    <span className="text-[10px] uppercase font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
-                      {currentProduct.category || "Beard Care"}
-                    </span>
-                    <h4 className="font-bold text-slate-900 text-sm">{currentProduct.name}</h4>
-                    <p className="text-xs font-bold text-slate-800">
-                      ₹{currentProduct.price}
-                    </p>
-                  </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3 bg-slate-50 rounded-xl">
+                  <span className="text-[11px] text-slate-400 block">Stock Available</span>
+                  <span className="font-bold text-slate-800 text-sm mt-0.5 block">
+                    {currentProduct.stock} units
+                  </span>
                 </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 bg-slate-50 rounded-xl">
-                    <span className="text-[11px] text-slate-400 block">Stock Available</span>
-                    <span className="font-bold text-slate-800 text-sm mt-0.5 block">
-                      {currentProduct.stock} units
-                    </span>
-                  </div>
-                  <div className="p-3 bg-slate-50 rounded-xl">
-                    <span className="text-[11px] text-slate-400 block">SKU Code</span>
-                    <span className="font-mono font-bold text-slate-800 text-xs mt-0.5 block">
-                      {currentProduct.sku || "N/A"}
-                    </span>
-                  </div>
-                  <div className="p-3 bg-slate-50 rounded-xl">
-                    <span className="text-[11px] text-slate-400 block">Delhivery Weight</span>
-                    <span className="font-mono font-bold text-slate-800 text-xs mt-0.5 block">
-                      {currentProduct.weight || 500} grams
-                    </span>
-                  </div>
-                  <div className="p-3 bg-slate-50 rounded-xl">
-                    <span className="text-[11px] text-slate-400 block">Package Box Size</span>
-                    <span className="font-mono font-bold text-slate-800 text-xs mt-0.5 block">
-                      {currentProduct.length || 15}x{currentProduct.width || 10}x{currentProduct.height || 5} cm
-                    </span>
-                  </div>
+                <div className="p-3 bg-slate-50 rounded-xl">
+                  <span className="text-[11px] text-slate-400 block">SKU Code</span>
+                  <span className="font-mono font-bold text-slate-800 text-xs mt-0.5 block">
+                    {currentProduct.sku || "N/A"}
+                  </span>
                 </div>
-
-                {currentProduct.description && (
-                  <div className="p-3 bg-slate-50 rounded-xl">
-                    <span className="text-[11px] text-slate-400 block font-bold mb-1">Description</span>
-                    <p className="text-slate-600 leading-relaxed">{currentProduct.description}</p>
-                  </div>
-                )}
+                <div className="p-3 bg-slate-50 rounded-xl">
+                  <span className="text-[11px] text-slate-400 block">Delhivery Weight</span>
+                  <span className="font-mono font-bold text-slate-800 text-xs mt-0.5 block">
+                    {currentProduct.weight || 500} grams
+                  </span>
+                </div>
+                <div className="p-3 bg-slate-50 rounded-xl">
+                  <span className="text-[11px] text-slate-400 block">Package Box Size</span>
+                  <span className="font-mono font-bold text-slate-800 text-xs mt-0.5 block">
+                    {currentProduct.length || 15}x{currentProduct.width || 10}x{currentProduct.height || 5} cm
+                  </span>
+                </div>
               </div>
 
-              <div className="flex justify-end gap-2 pt-2 border-t">
-                <button
-                  onClick={() => {
-                    setShowViewModal(false);
-                    handleOpenEdit(currentProduct);
-                  }}
-                  className="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl font-bold text-xs"
-                >
-                  Edit Product
-                </button>
-                <button
-                  onClick={() => setShowViewModal(false)}
-                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs"
-                >
-                  Close
-                </button>
-              </div>
-            </motion.div>
+              {currentProduct.description && (
+                <div className="p-3 bg-slate-50 rounded-xl">
+                  <span className="text-[11px] text-slate-400 block font-bold mb-1">Description</span>
+                  <p className="text-slate-600 leading-relaxed">{currentProduct.description}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t">
+              <button
+                onClick={() => {
+                  setShowViewModal(false);
+                  handleOpenEdit(currentProduct);
+                }}
+                className="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl font-bold text-xs"
+              >
+                Edit Product
+              </button>
+              <button
+                onClick={() => setShowViewModal(false)}
+                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-xs"
+              >
+                Close
+              </button>
+            </div>
           </div>
         )}
-      </AnimatePresence>
+      </Modal>
 
       {/* ======================================================== */}
       {/* MODAL 4: DELETE CONFIRMATION                             */}
       {/* ======================================================== */}
-      <AnimatePresence>
-        {showDeleteModal && currentProduct && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4"
-            >
-              <div className="w-12 h-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
-                <Trash2 size={24} />
-              </div>
+      <Modal
+        isOpen={Boolean(showDeleteModal && currentProduct)}
+        onClose={() => setShowDeleteModal(false)}
+        maxWidth="max-w-md"
+      >
+        {currentProduct && (
+          <div className="p-6 space-y-4">
+            <div className="w-12 h-12 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
+              <Trash2 size={24} />
+            </div>
 
-              <div className="text-center space-y-1">
-                <h3 className="font-bold text-slate-900 text-base">Delete Product?</h3>
-                <p className="text-xs text-slate-500">
-                  Are you sure you want to delete <strong className="text-slate-800">"{currentProduct.name}"</strong>?
-                  This action cannot be undone.
-                </p>
-              </div>
+            <div className="text-center space-y-1">
+              <h3 className="font-bold text-slate-900 text-base">Delete Product?</h3>
+              <p className="text-xs text-slate-500">
+                Are you sure you want to delete <strong className="text-slate-800">"{currentProduct.name}"</strong>?
+                This action cannot be undone.
+              </p>
+            </div>
 
-              <div className="flex gap-2.5 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowDeleteModal(false)}
-                  className="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-bold text-xs"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  disabled={submitting}
-                  onClick={handleDeleteProduct}
-                  className="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition shadow-md shadow-rose-600/20 disabled:opacity-50"
-                >
-                  {submitting ? "Deleting..." : "Yes, Delete"}
-                </button>
-              </div>
-            </motion.div>
+            <div className="flex gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 font-bold text-xs"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={submitting}
+                onClick={handleDeleteProduct}
+                className="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs transition shadow-md shadow-rose-600/20 disabled:opacity-50"
+              >
+                {submitting ? "Deleting..." : "Yes, Delete"}
+              </button>
+            </div>
           </div>
         )}
-      </AnimatePresence>
+      </Modal>
     </div>
   );
 }

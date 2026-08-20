@@ -4,6 +4,7 @@ import { Trash2, ShoppingCart, Minus, Plus, X, Check, ArrowLeft, ArrowRight } fr
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { getProductImageSrc } from '../utils/productImages';
+import Modal from '../components/Modal';
 
 function CartPage() {
   const { cart, updateQuantity, removeFromCart, getTotal } = useCart();
@@ -222,14 +223,13 @@ function CartPage() {
       </div>
 
       {/* Modal - Confirm Delete */}
-      {itemToRemove && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-900/60 backdrop-blur-sm p-4 sm:p-6">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.2 }}
-            className="bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-hard"
-          >
+      <Modal
+        isOpen={Boolean(itemToRemove)}
+        onClose={() => setItemToRemove(null)}
+        maxWidth="max-w-md"
+      >
+        {itemToRemove && (
+          <div className="p-6 sm:p-8">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl sm:text-2xl font-bold text-stone-900">Remove Item</h3>
               <button
@@ -258,9 +258,9 @@ function CartPage() {
                 Remove
               </button>
             </div>
-          </motion.div>
-        </div>
-      )}
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

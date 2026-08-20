@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import Avatar from "./Avatar";
 
 const menuItems = [
   {
@@ -187,10 +188,9 @@ export default function Sidebar() {
         >
           <div className="flex items-center gap-3">
 
-            <img
-              src="https://ui-avatars.com/api/?name=Admin&background=10b981&color=fff"
-              alt="Admin"
-              className="w-11 h-11 rounded-full border-2 border-emerald-100"
+            <Avatar
+              name="Administrator"
+              size="lg"
             />
 
             {!collapsed && (
