@@ -13,7 +13,7 @@ class WhatsAppService {
     const apiUrl =
       settings?.apiUrl ||
       process.env.WHATSAPP_API_URL ||
-      'http://127.0.0.1:3000';
+      'https://dailyfix-whatsapp-backend.onrender.com';
 
     const apiKey =
       settings?.apiKey ||
@@ -54,9 +54,11 @@ class WhatsAppService {
   async request(endpoint, method = 'GET', data = null, timeout = 10000) {
     const { apiUrl, apiKey } = await this.getConfig();
     try {
-      const headers = {
-        'x-api-key': apiKey,
-      };
+      const headers = {};
+      if (apiKey && apiKey.trim() && apiKey !== 'local-development-key') {
+        headers['x-api-key'] = apiKey.trim();
+      }
+
       const axiosConfig = {
         url: `${apiUrl}/api${endpoint}`,
         method,
@@ -72,6 +74,22 @@ class WhatsAppService {
       const response = await axios(axiosConfig);
       return { ok: true, data: response.data };
     } catch (error) {
+      // If 401, retry once without x-api-key header
+      if (error.response?.status === 401) {
+        try {
+          const retryRes = await axios({
+            url: `${apiUrl}/api${endpoint}`,
+            method,
+            headers: data && method !== 'GET' ? { 'Content-Type': 'application/json' } : {},
+            data: data && method !== 'GET' ? data : undefined,
+            timeout,
+          });
+          return { ok: true, data: retryRes.data };
+        } catch (retryErr) {
+          // Fall through
+        }
+      }
+
       const errMsg =
         error.response?.data?.message ||
         error.response?.data?.error ||
