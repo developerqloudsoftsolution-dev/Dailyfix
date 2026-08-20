@@ -83,6 +83,8 @@ export const logoutWhatsApp = async (req, res) => {
   }
 };
 
+const DEFAULT_WHATSAPP_API_URL = 'https://dailyfix-whatsapp-backend.onrender.com';
+
 export const getSettings = async (req, res) => {
   try {
     let settings = await WhatsAppSettings.findOne();
@@ -91,10 +93,13 @@ export const getSettings = async (req, res) => {
         adminPhones: [],
         adminPhone: '',
         notifyConnectedNumber: true,
-        apiUrl: process.env.WHATSAPP_API_URL || 'http://127.0.0.1:3000',
+        apiUrl: process.env.WHATSAPP_API_URL || DEFAULT_WHATSAPP_API_URL,
         apiKey: process.env.WHATSAPP_API_KEY || 'local-development-key',
         enabled: true,
       });
+    } else if (!settings.apiUrl || settings.apiUrl === 'http://127.0.0.1:3000' || settings.apiUrl === 'http://localhost:3000') {
+      settings.apiUrl = process.env.WHATSAPP_API_URL || DEFAULT_WHATSAPP_API_URL;
+      await settings.save();
     }
 
     return res.json({
@@ -141,7 +146,10 @@ export const updateSettings = async (req, res) => {
 
     if (adminPhone !== undefined) settings.adminPhone = adminPhone.trim();
     if (notifyConnectedNumber !== undefined) settings.notifyConnectedNumber = Boolean(notifyConnectedNumber);
-    if (apiUrl !== undefined) settings.apiUrl = apiUrl.trim();
+    if (apiUrl !== undefined) {
+      const cleanUrl = apiUrl.trim();
+      settings.apiUrl = cleanUrl || process.env.WHATSAPP_API_URL || DEFAULT_WHATSAPP_API_URL;
+    }
     if (apiKey !== undefined) settings.apiKey = apiKey.trim();
     if (enabled !== undefined) settings.enabled = Boolean(enabled);
     if (notifyCustomerOnOrder !== undefined) settings.notifyCustomerOnOrder = Boolean(notifyCustomerOnOrder);

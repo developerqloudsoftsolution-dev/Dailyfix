@@ -1,6 +1,8 @@
 import axios from 'axios';
 import WhatsAppSettings from '../models/WhatsAppSettings.js';
 
+const PRIMARY_WHATSAPP_API_URL = 'https://dailyfix-whatsapp-backend.onrender.com';
+
 class WhatsAppService {
   async getConfig() {
     let settings = null;
@@ -10,10 +12,11 @@ class WhatsAppService {
       // Database might be initializing
     }
 
-    const apiUrl =
-      settings?.apiUrl ||
-      process.env.WHATSAPP_API_URL ||
-      'https://dailyfix-whatsapp-backend.onrender.com';
+    let apiUrl = settings?.apiUrl?.trim();
+    // Fallback if empty or defaulted to unreachable localhost on production
+    if (!apiUrl || apiUrl === 'http://127.0.0.1:3000' || apiUrl === 'http://localhost:3000') {
+      apiUrl = process.env.WHATSAPP_API_URL || PRIMARY_WHATSAPP_API_URL;
+    }
 
     const apiKey =
       settings?.apiKey ||
@@ -51,16 +54,17 @@ class WhatsAppService {
     return cleaned;
   }
 
-  async request(endpoint, method = 'GET', data = null, timeout = 10000) {
+  async request(endpoint, method = 'GET', data = null, timeout = 12000) {
     const { apiUrl, apiKey } = await this.getConfig();
-    try {
+    
+    const executeReq = async (targetUrl) => {
       const headers = {};
       if (apiKey && apiKey.trim() && apiKey !== 'local-development-key') {
         headers['x-api-key'] = apiKey.trim();
       }
 
       const axiosConfig = {
-        url: `${apiUrl}/api${endpoint}`,
+        url: `${targetUrl}/api${endpoint}`,
         method,
         headers,
         timeout,
@@ -71,7 +75,11 @@ class WhatsAppService {
         axiosConfig.data = data;
       }
 
-      const response = await axios(axiosConfig);
+      return await axios(axiosConfig);
+    };
+
+    try {
+      const response = await executeReq(apiUrl);
       return { ok: true, data: response.data };
     } catch (error) {
       // If 401, retry once without x-api-key header
@@ -87,6 +95,17 @@ class WhatsAppService {
           return { ok: true, data: retryRes.data };
         } catch (retryErr) {
           // Fall through
+        }
+      }
+
+      // Automatic fallback to PRIMARY_WHATSAPP_API_URL if custom/local URL failed
+      if (apiUrl !== PRIMARY_WHATSAPP_API_URL) {
+        try {
+          console.warn(`[WhatsApp] Request to ${apiUrl} failed (${error.message}). Falling back to Render backend: ${PRIMARY_WHATSAPP_API_URL}`);
+          const fallbackRes = await executeReq(PRIMARY_WHATSAPP_API_URL);
+          return { ok: true, data: fallbackRes.data };
+        } catch (fallbackErr) {
+          // Fall through to error reporting
         }
       }
 
@@ -115,7 +134,7 @@ class WhatsAppService {
         return res;
       }
       if (attempt < 4) {
-        await new Promise((r) => setTimeout(r, 1200));
+        await new Promise((r) => setTimeout(r, 1500));
       }
     }
     return await this.request('/qr', 'GET', null, 15000);

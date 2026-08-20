@@ -21,6 +21,10 @@ import {
   MailCheck,
   UserCheck,
   Zap,
+  Globe,
+  Server,
+  RotateCcw,
+  Activity,
 } from "lucide-react";
 
 export default function WhatsAppConnect() {
@@ -452,6 +456,50 @@ export default function WhatsAppConnect() {
               </div>
             )}
           </motion.div>
+
+          {/* WhatsApp Microservice Health & Info */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 space-y-3.5"
+          >
+            <div className="flex items-center justify-between border-b pb-3">
+              <h4 className="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2">
+                <Server size={15} className="text-slate-500" />
+                WhatsApp Cloud Microservice
+              </h4>
+              <span
+                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${
+                  statusData?.serviceOnline
+                    ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                    : "bg-rose-50 text-rose-700 border border-rose-200"
+                }`}
+              >
+                <Activity size={12} className={statusData?.serviceOnline ? "text-emerald-500 animate-pulse" : "text-rose-500"} />
+                {statusData?.serviceOnline ? "Online & Healthy" : "Offline / Connecting"}
+              </span>
+            </div>
+
+            <div className="space-y-2 text-xs">
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-1.5 font-mono text-[11px]">
+                <div className="flex justify-between items-center text-slate-600">
+                  <span className="text-slate-400 font-sans">Active Microservice:</span>
+                  <span className="font-semibold text-slate-800 truncate max-w-[200px]" title={statusData?.apiUrl || settings.apiUrl || "Render Microservice"}>
+                    {statusData?.apiUrl || settings.apiUrl || "https://dailyfix-whatsapp-backend.onrender.com"}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center text-slate-600">
+                  <span className="text-slate-400 font-sans">Connection Protocol:</span>
+                  <span className="font-semibold text-slate-700 font-sans">Baileys Multi-Device (Render Cloud)</span>
+                </div>
+              </div>
+
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                The WhatsApp bot engine runs on the dedicated Render cloud microservice. Even if your store server restarts, your WhatsApp session remains linked.
+              </p>
+            </div>
+          </motion.div>
         </div>
 
         {/* ========================================= */}
@@ -721,6 +769,126 @@ export default function WhatsAppConnect() {
                   <Zap size={14} />
                   {savingSettings ? "Saving Settings..." : "Save Notification Settings"}
                 </button>
+              </div>
+            </motion.div>
+
+            {/* Card 3: Send Test WhatsApp Message */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-4"
+            >
+              <div className="flex items-center gap-3 border-b pb-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                  <Send size={18} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 text-base">Send Test WhatsApp Message</h3>
+                  <p className="text-xs text-slate-400">Verify instant message delivery to any WhatsApp number</p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">
+                    Recipient Phone Number (with Country Code)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. 919503997749 or 9876543210"
+                    value={testPhone}
+                    onChange={(e) => setTestPhone(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500/20"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">
+                    Message Content
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={testMessage}
+                    onChange={(e) => setTestMessage(e.target.value)}
+                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:bg-white"
+                  />
+                </div>
+
+                <div className="flex justify-end pt-1">
+                  <button
+                    type="button"
+                    onClick={() => handleSendTestMessage()}
+                    disabled={sendingTest || !isConnected}
+                    className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-xl text-xs font-semibold transition disabled:opacity-50 shadow-sm"
+                  >
+                    <Send size={13} />
+                    {sendingTest ? "Sending Ping..." : isConnected ? "Send Test Message" : "Connect WhatsApp First"}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Card 4: Advanced Microservice Settings */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-4"
+            >
+              <div className="flex items-center justify-between border-b pb-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center">
+                    <Globe size={18} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-slate-900 text-base">API Cloud Microservice Config</h3>
+                    <p className="text-xs text-slate-400">Backend endpoint for Baileys Multi-Device integration</p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSettings({
+                      ...settings,
+                      apiUrl: "https://dailyfix-whatsapp-backend.onrender.com",
+                      apiKey: "local-development-key",
+                    });
+                    toast.success("Reset API URL to Render Default! Remember to click Save.");
+                  }}
+                  className="inline-flex items-center gap-1.5 text-xs text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg font-medium transition"
+                >
+                  <RotateCcw size={12} /> Reset to Render Default
+                </button>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-3 pt-1">
+                <div>
+                  <label className="text-[11px] font-semibold text-slate-600 block mb-1">
+                    WhatsApp Microservice URL
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="https://dailyfix-whatsapp-backend.onrender.com"
+                    value={settings.apiUrl || ""}
+                    onChange={(e) => setSettings({ ...settings, apiUrl: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-semibold text-slate-600 block mb-1">
+                    API Secret Key
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="local-development-key"
+                    value={settings.apiKey || ""}
+                    onChange={(e) => setSettings({ ...settings, apiKey: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-mono focus:outline-none"
+                  />
+                </div>
               </div>
             </motion.div>
           </form>
