@@ -853,7 +853,7 @@ export default function WhatsAppConnect() {
                     setSettings({
                       ...settings,
                       apiUrl: "https://dailyfix-whatsapp-backend.onrender.com",
-                      apiKey: "local-development-key",
+                      apiKey: process.env.VITE_WHATSAPP_API_KEY || "local-development-key",
                     });
                     toast.success("Reset API URL to Render Default! Remember to click Save.");
                   }}

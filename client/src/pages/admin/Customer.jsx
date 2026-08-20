@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { motion, AnimatePresence } from "framer-motion";
 import Avatar from "../../components/Avatar";
 import Modal from "../../components/Modal";
 import {

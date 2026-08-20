@@ -1,31 +1,31 @@
 import React from "react";
 
-// Curated list of high-contrast, beautiful gradient color pairs
-const GRADIENTS = [
-  "from-emerald-500 to-teal-600",
-  "from-blue-500 to-indigo-600",
-  "from-purple-500 to-violet-600",
-  "from-amber-500 to-orange-600",
-  "from-rose-500 to-pink-600",
-  "from-cyan-500 to-blue-600",
-  "from-teal-500 to-emerald-600",
-  "from-indigo-500 to-purple-600",
-  "from-fuchsia-500 to-pink-600",
-  "from-sky-500 to-indigo-600",
-  "from-orange-500 to-red-600",
-  "from-violet-600 to-indigo-700",
+// Curated list of vibrant high-contrast gradient pairs with inline fallback
+const PALETTES = [
+  { bg: "linear-gradient(135deg, #10b981, #0d9488)", text: "#ffffff" },
+  { bg: "linear-gradient(135deg, #3b82f6, #4f46e5)", text: "#ffffff" },
+  { bg: "linear-gradient(135deg, #8b5cf6, #7c3aed)", text: "#ffffff" },
+  { bg: "linear-gradient(135deg, #f59e0b, #ea580c)", text: "#ffffff" },
+  { bg: "linear-gradient(135deg, #f43f5e, #db2777)", text: "#ffffff" },
+  { bg: "linear-gradient(135deg, #06b6d4, #2563eb)", text: "#ffffff" },
+  { bg: "linear-gradient(135deg, #14b8a6, #059669)", text: "#ffffff" },
+  { bg: "linear-gradient(135deg, #6366f1, #9333ea)", text: "#ffffff" },
+  { bg: "linear-gradient(135deg, #d946ef, #e11d48)", text: "#ffffff" },
+  { bg: "linear-gradient(135deg, #0284c7, #4338ca)", text: "#ffffff" },
+  { bg: "linear-gradient(135deg, #f97316, #dc2626)", text: "#ffffff" },
+  { bg: "linear-gradient(135deg, #7c3aed, #4338ca)", text: "#ffffff" },
 ];
 
-const getGradientForName = (name = "") => {
+const getPaletteForName = (name = "") => {
   const clean = String(name || "").trim().toUpperCase();
-  if (!clean) return GRADIENTS[0];
+  if (!clean) return PALETTES[0];
   let hash = 0;
   for (let i = 0; i < clean.length; i++) {
     hash = (hash << 5) - hash + clean.charCodeAt(i);
     hash |= 0;
   }
-  const index = Math.abs(hash) % GRADIENTS.length;
-  return GRADIENTS[index];
+  const index = Math.abs(hash) % PALETTES.length;
+  return PALETTES[index];
 };
 
 const getInitial = (name = "") => {
@@ -54,10 +54,10 @@ export default function Avatar({
   };
 
   const text = getInitialsText();
-  const gradient = getGradientForName(name);
+  const palette = getPaletteForName(name);
 
   const sizeClasses = {
-    xs: "w-7 h-7 text-xs",
+    xs: "w-7 h-7 text-xs font-semibold",
     sm: "w-8 h-8 text-xs font-bold",
     md: "w-10 h-10 text-sm font-bold",
     lg: "w-11 h-11 text-base font-bold",
@@ -69,9 +69,13 @@ export default function Avatar({
 
   return (
     <div
-      className={`inline-flex items-center justify-center rounded-full bg-gradient-to-br ${gradient} text-white shadow-sm ring-1 ring-black/5 flex-shrink-0 select-none ${appliedSize} ${className}`}
-      title={name}
-      aria-label={name}
+      className={`inline-flex items-center justify-center rounded-full shadow-sm ring-1 ring-white/20 flex-shrink-0 select-none ${appliedSize} ${className}`}
+      style={{
+        background: palette.bg,
+        color: palette.text,
+      }}
+      title={typeof name === "string" ? name : "User"}
+      aria-label={typeof name === "string" ? name : "User"}
     >
       <span className="leading-none tracking-tight">{text}</span>
     </div>

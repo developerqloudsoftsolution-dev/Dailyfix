@@ -55,13 +55,14 @@ class WhatsAppService {
   }
 
   async request(endpoint, method = 'GET', data = null, timeout = 12000) {
-    const { apiUrl, apiKey } = await this.getConfig();
-    
-    const executeReq = async (targetUrl) => {
+    const config = await this.getConfig();
+    const { apiUrl, apiKey } = config;
+    const trimmedKey = (apiKey || '').trim();
+    const resolvedKey = trimmedKey || process.env.WHATSAPP_API_KEY || 'local-development-key';
+
+    const executeReq = async (targetUrl, useKey = resolvedKey) => {
       const headers = {};
-      if (apiKey && apiKey.trim() && apiKey !== 'local-development-key') {
-        headers['x-api-key'] = apiKey.trim();
-      }
+      headers['x-api-key'] = useKey;
 
       const axiosConfig = {
         url: `${targetUrl}/api${endpoint}`,
@@ -82,16 +83,10 @@ class WhatsAppService {
       const response = await executeReq(apiUrl);
       return { ok: true, data: response.data };
     } catch (error) {
-      // If 401, retry once without x-api-key header
-      if (error.response?.status === 401) {
+      // If 401, try the fallback key ('local-development-key') once — handles unset Render API_KEY
+      if (error.response?.status === 401 && resolvedKey !== 'local-development-key') {
         try {
-          const retryRes = await axios({
-            url: `${apiUrl}/api${endpoint}`,
-            method,
-            headers: data && method !== 'GET' ? { 'Content-Type': 'application/json' } : {},
-            data: data && method !== 'GET' ? data : undefined,
-            timeout,
-          });
+          const retryRes = await executeReq(apiUrl, 'local-development-key');
           return { ok: true, data: retryRes.data };
         } catch (retryErr) {
           // Fall through

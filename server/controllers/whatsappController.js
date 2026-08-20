@@ -88,18 +88,29 @@ const DEFAULT_WHATSAPP_API_URL = 'https://dailyfix-whatsapp-backend.onrender.com
 export const getSettings = async (req, res) => {
   try {
     let settings = await WhatsAppSettings.findOne();
+    const defaultApiKey = process.env.WHATSAPP_API_KEY || 'local-development-key';
+    const defaultApiUrl = process.env.WHATSAPP_API_URL || DEFAULT_WHATSAPP_API_URL;
+
     if (!settings) {
       settings = await WhatsAppSettings.create({
         adminPhones: [],
         adminPhone: '',
         notifyConnectedNumber: true,
-        apiUrl: process.env.WHATSAPP_API_URL || DEFAULT_WHATSAPP_API_URL,
-        apiKey: process.env.WHATSAPP_API_KEY || 'local-development-key',
+        apiUrl: defaultApiUrl,
+        apiKey: defaultApiKey,
         enabled: true,
       });
-    } else if (!settings.apiUrl || settings.apiUrl === 'http://127.0.0.1:3000' || settings.apiUrl === 'http://localhost:3000') {
-      settings.apiUrl = process.env.WHATSAPP_API_URL || DEFAULT_WHATSAPP_API_URL;
-      await settings.save();
+    } else {
+      let needsSave = false;
+      if (!settings.apiUrl || settings.apiUrl === 'http://127.0.0.1:3000' || settings.apiUrl === 'http://localhost:3000') {
+        settings.apiUrl = defaultApiUrl;
+        needsSave = true;
+      }
+      if (!settings.apiKey || settings.apiKey.trim() === '') {
+        settings.apiKey = defaultApiKey;
+        needsSave = true;
+      }
+      if (needsSave) await settings.save();
     }
 
     return res.json({

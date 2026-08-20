@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import api, { orderAPI } from "../../services/api";
 import toast from "react-hot-toast";
+import { motion, AnimatePresence } from "framer-motion";
 import Avatar from "../../components/Avatar";
 import Modal from "../../components/Modal";
 import {
