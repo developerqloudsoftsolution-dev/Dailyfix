@@ -1,0 +1,11 @@
+{
+  "name": "dailyfix-dist",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "npx serve . -s -p 3000",
+    "preview": "npx vite preview"
+  },
+  "dependencies": {}
+}
