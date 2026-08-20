@@ -22,6 +22,8 @@ import {
   RefreshCw,
   Edit2,
   Check,
+  Send,
+  Zap,
 } from "lucide-react";
 
 export default function Orders() {
@@ -41,6 +43,11 @@ export default function Orders() {
   const [trackingOrder, setTrackingOrder] = useState(null);
   const [trackingData, setTrackingData] = useState(null);
   const [loadingTracking, setLoadingTracking] = useState(false);
+
+  // Shipment Creation Modal
+  const [shipmentModalOrder, setShipmentModalOrder] = useState(null);
+  const [manualWaybill, setManualWaybill] = useState("");
+  const [markAsShipped, setMarkAsShipped] = useState(true);
 
   useEffect(() => {
     fetchOrders();
@@ -119,12 +126,20 @@ export default function Orders() {
     }
   };
 
-  const createShipment = async (order) => {
+  const openShipmentModal = (order) => {
+    setShipmentModalOrder(order);
+    setManualWaybill(order.delhivery?.waybill || "");
+    setMarkAsShipped(true);
+  };
+
+  const handleAutoDelhiveryShipment = async () => {
+    if (!shipmentModalOrder) return;
     try {
-      setLoadingShipment(order._id);
-      const result = await orderAPI.createDelhiveryShipment(order.orderId);
+      setLoadingShipment(shipmentModalOrder._id);
+      const result = await orderAPI.createDelhiveryShipment(shipmentModalOrder.orderId);
       if (result.ok) {
-        toast.success("Shipment Created Successfully");
+        toast.success("Delhivery Shipment Created Successfully!");
+        setShipmentModalOrder(null);
         fetchOrders();
       } else {
         const errorMsg = result.data?.message || "Failed to create shipment. You can add AWB manually.";
@@ -137,6 +152,37 @@ export default function Orders() {
     }
   };
 
+  const handleSaveManualShipment = async () => {
+    if (!shipmentModalOrder) return;
+    if (!manualWaybill.trim()) {
+      toast.error("Please enter an AWB / Tracking number");
+      return;
+    }
+    try {
+      setSavingWaybill(true);
+      const result = await orderAPI.updateOrderWaybill(
+        shipmentModalOrder.orderId,
+        manualWaybill.trim()
+      );
+      if (result.ok) {
+        if (markAsShipped && shipmentModalOrder.status !== "Shipped") {
+          await api.put(`/orders/${shipmentModalOrder._id}/status`, {
+            status: "Shipped",
+          });
+        }
+        toast.success("Shipment AWB saved and tracking enabled!");
+        setShipmentModalOrder(null);
+        fetchOrders();
+      } else {
+        toast.error(result.data?.message || "Failed to update AWB");
+      }
+    } catch (err) {
+      toast.error("Failed to update AWB");
+    } finally {
+      setSavingWaybill(false);
+    }
+  };
+
   const openTrackingModal = async (order) => {
     setTrackingOrder(order);
     setTrackingData(null);
@@ -146,7 +192,6 @@ export default function Orders() {
       if (res.data && res.data.success) {
         setTrackingData(res.data.trackingData || res.data);
       } else {
-        // Fallback to order tracking history in DB
         setTrackingData({
           waybill: order.delhivery?.waybill,
           status: order.delhivery?.currentStatus || order.status,
@@ -154,7 +199,6 @@ export default function Orders() {
         });
       }
     } catch (err) {
-      // Fallback
       setTrackingData({
         waybill: order.delhivery?.waybill,
         status: order.delhivery?.currentStatus || order.status,
@@ -454,12 +498,10 @@ export default function Orders() {
                           </button>
                         ) : (
                           <button
-                            onClick={() => createShipment(order)}
-                            disabled={loadingShipment === order._id}
-                            className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition disabled:opacity-50"
+                            onClick={() => openShipmentModal(order)}
+                            className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition"
                           >
-                            <Truck size={13} />
-                            {loadingShipment === order._id ? "Creating..." : "Shipment"}
+                            <Truck size={13} /> Shipment
                           </button>
                         )}
 
@@ -478,6 +520,122 @@ export default function Orders() {
           </table>
         </div>
       </div>
+
+      {/* ========================================= */}
+      {/* CREATE SHIPMENT MODAL                     */}
+      {/* ========================================= */}
+      <AnimatePresence>
+        {shipmentModalOrder && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-100 overflow-hidden"
+            >
+              {/* Modal Header */}
+              <div className="flex justify-between items-center px-6 py-4 border-b bg-slate-50">
+                <div className="flex items-center gap-2">
+                  <Truck className="text-emerald-600" size={20} />
+                  <div>
+                    <h2 className="text-base font-bold text-slate-900">
+                      Create / Assign Shipment
+                    </h2>
+                    <p className="text-xs text-slate-500">
+                      Order #{shipmentModalOrder.orderId} • {shipmentModalOrder.customer?.firstName} {shipmentModalOrder.customer?.lastName}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShipmentModalOrder(null)}
+                  className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded-lg transition"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6 space-y-6">
+                {/* Method 1: Enter AWB / Tracking Number (Recommended) */}
+                <div className="p-4 rounded-xl border border-emerald-100 bg-emerald-50/40 space-y-3">
+                  <div className="flex items-center gap-2 font-semibold text-xs text-emerald-900 uppercase tracking-wider">
+                    <Edit2 size={13} className="text-emerald-700" /> Enter Courier AWB / Tracking ID
+                  </div>
+                  <p className="text-xs text-slate-600">
+                    Paste the Waybill / AWB generated from your Delhivery, Shiprocket, or courier portal:
+                  </p>
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      placeholder="e.g. 1403215689123"
+                      value={manualWaybill}
+                      onChange={(e) => setManualWaybill(e.target.value)}
+                      className="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                    <label className="flex items-center gap-2 text-xs text-slate-700 cursor-pointer pt-1">
+                      <input
+                        type="checkbox"
+                        checked={markAsShipped}
+                        onChange={(e) => setMarkAsShipped(e.target.checked)}
+                        className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                      />
+                      <span>Mark order status as <strong>"Shipped"</strong> automatically</span>
+                    </label>
+                  </div>
+                  <button
+                    onClick={handleSaveManualShipment}
+                    disabled={savingWaybill}
+                    className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-2.5 rounded-xl transition disabled:opacity-50"
+                  >
+                    <Check size={14} />
+                    {savingWaybill ? "Saving..." : "Save AWB & Enable Live Tracking"}
+                  </button>
+                </div>
+
+                {/* Divider */}
+                <div className="relative flex items-center justify-center">
+                  <div className="border-t border-slate-200 w-full" />
+                  <span className="bg-white px-3 text-xs text-slate-400 font-medium uppercase">Or</span>
+                  <div className="border-t border-slate-200 w-full" />
+                </div>
+
+                {/* Method 2: Automatic Delhivery API */}
+                <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3">
+                  <div className="flex items-center gap-2 font-semibold text-xs text-slate-700 uppercase tracking-wider">
+                    <Zap size={13} className="text-blue-600" /> Automatic Delhivery API Booking
+                  </div>
+                  <p className="text-xs text-slate-500">
+                    Automatically book shipment & generate waybill directly via Delhivery API integration.
+                  </p>
+                  <button
+                    onClick={handleAutoDelhiveryShipment}
+                    disabled={loadingShipment === shipmentModalOrder._id}
+                    className="w-full inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2.5 rounded-xl transition disabled:opacity-50"
+                  >
+                    <Truck size={14} />
+                    {loadingShipment === shipmentModalOrder._id
+                      ? "Contacting Delhivery..."
+                      : "Book Automatically with Delhivery API"}
+                  </button>
+                  <p className="text-[11px] text-slate-400 italic">
+                    Note: Requires active DELHIVERY_API_KEY in your .env file.
+                  </p>
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="px-6 py-4 bg-slate-50 border-t flex justify-end">
+                <button
+                  onClick={() => setShipmentModalOrder(null)}
+                  className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-semibold transition"
+                >
+                  Cancel
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* ========================================= */}
       {/* ORDER DETAILS MODAL (VIEW)               */}
