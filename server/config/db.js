@@ -92,6 +92,8 @@ const autoSeedProductsIfEmpty = async () => {
   }
 };
 
+import { syncAllOrdersAcrossDatabases } from '../utils/syncOrders.js';
+
 const connectDB = async () => {
   const primaryUri = process.env.MONGODB_URI;
   const localUri = 'mongodb://127.0.0.1:27017/dailyfixcare';
@@ -99,12 +101,13 @@ const connectDB = async () => {
   if (primaryUri) {
     try {
       console.log('🔄 Connecting to MongoDB (primary URI)...');
-      await mongoose.connect(primaryUri, {
+      const conn = await mongoose.connect(primaryUri, {
         dbName: 'dailyfixcare',
         serverSelectionTimeoutMS: 6000
       });
       console.log('✅ MongoDB connected successfully to primary URI (dailyfixcare)');
       await autoSeedProductsIfEmpty();
+      await syncAllOrdersAcrossDatabases(conn.connection);
       return;
     } catch (error) {
       console.warn(`⚠️ Primary MongoDB connection failed (${error.message}).`);
@@ -116,11 +119,12 @@ const connectDB = async () => {
 
   // Fallback to local MongoDB
   try {
-    await mongoose.connect(localUri, {
+    const localConn = await mongoose.connect(localUri, {
       serverSelectionTimeoutMS: 4000
     });
     console.log('✅ MongoDB connected successfully to local instance (dailyfixcare)');
     await autoSeedProductsIfEmpty();
+    await syncAllOrdersAcrossDatabases(localConn.connection);
   } catch (localError) {
     console.error('❌ MongoDB local fallback connection failed:', localError.message);
     console.error('⚠️ Please ensure MongoDB is running locally on port 27017 or whitelist your IP on MongoDB Atlas.');
