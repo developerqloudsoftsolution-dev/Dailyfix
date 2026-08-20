@@ -248,7 +248,7 @@ function AdminLogin() {
               >
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-slate-700 block">
-                    Email Address
+                    Email or Username
                   </label>
                   <div className="relative">
                     <Mail
@@ -256,12 +256,12 @@ function AdminLogin() {
                       className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
                     />
                     <input
-                      type="email"
+                      type="text"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                      placeholder="admin@company.com"
+                      placeholder="admin@dailyfixcare.com or username"
                     />
                   </div>
                 </div>

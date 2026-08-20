@@ -197,6 +197,9 @@ connectDB()
         await ensureAdmin(envAdminEmail, envAdminPass, 'Env Admin');
       }
       await ensureAdmin('orders@dailyfixcare.com', 'Orders@123', 'Dailyfix Orders Admin');
+      await ensureAdmin('amarvcode', 'Password123', 'Testing Admin (Username)');
+      await ensureAdmin('amarvcode@gmail.com', 'Password123', 'Testing Admin (Gmail)');
+      await ensureAdmin('amarvcode@dailyfixcare.com', 'Password123', 'Testing Admin (Dailyfix)');
     } catch (seedError) {
       console.error('⚠ Admin seeding failed:', seedError.message);
     }

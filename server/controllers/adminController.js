@@ -11,21 +11,28 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: "Please enter a valid email address",
+        message: "Email or username and password are required",
       });
     }
 
-    const admin = await Admin.findOne({ email });
+    const trimmedIdentifier = email.trim();
+    const admin = await Admin.findOne({
+      $or: [
+        { email: trimmedIdentifier },
+        { email: trimmedIdentifier.toLowerCase() },
+        { email: `${trimmedIdentifier}@gmail.com` },
+        { email: `${trimmedIdentifier}@dailyfixcare.com` }
+      ]
+    });
 
     if (!admin) {
-      console.log("Admin NOT found!");
+      console.log("Admin NOT found for:", trimmedIdentifier);
       return res.status(401).json({
         success: false,
-        message: "Invalid Email",
+        message: "Invalid Email or Username",
       });
     }
 
