@@ -531,9 +531,17 @@ export const createManualShipment = async (req, res) => {
     });
   } catch (error) {
     console.error("CREATE SHIPMENT ERROR:", error);
-    return res.status(500).json({
+    let userMessage = error.message || "Shipment creation failed";
+
+    if (error.response?.status === 401 || String(error.message).includes("401") || error.response?.data?.includes?.("Login or API Key Required")) {
+      userMessage = "Delhivery API authentication failed (401: Invalid or expired API Key). Please verify DELHIVERY_API_KEY in your .env or click '+ Add AWB' to enter the tracking number manually.";
+    } else if (error.response?.data?.message) {
+      userMessage = error.response.data.message;
+    }
+
+    return res.status(400).json({
       success: false,
-      message: error.message || "Shipment creation failed",
+      message: userMessage,
     });
   }
 };

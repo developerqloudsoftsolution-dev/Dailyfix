@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import api, { orderAPI } from "../../services/api";
 import toast from "react-hot-toast";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
   ShoppingBag,
@@ -9,24 +9,38 @@ import {
   CheckCircle2,
   Clock3,
   IndianRupee,
+  Eye,
+  X,
+  ExternalLink,
+  Package,
+  MapPin,
+  User,
+  CreditCard,
+  Calendar,
+  Phone,
+  Mail,
+  RefreshCw,
+  Edit2,
+  Check,
 } from "lucide-react";
 
 export default function Orders() {
-
   const [orders, setOrders] = useState([]);
   const [filteredOrders, setFilteredOrders] = useState([]);
-
   const [loading, setLoading] = useState(true);
-
   const [search, setSearch] = useState("");
-
   const [status, setStatus] = useState("All");
 
   const [loadingShipment, setLoadingShipment] = useState("");
-
   const [editingWaybillOrderId, setEditingWaybillOrderId] = useState(null);
   const [editingWaybillValue, setEditingWaybillValue] = useState("");
   const [savingWaybill, setSavingWaybill] = useState(false);
+
+  // Modals
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [trackingOrder, setTrackingOrder] = useState(null);
+  const [trackingData, setTrackingData] = useState(null);
+  const [loadingTracking, setLoadingTracking] = useState(false);
 
   useEffect(() => {
     fetchOrders();
@@ -51,61 +65,44 @@ export default function Orders() {
       setFilteredOrders(list);
     } catch (err) {
       console.log(err);
+      toast.error("Failed to load orders");
     } finally {
       setLoading(false);
-
     }
   };
 
   const filterOrders = () => {
-
     let data = [...orders];
-
     if (search) {
-
       const searchLower = search.toLowerCase();
       data = data.filter((o) =>
         o.orderId?.toLowerCase().includes(searchLower) ||
         o.customer?.firstName?.toLowerCase().includes(searchLower) ||
         o.customer?.lastName?.toLowerCase().includes(searchLower) ||
-        (o.customer?.firstName + ' ' + o.customer?.lastName).toLowerCase().includes(searchLower) ||
+        (o.customer?.firstName + " " + o.customer?.lastName).toLowerCase().includes(searchLower) ||
         o.customer?.email?.toLowerCase().includes(searchLower) ||
         o.customer?.phone?.includes(search) ||
         o.delhivery?.waybill?.toLowerCase().includes(searchLower)
       );
-
     }
 
     if (status !== "All") {
-
       data = data.filter((o) => o.status === status);
-
     }
 
     setFilteredOrders(data);
-
   };
 
   const totalRevenue = useMemo(() => {
-
     return orders.reduce(
-      (sum, o) => sum + Number(o.total || 0),
+      (sum, o) => sum + Number(o.total || o.totalAmount || 0),
       0
     );
-
   }, [orders]);
 
-  const pendingOrders = orders.filter(
-    (o) => o.status === "Pending"
-  ).length;
-
-  const deliveredOrders = orders.filter(
-    (o) => o.status === "Delivered"
-  ).length;
-
-  const shippedOrders = orders.filter(
-    (o) => o.status === "Shipped"
-  ).length;
+  const pendingOrders = orders.filter((o) => o.status === "Pending").length;
+  const deliveredOrders = orders.filter((o) => o.status === "Delivered").length;
+  const shippedOrders = orders.filter((o) => o.status === "Shipped").length;
 
   const updateStatus = async (id, newStatus) => {
     try {
@@ -113,41 +110,58 @@ export default function Orders() {
         status: newStatus,
       });
       toast.success("Status Updated");
+      if (selectedOrder && selectedOrder._id === id) {
+        setSelectedOrder((prev) => ({ ...prev, status: newStatus }));
+      }
       fetchOrders();
     } catch {
-      toast.error("Failed");
-
+      toast.error("Failed to update status");
     }
-
   };
 
   const createShipment = async (order) => {
     try {
       setLoadingShipment(order._id);
-      const result =
-        await orderAPI.createDelhiveryShipment(
-          order.orderId
-        );
+      const result = await orderAPI.createDelhiveryShipment(order.orderId);
       if (result.ok) {
-        toast.success("Shipment Created");
+        toast.success("Shipment Created Successfully");
         fetchOrders();
       } else {
-        toast.error(result.data.message);
+        const errorMsg = result.data?.message || "Failed to create shipment. You can add AWB manually.";
+        toast.error(errorMsg, { duration: 6000 });
       }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to create shipment", { duration: 6000 });
     } finally {
       setLoadingShipment("");
     }
   };
-  const trackShipment = async (orderId) => {
+
+  const openTrackingModal = async (order) => {
+    setTrackingOrder(order);
+    setTrackingData(null);
+    setLoadingTracking(true);
     try {
-      const result =
-        await orderAPI.trackOrder(orderId);
-      if (result.ok) {
-        toast.success("Tracking Updated");
-        fetchOrders();
+      const res = await api.get(`/orders/${order.orderId}/track`);
+      if (res.data && res.data.success) {
+        setTrackingData(res.data.trackingData || res.data);
+      } else {
+        // Fallback to order tracking history in DB
+        setTrackingData({
+          waybill: order.delhivery?.waybill,
+          status: order.delhivery?.currentStatus || order.status,
+          scans: order.delhivery?.trackingHistory || []
+        });
       }
-    } catch {
-      toast.error("Failed");
+    } catch (err) {
+      // Fallback
+      setTrackingData({
+        waybill: order.delhivery?.waybill,
+        status: order.delhivery?.currentStatus || order.status,
+        scans: order.delhivery?.trackingHistory || []
+      });
+    } finally {
+      setLoadingTracking(false);
     }
   };
 
@@ -177,7 +191,7 @@ export default function Orders() {
         cancelEditingWaybill();
         fetchOrders();
       } else {
-        toast.error(result.data.message || "Failed to update AWB");
+        toast.error(result.data?.message || "Failed to update AWB");
       }
     } catch (err) {
       toast.error("Failed to update AWB");
@@ -187,495 +201,605 @@ export default function Orders() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-12">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">
-            Orders
-          </h1>
-          <p className="text-slate-500">
-            Manage customer orders
-          </p>
+          <h1 className="text-3xl font-bold text-slate-900">Orders</h1>
+          <p className="text-slate-500">Manage customer orders and track shipments</p>
         </div>
+        <button
+          onClick={fetchOrders}
+          className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl transition text-sm font-medium"
+        >
+          <RefreshCw size={16} /> Refresh
+        </button>
       </div>
+
       {/* Cards */}
-
       <div className="grid md:grid-cols-4 gap-5">
-        <motion.div whileHover={{ y:-4 }}
-          className="bg-white rounded-2xl p-6 border shadow-sm">
-          <ShoppingBag className="text-blue-600"/>
-          <h2 className="text-3xl font-bold mt-3">
-            {orders.length}
-          </h2>
-          <p className="text-slate-500">
-            Total Orders
-          </p>
+        <motion.div
+          whileHover={{ y: -3 }}
+          className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm"
+        >
+          <ShoppingBag className="text-blue-600 mb-2" size={24} />
+          <h2 className="text-3xl font-bold text-slate-900 mt-1">{orders.length}</h2>
+          <p className="text-slate-500 text-sm">Total Orders</p>
         </motion.div>
-        <motion.div whileHover={{ y:-4 }}
-          className="bg-white rounded-2xl p-6 border shadow-sm">
-          <IndianRupee className="text-green-600"/>
-          <h2 className="text-3xl font-bold mt-3">
-            ₹{totalRevenue.toLocaleString()}
+        <motion.div
+          whileHover={{ y: -3 }}
+          className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm"
+        >
+          <IndianRupee className="text-emerald-600 mb-2" size={24} />
+          <h2 className="text-3xl font-bold text-slate-900 mt-1">
+            ₹{totalRevenue.toLocaleString("en-IN")}
           </h2>
-          <p className="text-slate-500">
-            Revenue
-          </p>
-
+          <p className="text-slate-500 text-sm">Revenue</p>
         </motion.div>
-        <motion.div whileHover={{ y:-4 }}
-          className="bg-white rounded-2xl p-6 border shadow-sm">
-          <Truck className="text-purple-600"/>
-          <h2 className="text-3xl font-bold mt-3">
-            {shippedOrders}
-          </h2>
-
-          <p className="text-slate-500">
-
-            Shipped
-
-          </p>
-
+        <motion.div
+          whileHover={{ y: -3 }}
+          className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm"
+        >
+          <Truck className="text-purple-600 mb-2" size={24} />
+          <h2 className="text-3xl font-bold text-slate-900 mt-1">{shippedOrders}</h2>
+          <p className="text-slate-500 text-sm">Shipped</p>
         </motion.div>
-
-        <motion.div whileHover={{ y:-4 }}
-          className="bg-white rounded-2xl p-6 border shadow-sm">
-
-          <CheckCircle2 className="text-emerald-600"/>
-
-          <h2 className="text-3xl font-bold mt-3">
-
-            {deliveredOrders}
-
-          </h2>
-
-          <p className="text-slate-500">
-
-            Delivered
-
-          </p>
-
+        <motion.div
+          whileHover={{ y: -3 }}
+          className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm"
+        >
+          <CheckCircle2 className="text-teal-600 mb-2" size={24} />
+          <h2 className="text-3xl font-bold text-slate-900 mt-1">{deliveredOrders}</h2>
+          <p className="text-slate-500 text-sm">Delivered</p>
         </motion.div>
-
       </div>
 
       {/* Filters */}
-
-      <div className="bg-white rounded-2xl border p-5 shadow-sm">
-
-        <div className="grid md:grid-cols-2 gap-4">
-
-          <div className="relative">
-
-            <Search
-              className="absolute left-4 top-4 text-slate-400"
-              size={18}
-            />
-
-            <input
-              value={search}
-              onChange={(e)=>setSearch(e.target.value)}
-              placeholder="Search Order ID / AWB / Customer Name / Phone"
-              className="w-full pl-11 py-3 border rounded-xl outline-none focus:border-emerald-500"
-            />
-
-          </div>
-
-          <select
-            value={status}
-            onChange={(e)=>setStatus(e.target.value)}
-            className="border rounded-xl px-4"
-          >
-
-            <option>All</option>
-
-            <option>Pending</option>
-
-            <option>Processing</option>
-
-            <option>Shipped</option>
-
-            <option>Delivered</option>
-
-            <option>Cancelled</option>
-
-          </select>
-
+      <div className="flex flex-col md:flex-row gap-4 justify-between bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+        <div className="relative flex-1">
+          <Search
+            size={18}
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
+          />
+          <input
+            type="text"
+            placeholder="Search Order ID / AWB / Customer Name / Phone"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500/20"
+          />
         </div>
-
+        <select
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+          className="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:outline-none"
+        >
+          <option value="All">All Statuses</option>
+          <option value="Pending">Pending</option>
+          <option value="Confirmed">Confirmed</option>
+          <option value="Processing">Processing</option>
+          <option value="Shipped">Shipped</option>
+          <option value="Delivered">Delivered</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
       </div>
-            {/* Orders Table */}
 
-      <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
-
+      {/* Orders Table */}
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-
-          <table className="w-full">
-
-            <thead className="bg-slate-50">
-
+          <table className="w-full text-left text-sm">
+            <thead className="bg-slate-50 text-slate-600 uppercase text-xs tracking-wider border-b">
               <tr>
-
-                <th className="px-6 py-4 text-left text-xs uppercase">
-                  Order
-                </th>
-
-                <th className="px-6 py-4 text-left text-xs uppercase">
-                  Customer
-                </th>
-
-                <th className="px-6 py-4 text-left text-xs uppercase">
-                  Total
-                </th>
-
-                <th className="px-6 py-4 text-left text-xs uppercase">
-                  Payment
-                </th>
-
-                <th className="px-6 py-4 text-left text-xs uppercase">
-                  Status
-                </th>
-
-                <th className="px-6 py-4 text-left text-xs uppercase">
-                  Waybill
-                </th>
-
-                <th className="px-6 py-4 text-right text-xs uppercase">
-                  Actions
-                </th>
-
+                <th className="px-6 py-4">Order</th>
+                <th className="px-6 py-4">Customer</th>
+                <th className="px-6 py-4">Total</th>
+                <th className="px-6 py-4">Payment</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">Waybill / AWB</th>
+                <th className="px-6 py-4 text-right">Actions</th>
               </tr>
-
             </thead>
-
-            <tbody>
-
+            <tbody className="divide-y divide-slate-100">
               {loading ? (
-
-                [...Array(8)].map((_, index) => (
-
-                  <tr key={index}>
-
-                    <td colSpan={7} className="p-5">
-
-                      <div className="h-14 bg-slate-100 rounded-xl animate-pulse"/>
-
+                [...Array(6)].map((_, i) => (
+                  <tr key={i}>
+                    <td colSpan={7} className="px-6 py-4">
+                      <div className="h-10 bg-slate-100 rounded-lg animate-pulse" />
                     </td>
-
                   </tr>
-
                 ))
-
               ) : filteredOrders.length === 0 ? (
-
                 <tr>
-
-                  <td
-                    colSpan={7}
-                    className="text-center py-20 text-slate-500"
-                  >
-
-                    No Orders Found
-
+                  <td colSpan={7} className="text-center py-16 text-slate-500">
+                    <Package className="mx-auto text-slate-300 mb-2" size={36} />
+                    <p className="font-medium text-slate-600">No Orders Found</p>
+                    <p className="text-xs text-slate-400 mt-1">Try adjusting your search or filters</p>
                   </td>
-
                 </tr>
-
               ) : (
-
                 filteredOrders.map((order) => (
-
-                  <motion.tr
+                  <tr
                     key={order._id}
-                    whileHover={{ backgroundColor:"#f8fafc" }}
-                    className="border-b"
+                    className="hover:bg-slate-50/70 transition-colors"
                   >
-
-                    {/* Order */}
-
+                    {/* Order ID & Date */}
                     <td className="px-6 py-4">
-
-                      <div>
-
-                        <h3 className="font-semibold">
-
-                          {order.orderId}
-
-                        </h3>
-
-                        <p className="text-xs text-slate-500">
-
-                          {new Date(order.createdAt).toLocaleDateString()}
-
-                        </p>
-
-                      </div>
-
+                      <p className="font-semibold text-slate-900">{order.orderId}</p>
+                      <p className="text-xs text-slate-400">
+                        {order.createdAt
+                          ? new Date(order.createdAt).toLocaleDateString("en-IN", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            })
+                          : "Recent"}
+                      </p>
                     </td>
 
                     {/* Customer */}
-
                     <td className="px-6 py-4">
-
-                      <div>
-
-                        <p className="font-medium">
-
-                          {order.customer?.firstName} {order.customer?.lastName}
-
-                        </p>
-
-                        <p className="text-xs text-slate-500">
-
-                          {order.customer?.phone}
-
-                        </p>
-
-                        <p className="text-xs text-slate-400">
-
-                          {order.customer?.email}
-
-                        </p>
-
-                      </div>
-
+                      <p className="font-medium text-slate-900">
+                        {order.customer?.firstName} {order.customer?.lastName}
+                      </p>
+                      <p className="text-xs text-slate-500">{order.customer?.phone}</p>
+                      <p className="text-xs text-slate-400 truncate max-w-[150px]">
+                        {order.customer?.email}
+                      </p>
                     </td>
 
-                    {/* Amount */}
-
-                    <td className="px-6 py-4 font-semibold">
-
-                      ₹{order.total}
-
+                    {/* Total */}
+                    <td className="px-6 py-4 font-semibold text-slate-900">
+                      ₹{order.total || order.totalAmount || 0}
                     </td>
 
                     {/* Payment */}
-
                     <td className="px-6 py-4">
-
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ${
                           order.paymentMethod === "COD"
-                            ? "bg-orange-100 text-orange-700"
-                            : "bg-green-100 text-green-700"
+                            ? "bg-orange-50 text-orange-700 border border-orange-200"
+                            : "bg-emerald-50 text-emerald-700 border border-emerald-200"
                         }`}
                       >
-
-                        {order.paymentMethod}
-
+                        {order.paymentMethod || "COD"}
                       </span>
-
                     </td>
 
-                    {/* Status */}
-
+                    {/* Status Select */}
                     <td className="px-6 py-4">
-
                       <select
                         value={order.status}
-                        onChange={(e)=>
-                          updateStatus(
-                            order._id,
-                            e.target.value
-                          )
-                        }
-                        className="border rounded-lg px-2 py-2"
+                        onChange={(e) => updateStatus(order._id, e.target.value)}
+                        className={`text-xs font-medium px-2.5 py-1.5 rounded-lg border focus:outline-none ${
+                          order.status === "Delivered"
+                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            : order.status === "Shipped"
+                            ? "bg-purple-50 text-purple-700 border-purple-200"
+                            : order.status === "Cancelled"
+                            ? "bg-rose-50 text-rose-700 border-rose-200"
+                            : "bg-slate-50 text-slate-700 border-slate-200"
+                        }`}
                       >
-
-                        <option>Pending</option>
-                        <option>Confirmed</option>
-                        <option>Processing</option>
-                        <option>Shipped</option>
-                        <option>Delivered</option>
-                        <option>Cancelled</option>
-
+                        <option value="Pending">Pending</option>
+                        <option value="Confirmed">Confirmed</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Shipped">Shipped</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Cancelled">Cancelled</option>
                       </select>
-
                     </td>
 
-                    {/* Waybill */}
-
+                    {/* Waybill / AWB */}
                     <td className="px-6 py-4">
-
                       {editingWaybillOrderId === order._id ? (
-
-                        <div className="flex flex-col gap-2 w-40">
-
+                        <div className="flex flex-col gap-1.5 w-44">
                           <input
                             type="text"
                             value={editingWaybillValue}
                             onChange={(e) => setEditingWaybillValue(e.target.value)}
                             placeholder="Enter AWB number"
-                            className="w-full border border-slate-300 rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                            className="w-full border border-slate-300 rounded-lg px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
                             autoFocus
                             onKeyDown={(e) => {
                               if (e.key === "Enter") saveWaybill(order);
                               if (e.key === "Escape") cancelEditingWaybill();
                             }}
                           />
-
                           <div className="flex gap-1">
-
                             <button
                               onClick={() => saveWaybill(order)}
                               disabled={savingWaybill}
                               className="flex-1 text-xs bg-emerald-600 text-white px-2 py-1 rounded hover:bg-emerald-700 disabled:opacity-50"
                             >
-
                               {savingWaybill ? "..." : "Save"}
-
                             </button>
-
                             <button
                               onClick={cancelEditingWaybill}
                               disabled={savingWaybill}
                               className="flex-1 text-xs bg-slate-200 text-slate-700 px-2 py-1 rounded hover:bg-slate-300"
                             >
-
                               Cancel
-
                             </button>
-
                           </div>
-
                         </div>
-
                       ) : (
-
-                        <div className="flex flex-col gap-1">
-
+                        <div className="flex flex-col gap-0.5">
                           {order.delhivery?.waybill ? (
-
-                            <span className="font-medium text-emerald-600">
-
+                            <span className="font-mono text-xs font-semibold text-emerald-700">
                               {order.delhivery.waybill}
-
                             </span>
-
                           ) : (
-
-                            <span className="text-slate-400">-</span>
-
+                            <span className="text-slate-400 text-xs">No AWB</span>
                           )}
-
                           <button
                             onClick={() => startEditingWaybill(order)}
-                            className="text-left text-xs text-slate-400 hover:text-emerald-600 transition-colors"
+                            className="text-left text-[11px] text-slate-400 hover:text-emerald-600 flex items-center gap-1 transition"
                           >
-
-                            {order.delhivery?.waybill ? "Edit" : "Add AWB"}
-
+                            <Edit2 size={10} />
+                            {order.delhivery?.waybill ? "Edit AWB" : "+ Add AWB"}
                           </button>
-
                         </div>
-
                       )}
-
                     </td>
 
                     {/* Actions */}
-
-                    <td className="px-6 py-4">
-
-                      <div className="flex justify-end gap-2 flex-wrap">
-
-                        {!order.delhivery?.waybill && (
-
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex justify-end gap-2 items-center flex-wrap">
+                        {order.delhivery?.waybill ? (
                           <button
-                            onClick={() =>
-                              createShipment(order)
-                            }
-                            disabled={
-                              loadingShipment === order._id
-                            }
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg disabled:opacity-50"
+                            onClick={() => openTrackingModal(order)}
+                            className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition"
                           >
-
-                            {loadingShipment === order._id
-                              ? "Creating..."
-                              : "Shipment"}
-
+                            <Truck size={13} /> Track
                           </button>
-
-                        )}
-
-                        {order.delhivery?.waybill && (
-
+                        ) : (
                           <button
-                            onClick={() =>
-                              trackShipment(order.orderId)
-                            }
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
+                            onClick={() => createShipment(order)}
+                            disabled={loadingShipment === order._id}
+                            className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition disabled:opacity-50"
                           >
-
-                            Track
-
+                            <Truck size={13} />
+                            {loadingShipment === order._id ? "Creating..." : "Shipment"}
                           </button>
-
                         )}
 
                         <button
-                          className="bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-lg"
+                          onClick={() => setSelectedOrder(order)}
+                          className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold transition"
                         >
-
-                          View
-
+                          <Eye size={13} /> View
                         </button>
-
                       </div>
-
                     </td>
-
-                  </motion.tr>
-
+                  </tr>
                 ))
-
               )}
-
             </tbody>
-
           </table>
-
         </div>
-
       </div>
 
-      {/* Footer */}
+      {/* ========================================= */}
+      {/* ORDER DETAILS MODAL (VIEW)               */}
+      {/* ========================================= */}
+      <AnimatePresence>
+        {selectedOrder && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              className="bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-slate-100 overflow-hidden my-8"
+            >
+              {/* Modal Header */}
+              <div className="flex justify-between items-center px-6 py-4 border-b bg-slate-50">
+                <div>
+                  <h2 className="text-lg font-bold text-slate-900">
+                    Order Details: {selectedOrder.orderId}
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    Placed on{" "}
+                    {selectedOrder.createdAt
+                      ? new Date(selectedOrder.createdAt).toLocaleString("en-IN")
+                      : "Recent"}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setSelectedOrder(null)}
+                  className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded-lg transition"
+                >
+                  <X size={18} />
+                </button>
+              </div>
 
-      <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+              {/* Modal Body */}
+              <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
+                {/* Status Bar */}
+                <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200/80">
+                  <div>
+                    <span className="text-xs text-slate-500 block">Current Status</span>
+                    <span className="font-semibold text-slate-900 text-sm">
+                      {selectedOrder.status}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-slate-500">Update:</span>
+                    <select
+                      value={selectedOrder.status}
+                      onChange={(e) => updateStatus(selectedOrder._id, e.target.value)}
+                      className="text-xs font-medium px-3 py-1.5 rounded-lg border bg-white focus:outline-none"
+                    >
+                      <option value="Pending">Pending</option>
+                      <option value="Confirmed">Confirmed</option>
+                      <option value="Processing">Processing</option>
+                      <option value="Shipped">Shipped</option>
+                      <option value="Delivered">Delivered</option>
+                      <option value="Cancelled">Cancelled</option>
+                    </select>
+                  </div>
+                </div>
 
-        <p className="text-sm text-slate-500">
+                {/* Customer & Shipping Grid */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  {/* Customer Info */}
+                  <div className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 space-y-2">
+                    <div className="flex items-center gap-2 text-slate-700 font-semibold text-xs uppercase tracking-wider">
+                      <User size={14} className="text-slate-500" /> Customer Information
+                    </div>
+                    <p className="font-medium text-slate-900 text-sm">
+                      {selectedOrder.customer?.firstName} {selectedOrder.customer?.lastName}
+                    </p>
+                    <p className="text-xs text-slate-600 flex items-center gap-1.5">
+                      <Phone size={12} className="text-slate-400" />
+                      {selectedOrder.customer?.phone || "N/A"}
+                    </p>
+                    <p className="text-xs text-slate-600 flex items-center gap-1.5">
+                      <Mail size={12} className="text-slate-400" />
+                      {selectedOrder.customer?.email || "N/A"}
+                    </p>
+                  </div>
 
-          Showing {filteredOrders.length} of {orders.length} orders
+                  {/* Shipping Address */}
+                  <div className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 space-y-2">
+                    <div className="flex items-center gap-2 text-slate-700 font-semibold text-xs uppercase tracking-wider">
+                      <MapPin size={14} className="text-slate-500" /> Delivery Address
+                    </div>
+                    <p className="text-xs text-slate-800 leading-relaxed">
+                      {selectedOrder.shippingAddress?.address || "Address not provided"}
+                      <br />
+                      {selectedOrder.shippingAddress?.city && `${selectedOrder.shippingAddress.city}, `}
+                      {selectedOrder.shippingAddress?.state && `${selectedOrder.shippingAddress.state} `}
+                      {selectedOrder.shippingAddress?.pincode && `- ${selectedOrder.shippingAddress.pincode}`}
+                    </p>
+                  </div>
+                </div>
 
-        </p>
+                {/* Ordered Items */}
+                <div className="space-y-3">
+                  <h3 className="text-xs font-semibold text-slate-700 uppercase tracking-wider flex items-center gap-2">
+                    <Package size={14} className="text-slate-500" /> Ordered Products
+                  </h3>
+                  <div className="border border-slate-100 rounded-xl overflow-hidden divide-y divide-slate-100">
+                    {selectedOrder.items && selectedOrder.items.length > 0 ? (
+                      selectedOrder.items.map((item, idx) => (
+                        <div key={idx} className="flex justify-between items-center p-3 text-sm">
+                          <div>
+                            <p className="font-medium text-slate-900">{item.name}</p>
+                            <p className="text-xs text-slate-400">Qty: {item.quantity} × ₹{item.price}</p>
+                          </div>
+                          <span className="font-semibold text-slate-900">
+                            ₹{item.price * item.quantity}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="p-4 text-xs text-slate-500">1 × Dailyfix Beard Colour (Default Package)</div>
+                    )}
+                  </div>
+                </div>
 
-        <div className="flex gap-2">
+                {/* Pricing & Payment Details */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  {/* Payment Info */}
+                  <div className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 space-y-2">
+                    <div className="flex items-center gap-2 text-slate-700 font-semibold text-xs uppercase tracking-wider">
+                      <CreditCard size={14} className="text-slate-500" /> Payment Info
+                    </div>
+                    <div className="flex justify-between text-xs py-1">
+                      <span className="text-slate-500">Payment Method:</span>
+                      <span className="font-semibold text-slate-800">{selectedOrder.paymentMethod || "COD"}</span>
+                    </div>
+                    <div className="flex justify-between text-xs py-1">
+                      <span className="text-slate-500">Payment Status:</span>
+                      <span className="font-semibold text-slate-800">{selectedOrder.paymentStatus || "Pending"}</span>
+                    </div>
+                    {selectedOrder.razorpayPaymentId && (
+                      <div className="flex justify-between text-xs py-1">
+                        <span className="text-slate-500">Razorpay ID:</span>
+                        <span className="font-mono text-slate-800">{selectedOrder.razorpayPaymentId}</span>
+                      </div>
+                    )}
+                  </div>
 
-          <button className="px-4 py-2 border rounded-lg hover:bg-slate-100">
+                  {/* Pricing Total */}
+                  <div className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 space-y-2">
+                    <div className="text-xs uppercase tracking-wider font-semibold text-slate-700">
+                      Total Summary
+                    </div>
+                    <div className="flex justify-between text-xs text-slate-600">
+                      <span>Subtotal:</span>
+                      <span>₹{selectedOrder.total || selectedOrder.totalAmount || 0}</span>
+                    </div>
+                    <div className="flex justify-between text-xs text-slate-600">
+                      <span>Shipping:</span>
+                      <span className="text-emerald-600 font-medium">Free</span>
+                    </div>
+                    <div className="border-t pt-2 flex justify-between font-bold text-sm text-slate-900">
+                      <span>Final Total:</span>
+                      <span className="text-emerald-700">₹{selectedOrder.total || selectedOrder.totalAmount || 0}</span>
+                    </div>
+                  </div>
+                </div>
 
-            Previous
+                {/* Delhivery Shipment Section */}
+                <div className="p-4 rounded-xl border border-blue-100 bg-blue-50/40 space-y-2">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2 font-semibold text-xs text-blue-900 uppercase tracking-wider">
+                      <Truck size={14} className="text-blue-600" /> Delhivery Logistics
+                    </div>
+                    {selectedOrder.delhivery?.waybill && (
+                      <button
+                        onClick={() => openTrackingModal(selectedOrder)}
+                        className="text-xs text-blue-700 hover:text-blue-900 font-semibold underline flex items-center gap-1"
+                      >
+                        Live Tracking <ExternalLink size={12} />
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-xs text-slate-600">
+                    AWB / Waybill:{" "}
+                    <span className="font-mono font-bold text-slate-900">
+                      {selectedOrder.delhivery?.waybill || "Not assigned yet"}
+                    </span>
+                  </p>
+                </div>
+              </div>
 
-          </button>
+              {/* Modal Footer */}
+              <div className="px-6 py-4 bg-slate-50 border-t flex justify-end gap-3">
+                <button
+                  onClick={() => setSelectedOrder(null)}
+                  className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-semibold transition"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
-          <button className="px-4 py-2 rounded-lg bg-emerald-600 text-white">
+      {/* ========================================= */}
+      {/* SHIPMENT TRACKING MODAL                   */}
+      {/* ========================================= */}
+      <AnimatePresence>
+        {trackingOrder && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white w-full max-w-lg rounded-2xl shadow-2xl border border-slate-100 overflow-hidden"
+            >
+              {/* Header */}
+              <div className="flex justify-between items-center px-6 py-4 border-b bg-slate-50">
+                <div className="flex items-center gap-2">
+                  <Truck className="text-blue-600" size={20} />
+                  <div>
+                    <h2 className="text-base font-bold text-slate-900">
+                      Shipment Tracking
+                    </h2>
+                    <p className="text-xs text-slate-500">Order #{trackingOrder.orderId}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setTrackingOrder(null)}
+                  className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded-lg transition"
+                >
+                  <X size={18} />
+                </button>
+              </div>
 
-            1
+              {/* Body */}
+              <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+                {/* Waybill Box */}
+                <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl flex justify-between items-center">
+                  <div>
+                    <p className="text-xs text-blue-600 font-medium">Delhivery Waybill / AWB</p>
+                    <p className="text-lg font-mono font-bold text-blue-900">
+                      {trackingOrder.delhivery?.waybill || "No AWB assigned"}
+                    </p>
+                  </div>
+                  {trackingOrder.delhivery?.waybill && (
+                    <a
+                      href={`https://www.delhivery.com/track/package/${trackingOrder.delhivery.waybill}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition"
+                    >
+                      Track on Delhivery <ExternalLink size={12} />
+                    </a>
+                  )}
+                </div>
 
-          </button>
+                {/* Status Indicator */}
+                <div className="flex items-center justify-between px-2">
+                  <span className="text-xs font-semibold text-slate-500 uppercase">Courier Status</span>
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                    {trackingOrder.delhivery?.currentStatus || trackingOrder.status || "Manifested"}
+                  </span>
+                </div>
 
-          <button className="px-4 py-2 border rounded-lg hover:bg-slate-100">
+                {/* Tracking Scans / History Timeline */}
+                <div className="space-y-3 pt-2">
+                  <h3 className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                    Tracking Timeline
+                  </h3>
 
-            Next
+                  {loadingTracking ? (
+                    <div className="py-8 text-center text-slate-400 text-xs flex items-center justify-center gap-2">
+                      <RefreshCw className="animate-spin" size={16} /> Fetching live tracking from Delhivery...
+                    </div>
+                  ) : (
+                    <div className="space-y-4 border-l-2 border-slate-200 pl-4 ml-2">
+                      {trackingData?.ShipmentData?.[0]?.Shipment?.Scan &&
+                      trackingData.ShipmentData[0].Shipment.Scan.length > 0 ? (
+                        trackingData.ShipmentData[0].Shipment.Scan.map((scan, idx) => (
+                          <div key={idx} className="relative">
+                            <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-blue-600 ring-4 ring-white" />
+                            <p className="font-semibold text-xs text-slate-900">{scan.status || "Scanned"}</p>
+                            <p className="text-[11px] text-slate-500">{scan.location || "In Transit"}</p>
+                            {scan.date && (
+                              <p className="text-[10px] text-slate-400">
+                                {new Date(scan.date).toLocaleString("en-IN")}
+                              </p>
+                            )}
+                          </div>
+                        ))
+                      ) : (
+                        <div className="relative">
+                          <div className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-emerald-600 ring-4 ring-white" />
+                          <p className="font-semibold text-xs text-slate-900">
+                            {trackingOrder.delhivery?.currentStatus || "Order Placed / Manifested"}
+                          </p>
+                          <p className="text-[11px] text-slate-500">
+                            Package ready for pickup by Delhivery Courier
+                          </p>
+                          <p className="text-[10px] text-slate-400 mt-1">
+                            {trackingOrder.createdAt
+                              ? new Date(trackingOrder.createdAt).toLocaleString("en-IN")
+                              : "Recent"}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
 
-          </button>
-
-        </div>
-
-      </div>
-
+              {/* Footer */}
+              <div className="px-6 py-4 bg-slate-50 border-t flex justify-end">
+                <button
+                  onClick={() => setTrackingOrder(null)}
+                  className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-semibold transition"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
-
   );
-
 }
