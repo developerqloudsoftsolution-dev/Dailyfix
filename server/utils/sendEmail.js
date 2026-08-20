@@ -1,44 +1,59 @@
-
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({ path: path.join(__dirname, "..", ".env") });
+const serverEnvPath = path.join(__dirname, "..", ".env");
+const rootEnvPath = path.join(__dirname, "..", "..", ".env");
 
-console.log("SMTP Configuration loaded:");
-console.log("SMTP_HOST:", process.env.SMTP_HOST);
-console.log("SMTP_PORT:", process.env.SMTP_PORT);
-console.log("SMTP_USER:", process.env.SMTP_USER);
+if (fs.existsSync(serverEnvPath)) {
+  dotenv.config({ path: serverEnvPath });
+} else if (fs.existsSync(rootEnvPath)) {
+  dotenv.config({ path: rootEnvPath });
+} else {
+  dotenv.config();
+}
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT, 10) || 465,
-  secure: (parseInt(process.env.SMTP_PORT, 10) === 465),
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
-  },
-  tls: {
-    rejectUnauthorized: false
-  }
-});
+let transporter = null;
 
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("❌ SMTP Connection Error (email may not work):", error.message);
-  } else {
-    console.log("✅ SMTP Server is ready to send emails!");
-  }
-});
+if (process.env.SMTP_HOST && process.env.SMTP_USER) {
+  transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT, 10) || 465,
+    secure: (parseInt(process.env.SMTP_PORT, 10) === 465),
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS
+    },
+    tls: {
+      rejectUnauthorized: false
+    }
+  });
+
+  transporter.verify((error, success) => {
+    if (error) {
+      console.warn("⚠️ SMTP connection notice:", error.message);
+    } else {
+      console.log("✅ SMTP server is ready to send emails");
+    }
+  });
+} else {
+  console.log("ℹ️ SMTP configuration skipped (credentials not provided)");
+}
 
 const sendEmail = async ({ to, subject, html, text }) => {
+  if (!transporter) {
+    console.warn(`⚠️ Email to ${to} not sent: SMTP transporter not configured`);
+    return null;
+  }
+
   try {
     const fromName = process.env.SMTP_FROM_NAME || 'DailyFixCare';
-    const fromEmail = process.env.SMTP_FROM_EMAIL || 'noreply@dailyfixcare.com';
+    const fromEmail = process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER || 'noreply@dailyfixcare.com';
     const mailOptions = {
       from: `"${fromName}" <${fromEmail}>`,
       to,

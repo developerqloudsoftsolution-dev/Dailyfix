@@ -1,8 +1,23 @@
 import axios from "axios";
 import dotenv from "dotenv";
 import crypto from "crypto";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
 
-dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const serverEnvPath = path.join(__dirname, "..", ".env");
+const rootEnvPath = path.join(__dirname, "..", "..", ".env");
+
+if (fs.existsSync(serverEnvPath)) {
+  dotenv.config({ path: serverEnvPath });
+} else if (fs.existsSync(rootEnvPath)) {
+  dotenv.config({ path: rootEnvPath });
+} else {
+  dotenv.config();
+}
 
 const API_KEY = process.env.DELHIVERY_API_KEY;
 const BASE_URL = process.env.DELHIVERY_BASE_URL || "https://track.delhivery.com";

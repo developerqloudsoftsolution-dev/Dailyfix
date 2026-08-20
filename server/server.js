@@ -13,9 +13,16 @@ import dotenv from 'dotenv';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({
-  path: path.join(__dirname, '.env')
-});
+const serverEnvPath = path.join(__dirname, '.env');
+const rootEnvPath = path.join(__dirname, '..', '.env');
+
+if (fs.existsSync(serverEnvPath)) {
+  dotenv.config({ path: serverEnvPath });
+} else if (fs.existsSync(rootEnvPath)) {
+  dotenv.config({ path: rootEnvPath });
+} else {
+  dotenv.config();
+}
 
 // Database
 import connectDB from './config/db.js';
@@ -149,7 +156,7 @@ if (frontendExists) {
 // ===============================
 // START SERVER FIRST
 // ===============================
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 5000;
 
 const server = app.listen(
   PORT,
