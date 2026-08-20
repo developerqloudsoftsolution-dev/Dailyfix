@@ -1,0 +1,45 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # 1. Do not rewrite existing physical files or directories
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # 2. Do not rewrite API or uploads requests if handled by backend
+  RewriteRule ^api/ - [L]
+  RewriteRule ^uploads/ - [L]
+
+  # 3. Route all other Single Page Application (SPA) routes to index.html
+  RewriteRule ^index\.html$ - [L]
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# Security & Optimization Headers
+<IfModule mod_headers.c>
+  # Protect against clickjacking
+  Header always set X-Frame-Options "SAMEORIGIN"
+  # Protect against MIME sniffing
+  Header always set X-Content-Type-Options "nosniff"
+  # Enable XSS protection
+  Header always set X-XSS-Protection "1; mode=block"
+  # Referrer policy
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Caching for static assets
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/jpg "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType video/mp4 "access plus 1 year"
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType application/x-javascript "access plus 1 month"
+  ExpiresByType text/javascript "access plus 1 month"
+</IfModule>

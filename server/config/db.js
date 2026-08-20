@@ -100,9 +100,10 @@ const connectDB = async () => {
     try {
       console.log('🔄 Connecting to MongoDB (primary URI)...');
       await mongoose.connect(primaryUri, {
-        serverSelectionTimeoutMS: 5000
+        dbName: 'dailyfixcare',
+        serverSelectionTimeoutMS: 6000
       });
-      console.log('✅ MongoDB connected successfully to primary URI');
+      console.log('✅ MongoDB connected successfully to primary URI (dailyfixcare)');
       await autoSeedProductsIfEmpty();
       return;
     } catch (error) {

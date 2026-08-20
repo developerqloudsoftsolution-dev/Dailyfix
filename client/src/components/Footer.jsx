@@ -194,6 +194,9 @@ const Footer = () => {
             © 2024 Dailyfix. All rights reserved.
           </p>
           <div className="flex gap-8">
+            <Link to="/admin/login" className="text-slate-400 hover:text-emerald-400 transition-all duration-300 text-sm">
+              Admin
+            </Link>
             <Link to="/privacy-policy" className="text-slate-400 hover:text-emerald-400 transition-all duration-300 text-sm">
               Privacy Policy
             </Link>
