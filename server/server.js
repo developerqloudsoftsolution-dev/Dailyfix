@@ -104,21 +104,15 @@ app.use("/api/instagram", instagramRoute);
 const projectRoot = path.join(__dirname, '..');
 const envPath = process.env.FRONTEND_DIST_PATH;
 
-let frontendPath;
-if (envPath && envPath.trim()) {
-  frontendPath = path.isAbsolute(envPath)
-    ? envPath
-    : path.resolve(projectRoot, envPath);
-} else {
-  const adjacentClientDist = path.join(__dirname, '..', 'client', 'dist');
-  const serverInternalDist = path.join(__dirname, 'dist');
-  frontendPath = fs.existsSync(adjacentClientDist)
-    ? adjacentClientDist
-    : serverInternalDist;
-}
+const candidatePaths = [
+  envPath ? (path.isAbsolute(envPath) ? envPath : path.resolve(projectRoot, envPath)) : null,
+  path.join(projectRoot, 'dist'),
+  path.join(projectRoot, 'client', 'dist'),
+  path.join(__dirname, 'dist')
+].filter(Boolean);
 
-const frontendExists = fs.existsSync(frontendPath) &&
-  fs.existsSync(path.join(frontendPath, 'index.html'));
+let frontendPath = candidatePaths.find((p) => fs.existsSync(p) && fs.existsSync(path.join(p, 'index.html'))) || candidatePaths[0];
+const frontendExists = Boolean(frontendPath && fs.existsSync(path.join(frontendPath, 'index.html')));
 
 if (frontendExists) {
   app.use(express.static(frontendPath));
