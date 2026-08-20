@@ -22,9 +22,30 @@ export const adminAPI = {
   login: async (email, password) => {
     try {
       const res = await api.post('/admin/login', { email, password })
-      return { ok: true, data: res.data }
+      if (typeof res.data === 'string' && res.data.includes('<!doctype html>')) {
+        return {
+          ok: false,
+          data: {
+            message: 'API server not reachable. Ensure the Node.js backend is running and handling /api routes.'
+          }
+        }
+      }
+      if (res.data && (res.data.token || res.data.success)) {
+        return { ok: true, data: res.data }
+      }
+      return { ok: false, data: res.data || { message: 'Invalid response from server' } }
     } catch (err) {
-      return { ok: false, data: err.response?.data || { message: 'Login failed' } }
+      const msg = err.response?.data?.message || err.response?.data?.error;
+      if (msg) {
+        return { ok: false, data: { message: msg } }
+      }
+      if (err.response?.status === 404) {
+        return { ok: false, data: { message: 'API endpoint not found. Verify backend server is running.' } }
+      }
+      if (err.response?.status >= 500) {
+        return { ok: false, data: { message: 'Server error during login. Verify MongoDB connection.' } }
+      }
+      return { ok: false, data: { message: err.message || 'Login failed' } }
     }
   },
   sendOtp: async (email) => {
