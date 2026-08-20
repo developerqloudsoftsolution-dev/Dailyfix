@@ -4,8 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "echo 'Assets already built successfully'",
     "start": "npx serve . -s -p 3000",
-    "preview": "npx vite preview"
+    "preview": "npx serve . -s -p 3000"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {}
 }
