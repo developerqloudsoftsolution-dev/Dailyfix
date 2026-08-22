@@ -67,49 +67,49 @@ const Shop = () => {
       <div className="relative overflow-hidden border-b border-stone-200 bg-white">
         <div
           aria-hidden="true"
-          className="absolute -top-40 left-1/2 -translate-x-1/2 w-[640px] h-[640px] rounded-full bg-emerald-200/40 blur-3xl"
+          className="absolute -top-40 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full bg-emerald-200/30 blur-3xl pointer-events-none"
         />
 
-        <div className="relative max-w-9xl mx-auto px-6 md:px-12 pt-32 pb-20 text-center">
+        <div className="relative max-w-9xl mx-auto px-6 md:px-12 pt-24 pb-8 sm:pt-28 sm:pb-9 text-center">
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-xs md:text-sm font-bold tracking-[0.2em] text-emerald-600 uppercase mb-6"
+            transition={{ duration: 0.4 }}
+            className="text-[11px] sm:text-xs font-bold tracking-[0.2em] text-emerald-600 uppercase mb-2"
           >
             Dailyfix Grooming
           </motion.p>
 
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.05 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-bold text-stone-900 tracking-tight mb-6"
+            transition={{ duration: 0.4, delay: 0.05 }}
+            className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-stone-900 tracking-tight mb-2.5"
           >
             Beard Colour, Done Right
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-lg md:text-xl text-stone-600 max-w-2xl mx-auto leading-relaxed"
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="text-sm sm:text-base text-stone-600 max-w-xl mx-auto leading-relaxed mb-4"
           >
             Three natural shades. Zero ammonia. A grey-free beard that still feels like yours.
           </motion.p>
 
-          {/* Trust strip */}
+          {/* Compact Trust strip */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.15 }}
-            className="mt-12 flex flex-wrap items-center justify-center gap-x-12 gap-y-4"
+            transition={{ duration: 0.4, delay: 0.15 }}
+            className="flex flex-wrap items-center justify-center gap-x-6 sm:gap-x-8 gap-y-2 pt-1"
           >
             {TRUST_POINTS.map(({ icon: Icon, label }, i) => (
               <React.Fragment key={label}>
-                {i > 0 && <span className="hidden sm:block w-px h-6 bg-stone-300" aria-hidden="true" />}
-                <div className="flex items-center gap-3 text-sm font-medium text-stone-700">
-                  <Icon size={20} className="text-emerald-600" />
+                {i > 0 && <span className="hidden sm:block w-px h-4 bg-stone-300" aria-hidden="true" />}
+                <div className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-stone-700">
+                  <Icon size={16} className="text-emerald-600 flex-shrink-0" />
                   {label}
                 </div>
               </React.Fragment>
@@ -119,13 +119,14 @@ const Shop = () => {
       </div>
 
       {/* Products */}
-      <div className="max-w-9xl mx-auto px-6 md:px-12 py-4">
-        <div className="flex items-baseline justify-between mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-stone-900">All Shades</h2>
-          <span className="text-stone-500 text-lg">
+      <div className="max-w-9xl mx-auto px-6 md:px-12 pt-8 pb-16">
+        <div className="flex items-baseline justify-between mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-stone-900">All Shades</h2>
+          <span className="text-stone-500 text-sm sm:text-base font-medium">
             {products.length} {products.length === 1 ? 'product' : 'products'}
           </span>
         </div>
+
 
         {loading ? (
           <div className="text-center py-32 text-stone-500">
