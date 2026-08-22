@@ -89,8 +89,12 @@ const orderSchema = new mongoose.Schema(
     // ==========================
 
     total: { type: Number, required: true },
+    subtotal: { type: Number, default: 0 },
+    discount: { type: Number, default: 0 },
+    couponCode: { type: String, default: "", trim: true },
     tax: { type: Number, default: 0 },
     shipping: { type: Number, default: 0 },
+
     paymentMethod: {
       type: String,
       enum: ["COD", "Online"],

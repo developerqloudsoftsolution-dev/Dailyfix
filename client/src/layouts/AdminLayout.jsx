@@ -1,5 +1,8 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, Package, ShoppingCart, Users, LogOut, ShieldCheck, MessageSquare } from 'lucide-react'
+import { LayoutDashboard, Package, ShoppingCart, Users, LogOut, ShieldCheck, MessageSquare, Ticket } from 'lucide-react'
+
+
+
 import api from '../services/api'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -83,6 +86,13 @@ function AdminLayout() {
               </Link>
             </li>
             <li>
+              <Link to="/admin/coupons" className="flex items-center gap-3 p-3 rounded hover:bg-gray-800 text-purple-300 font-medium">
+                <Ticket size={20} className="text-purple-400" />
+                Add Coupon
+              </Link>
+            </li>
+
+            <li className="hidden" style={{ display: 'none' }}>
               <Link to="/admin/admins" className="flex items-center gap-3 p-3 rounded hover:bg-gray-800">
                 <ShieldCheck size={20} />
                 Manage Admins
@@ -90,6 +100,7 @@ function AdminLayout() {
             </li>
           </ul>
         </nav>
+
         <div className="p-4 border-t border-gray-800 flex-shrink-0">
           <button
             onClick={handleLogout}

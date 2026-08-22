@@ -16,9 +16,17 @@ import {
   AlertCircle,
   ShieldCheck,
   Truck,
-  Lock
+  Lock,
+  Ticket,
+  Tag,
+  Sparkles,
+  ChevronDown,
+  ChevronUp,
+  X,
+  Check
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+
 
 const statesOfIndia = [
   'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
@@ -340,71 +348,228 @@ function Step1AddressSummary({ register, errors, touchedFields, watchedPhone, wa
   );
 }
 
-function FixedOrderSummary({ cart, getTotal }) {
-  const subtotal = getTotal();
-  const shipping = 0;
-  const total = subtotal;
+function FixedOrderSummary({
+  cart,
+  subtotal,
+  discount,
+  finalTotal,
+  appliedCoupon,
+  couponInput,
+  setCouponInput,
+  couponLoading,
+  onApplyCoupon,
+  onRemoveCoupon,
+  availableCoupons,
+}) {
+  const [showOffers, setShowOffers] = useState(false);
+  const totalCartQty = cart.reduce((sum, item) => sum + Number(item.quantity || 1), 0);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
-      className="bg-white p-8 rounded-3xl shadow-soft border border-stone-100 lg:sticky lg:top-28"
+      className="bg-white p-6 sm:p-8 rounded-3xl shadow-soft border border-stone-100 lg:sticky lg:top-28 space-y-6"
     >
-      <h2 className="text-2xl font-bold text-stone-900 mb-8">Order Summary</h2>
+      <h2 className="text-2xl font-bold text-stone-900">Order Summary</h2>
 
-      <div className="space-y-6 mb-8">
+      {/* Cart Items */}
+      <div className="space-y-4 max-h-64 overflow-y-auto pr-1">
         {cart.map((item, index) => {
           const price = item.product.price;
           return (
-            <div key={index} className="flex items-center justify-between text-stone-700 pb-6 border-b border-stone-100">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 bg-stone-50 rounded-xl overflow-hidden flex items-center justify-center">
+            <div key={index} className="flex items-center justify-between text-stone-700 pb-4 border-b border-stone-100">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-stone-50 rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0">
                   <img
                     src={getProductImageSrc(item.product)}
                     alt={item.product.name}
-                    className="w-full h-full object-contain p-2"
+                    className="w-full h-full object-contain p-1.5"
                   />
                 </div>
                 <div>
-                  <p className="font-semibold text-stone-900">{item.product.name}</p>
-                  <p className="text-sm text-stone-500">Qty: {item.quantity}</p>
+                  <p className="font-semibold text-sm text-stone-900 line-clamp-1">{item.product.name}</p>
+                  <p className="text-xs text-stone-500">Qty: {item.quantity}</p>
                 </div>
               </div>
-              <p className="font-semibold text-stone-900">₹{price * item.quantity}</p>
+              <p className="font-semibold text-sm text-stone-900">₹{price * item.quantity}</p>
             </div>
           );
         })}
       </div>
 
-      <div className="space-y-4 text-stone-700 mb-8">
+      {/* =========================================
+          COUPON / PROMO CODE SECTION
+          ========================================= */}
+      <div className="bg-stone-50/80 border border-stone-200/80 rounded-2xl p-4 space-y-3">
         <div className="flex items-center justify-between">
-          <span className="text-lg font-medium">Subtotal</span>
-          <span className="text-lg font-semibold text-stone-900">₹{subtotal}</span>
+          <div className="flex items-center gap-2 text-xs font-bold text-stone-800 uppercase tracking-wider">
+            <Ticket className="text-emerald-600" size={16} /> Have a Promo Code?
+          </div>
+          {availableCoupons.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowOffers(!showOffers)}
+              className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
+            >
+              <span>{showOffers ? 'Hide Offers' : `View Offers (${availableCoupons.length})`}</span>
+              {showOffers ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            </button>
+          )}
         </div>
+
+        {appliedCoupon ? (
+          /* Applied Coupon Badge */
+          <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center flex-shrink-0">
+                <Check size={16} />
+              </div>
+              <div>
+                <p className="font-mono text-sm font-black text-emerald-900 tracking-wider">
+                  {appliedCoupon.code}
+                </p>
+                <p className="text-xs font-semibold text-emerald-700">
+                  Savings of ₹{discount} applied!
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={onRemoveCoupon}
+              className="text-stone-400 hover:text-red-500 transition p-1 text-xs font-semibold flex items-center gap-1"
+              title="Remove Coupon"
+            >
+              <X size={16} /> Remove
+            </button>
+          </div>
+        ) : (
+          /* Coupon Input Form */
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              value={couponInput}
+              onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+              placeholder="Enter coupon code"
+              className="flex-1 bg-white border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs font-mono font-bold text-stone-900 uppercase tracking-wider focus:outline-none focus:border-emerald-500 transition placeholder-stone-400"
+            />
+            <button
+              type="button"
+              onClick={() => onApplyCoupon(couponInput)}
+              disabled={couponLoading || !couponInput.trim()}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-bold text-xs transition disabled:opacity-50 shadow-sm"
+            >
+              {couponLoading ? 'Checking...' : 'Apply'}
+            </button>
+          </div>
+        )}
+
+        {/* Available Offers Drawer */}
+        <AnimatePresence>
+          {showOffers && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="space-y-2 pt-2 border-t border-stone-200/60 overflow-hidden"
+            >
+              <p className="text-[11px] font-bold text-stone-500 uppercase tracking-wider">
+                Available Offers for You:
+              </p>
+              {availableCoupons.map((c) => {
+                const isBundleLocked = c.minQuantity > 1 && totalCartQty < c.minQuantity;
+                const itemsNeeded = c.minQuantity - totalCartQty;
+
+                return (
+                  <div
+                    key={c._id}
+                    className="bg-white border border-stone-200 rounded-xl p-3 flex items-start justify-between gap-3 shadow-2xs"
+                  >
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs font-black text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          {c.code}
+                        </span>
+                        <span className="text-xs font-bold text-stone-900">
+                          {c.discountType === 'percentage' ? `${c.discountAmount}% OFF` : `₹${c.discountAmount} OFF`}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-stone-500 leading-tight">
+                        {c.title || c.description || (c.minOrderAmount ? `Min order ₹${c.minOrderAmount}` : 'Limited time discount')}
+                      </p>
+                      {isBundleLocked && (
+                        <p className="text-[10px] font-bold text-amber-700">
+                          ⚡ Add {itemsNeeded} more item{itemsNeeded > 1 ? 's' : ''} to unlock!
+                        </p>
+                      )}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => onApplyCoupon(c.code)}
+                      disabled={couponLoading || appliedCoupon?.code === c.code || isBundleLocked}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex-shrink-0 ${
+                        appliedCoupon?.code === c.code
+                          ? 'bg-emerald-100 text-emerald-800'
+                          : isBundleLocked
+                          ? 'bg-stone-100 text-stone-400 cursor-not-allowed'
+                          : 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs'
+                      }`}
+                    >
+                      {appliedCoupon?.code === c.code ? 'Applied' : 'Apply'}
+                    </button>
+                  </div>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Pricing Calculation Breakdown */}
+      <div className="space-y-3 text-stone-700">
         <div className="flex items-center justify-between">
-          <span className="text-lg font-medium">Shipping</span>
-          <span className="text-emerald-700 font-semibold text-lg">{shipping === 0 ? 'Free' : `₹${shipping}`}</span>
+          <span className="text-sm font-medium">Subtotal</span>
+          <span className="text-sm font-semibold text-stone-900">₹{subtotal}</span>
         </div>
-        <div className="pt-6 border-t border-stone-200 flex items-center justify-between font-bold">
-          <span className="text-xl text-stone-900">Total</span>
-          <span className="text-3xl text-emerald-700">₹{total}</span>
+
+        {discount > 0 && (
+          <div className="flex items-center justify-between text-emerald-700">
+            <span className="text-sm font-semibold flex items-center gap-1">
+              <Tag size={14} /> Coupon Discount ({appliedCoupon?.code})
+            </span>
+            <span className="text-sm font-bold">- ₹{discount}</span>
+          </div>
+        )}
+
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium">Shipping</span>
+          <span className="text-emerald-700 font-semibold text-sm">Free</span>
+        </div>
+
+        <div className="pt-4 border-t border-stone-200 flex items-center justify-between font-bold">
+          <span className="text-lg text-stone-900">Total Amount</span>
+          <div className="text-right">
+            <span className="text-2xl text-emerald-700 font-black">₹{finalTotal}</span>
+            {discount > 0 && (
+              <p className="text-[11px] font-semibold text-emerald-600">
+                You save ₹{discount} on this order!
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="space-y-4 pt-6 border-t border-stone-100">
-        <div className="flex items-center gap-3 text-stone-600">
-          <ShieldCheck size={18} className="text-emerald-600 flex-shrink-0" />
-          <span className="text-sm font-medium">Secure Payment</span>
+      {/* Trust Badges */}
+      <div className="space-y-3 pt-4 border-t border-stone-100">
+        <div className="flex items-center gap-2.5 text-stone-600 text-xs">
+          <ShieldCheck size={16} className="text-emerald-600 flex-shrink-0" />
+          <span>100% Verified Secure Payment</span>
         </div>
-        <div className="flex items-center gap-3 text-stone-600">
-          <Truck size={18} className="text-emerald-600 flex-shrink-0" />
-          <span className="text-sm font-medium">Free & Fast Shipping</span>
-        </div>
-        <div className="flex items-center gap-3 text-stone-600">
-          <Lock size={18} className="text-emerald-600 flex-shrink-0" />
-          <span className="text-sm font-medium">100% Secure Checkout</span>
+        <div className="flex items-center gap-2.5 text-stone-600 text-xs">
+          <Truck size={16} className="text-emerald-600 flex-shrink-0" />
+          <span>Express Courier Delivery with Live Tracking</span>
         </div>
       </div>
     </motion.div>
@@ -428,6 +593,16 @@ function CheckoutPage() {
   });
   const [selectedPayment, setSelectedPayment] = useState('cod');
 
+  // Coupon State
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponInput, setCouponInput] = useState('');
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [availableCoupons, setAvailableCoupons] = useState([]);
+
+  const subtotal = getTotal();
+  const discount = appliedCoupon ? Number(appliedCoupon.discountCalculated || 0) : 0;
+  const finalTotal = Math.max(0, subtotal - discount);
+
   const {
     register,
     handleSubmit,
@@ -443,6 +618,61 @@ function CheckoutPage() {
 
   const watchedPhone = watch('phone', '');
   const watchedPincode = watch('pincode', '');
+
+  // Load available checkout coupons
+  useEffect(() => {
+    fetchAvailableCoupons();
+  }, []);
+
+  const fetchAvailableCoupons = async () => {
+    try {
+      const res = await api.get('/coupons/available');
+      if (res.data?.success && res.data.coupons) {
+        setAvailableCoupons(res.data.coupons);
+      }
+    } catch (err) {
+      // Quiet fail
+    }
+  };
+
+  const handleApplyCoupon = async (codeToApply) => {
+    if (!codeToApply || !codeToApply.trim()) {
+      toast.error('Please enter a coupon code');
+      return;
+    }
+
+    try {
+      setCouponLoading(true);
+      const res = await api.post('/coupons/apply', {
+        code: codeToApply.trim().toUpperCase(),
+        orderAmount: subtotal,
+        items: cart.map((item) => ({
+          productId: item.productId || item.product?._id,
+          product: item.product,
+          quantity: item.quantity,
+          price: item.product?.price || 0,
+        })),
+      });
+
+      if (res.data?.success && res.data.coupon) {
+        setAppliedCoupon(res.data.coupon);
+        setCouponInput(res.data.coupon.code);
+        toast.success(res.data.message || 'Coupon applied successfully!');
+      } else {
+        toast.error(res.data?.message || 'Invalid coupon code');
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to apply coupon');
+    } finally {
+      setCouponLoading(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponInput('');
+    toast.success('Coupon removed');
+  };
 
   useEffect(() => {
     const savedOrder = sessionStorage.getItem('pendingOrder');
@@ -526,7 +756,7 @@ function CheckoutPage() {
         return;
       }
 
-      const totalAmount = getTotal();
+      const totalAmount = finalTotal;
 
       const gatewayRes = await orderAPI.createRazorpayOrder(totalAmount);
 
@@ -574,6 +804,8 @@ function CheckoutPage() {
                 state: data.state,
                 pincode: data.pincode
               },
+              discount,
+              couponCode: appliedCoupon?.code || '',
               paymentMethod: 'online',
               paymentDetails: {
                 razorpayOrderId: response.razorpay_order_id,
@@ -600,6 +832,7 @@ function CheckoutPage() {
         notes: {
           customer_email: data.email,
           customer_phone: data.phone,
+          coupon_code: appliedCoupon?.code || '',
         },
         theme: {
           color: '#059669'
@@ -641,6 +874,8 @@ function CheckoutPage() {
           state: data.state,
           pincode: data.pincode
         },
+        discount,
+        couponCode: appliedCoupon?.code || '',
         paymentMethod: 'cod'
       });
 
@@ -705,7 +940,20 @@ function CheckoutPage() {
 
             {/* Right Column: Order Summary & Mobile Submit Button */}
             <div className="space-y-8">
-              <FixedOrderSummary cart={cart} getTotal={getTotal} />
+              <FixedOrderSummary
+                cart={cart}
+                subtotal={subtotal}
+                discount={discount}
+                finalTotal={finalTotal}
+                appliedCoupon={appliedCoupon}
+                couponInput={couponInput}
+                setCouponInput={setCouponInput}
+                couponLoading={couponLoading}
+                onApplyCoupon={handleApplyCoupon}
+                onRemoveCoupon={handleRemoveCoupon}
+                availableCoupons={availableCoupons}
+              />
+
 
               {/* Mobile Place Order Button (renders under Order Summary on mobile) */}
               <div className="block lg:hidden">

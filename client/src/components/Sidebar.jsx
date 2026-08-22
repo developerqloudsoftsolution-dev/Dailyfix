@@ -5,8 +5,9 @@ import {
   ShoppingCart,
   Users,
   FolderTree,
-  TicketPercent,
+  Ticket,
   Star,
+
   BarChart3,
   Settings,
   LogOut,
@@ -42,6 +43,12 @@ const menuItems = [
     path: "/admin/customers",
   },
   {
+    title: "Add Coupon",
+    icon: Ticket,
+    path: "/admin/coupons",
+  },
+
+  {
     title: "WhatsApp Bot",
     icon: MessageSquare,
     path: "/admin/whatsapp",
@@ -50,17 +57,9 @@ const menuItems = [
     title: "Manage Admins",
     icon: ShieldCheck,
     path: "/admin/admins",
+    hidden: true,
   },
-  {
-    title: "Categories",
-    icon: FolderTree,
-    path: "/admin/categories",
-  },
-  {
-    title: "Coupons",
-    icon: TicketPercent,
-    path: "/admin/coupons",
-  },
+
   {
     title: "Reviews",
     icon: Star,
@@ -138,11 +137,11 @@ export default function Sidebar() {
 
       <div className="flex-1 overflow-y-auto py-6">
 
-        <div className="space-y-1 px-3">
+          {menuItems
+            .filter((item) => !item.hidden)
+            .map((item) => {
+              const Icon = item.icon;
 
-          {menuItems.map((item) => {
-
-            const Icon = item.icon;
 
             return (
 

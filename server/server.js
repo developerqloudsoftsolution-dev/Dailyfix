@@ -48,6 +48,8 @@ import instagramRoute from "./routes/instagram.js";
 import whatsappRoutes from './routes/whatsappRoutes.js';
 import apiAuthRoutes from './routes/apiAuthRoutes.js';
 import wcRoutes from './routes/wcRoutes.js';
+import couponRoutes from './routes/couponRoutes.js';
+
 
 
 const app = express();
@@ -113,8 +115,10 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/contact', contactRoutes);
 app.use("/api/instagram", instagramRoute);
 app.use('/api/admin/whatsapp', whatsappRoutes);
+app.use('/api/coupons', couponRoutes);
 
 // WooCommerce / Third-Party App Authorization Routes
+
 app.use('/api/auth', apiAuthRoutes);
 app.use('/wc-auth/v1', apiAuthRoutes);
 

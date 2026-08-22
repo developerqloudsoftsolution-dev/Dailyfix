@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import crypto from "crypto";
 import Order from "../models/Order.js";
 import Product from "../models/Product.js";
+import Coupon from "../models/Coupon.js";
+
 import sendEmail from "../utils/sendEmail.js";
 import customerOrderTemplate from "../templates/customerOrderTemplate.js";
 import adminOrderTemplate from "../templates/adminOrderTemplate.js";
@@ -186,8 +188,10 @@ export const createOrder = async (req, res) => {
 
     const tax = 0;
     const shipping = 0;
+    const discount = Math.max(0, Number(req.body.discount || req.body.coupon?.discount || 0));
+    const couponCode = String(req.body.couponCode || req.body.coupon?.code || "").trim().toUpperCase();
 
-    const total = subtotal + tax + shipping;
+    const total = Math.max(0, subtotal - discount + tax + shipping);
 
     const weight =
       await calculateWeight(items);
@@ -214,6 +218,9 @@ export const createOrder = async (req, res) => {
       razorpayPaymentId: req.body.paymentDetails?.razorpayPaymentId || req.body.razorpayPaymentId || "",
       razorpaySignature: req.body.paymentDetails?.razorpaySignature || req.body.razorpaySignature || "",
       paymentDetails: req.body.paymentDetails || {},
+      subtotal,
+      discount,
+      couponCode,
       total,
       tax,
       shipping,
@@ -221,7 +228,13 @@ export const createOrder = async (req, res) => {
       items: dbItems,
     });
 
-    console.log("✅ Order Saved:", order.orderId);
+    // Increment coupon usage count if applied
+    if (couponCode) {
+      Coupon.findOneAndUpdate({ code: couponCode }, { $inc: { usedCount: 1 } }).catch(() => {});
+    }
+
+    console.log("✅ Order Saved:", order.orderId, couponCode ? `(Coupon: ${couponCode}, Saved: ₹${discount})` : "");
+
 
     /*
     ==========================================
