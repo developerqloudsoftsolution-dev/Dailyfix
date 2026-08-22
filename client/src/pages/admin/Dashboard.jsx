@@ -66,6 +66,26 @@ export default function Dashboard() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [loadingOrderDetails, setLoadingOrderDetails] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [syncingTracking, setSyncingTracking] = useState(false);
+
+  const handleSyncTracking = async () => {
+    try {
+      setSyncingTracking(true);
+      toast.loading("Syncing courier statuses with Delhivery & Ekart...", { id: "dash-sync" });
+      const res = await api.post("/orders/sync-tracking");
+      if (res.data?.success) {
+        toast.success(res.data.message || "Courier statuses synced successfully!", { id: "dash-sync" });
+        fetchDashboard();
+      } else {
+        toast.error(res.data?.message || "Sync failed", { id: "dash-sync" });
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to sync courier statuses", { id: "dash-sync" });
+    } finally {
+      setSyncingTracking(false);
+    }
+  };
+
 
   const [data, setData] = useState({
     stats: {
@@ -132,7 +152,24 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchDashboard();
+
+    // 📡 Auto-sync courier status with Delhivery & Ekart in the background on load
+    api.post("/orders/sync-tracking")
+      .then((res) => {
+        if (res.data?.success) {
+          fetchDashboard(false);
+        }
+      })
+      .catch(() => {});
+
+    // 🔁 Auto-refresh dashboard every 45 seconds
+    const interval = setInterval(() => {
+      fetchDashboard(false);
+    }, 45 * 1000);
+
+    return () => clearInterval(interval);
   }, []);
+
 
   const handleViewOrder = async (order) => {
     setSelectedOrder(order);
@@ -153,20 +190,33 @@ export default function Dashboard() {
     try {
       setUpdatingStatus(true);
       toast.loading(`Updating order to ${newStatus}...`, { id: "dash-status" });
+
+      // Immediate optimistic update
+      setSelectedOrder((prev) => (prev ? { ...prev, status: newStatus } : null));
+      setData((prev) => ({
+        ...prev,
+        orders: prev.orders.map((o) =>
+          o._id === orderId || o.orderId === orderId ? { ...o, status: newStatus } : o
+        ),
+      }));
+
       const res = await api.put(`/orders/${orderId}/status`, { status: newStatus });
       if (res.data?.success) {
-        toast.success(`Order marked as ${newStatus}!`, { id: "dash-status" });
-        setSelectedOrder((prev) => (prev ? { ...prev, status: newStatus } : null));
+        toast.success(res.data.message || `Order marked as ${newStatus}!`, { id: "dash-status" });
         fetchDashboard();
       } else {
         toast.error(res.data?.message || "Failed to update status", { id: "dash-status" });
+        fetchDashboard();
       }
     } catch (err) {
-      toast.error("Error updating status", { id: "dash-status" });
+      console.error("Dashboard update status error:", err);
+      toast.error(err.response?.data?.message || "Error updating status", { id: "dash-status" });
+      fetchDashboard();
     } finally {
       setUpdatingStatus(false);
     }
   };
+
 
   const { stats, orders, products, topProducts, monthlyRevenue } = data;
 
@@ -226,9 +276,21 @@ export default function Dashboard() {
           )}
 
           <button
+            onClick={handleSyncTracking}
+            disabled={syncingTracking}
+            className="flex items-center gap-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 px-4 py-2.5 font-semibold shadow-sm transition disabled:opacity-60 text-sm"
+          >
+            <RefreshCw
+              size={16}
+              className={syncingTracking ? "animate-spin" : ""}
+            />
+            {syncingTracking ? "Syncing Couriers..." : "Sync Courier Status"}
+          </button>
+
+          <button
             onClick={() => fetchDashboard(true)}
             disabled={loading}
-            className="flex items-center gap-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 px-4 py-2.5 font-medium text-slate-700 shadow-sm transition disabled:opacity-50"
+            className="flex items-center gap-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 px-4 py-2.5 font-medium text-slate-700 shadow-sm transition disabled:opacity-50 text-sm"
           >
             <RefreshCw
               size={16}
@@ -236,6 +298,7 @@ export default function Dashboard() {
             />
             Refresh
           </button>
+
 
           <div className="relative">
             <button className="w-11 h-11 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 flex items-center justify-center shadow-sm transition">

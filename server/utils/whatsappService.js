@@ -295,7 +295,13 @@ ${itemsList}
       const customerPhone = order.customer?.phone;
       if (!customerPhone) return;
 
-      const waybill = order.delhivery?.waybill || 'Assigned';
+      const isEkart = order.carrier === 'Ekart' || (!order.delhivery?.waybill && (order.ekart?.waybill || order.ekart?.trackingId));
+      const courierName = isEkart ? 'Ekart Logistics' : 'Delhivery Express';
+      const waybill = (isEkart ? (order.ekart?.waybill || order.ekart?.trackingId) : order.delhivery?.waybill) || 'Assigned';
+      const trackingUrl = isEkart
+        ? `https://ekartlogistics.com/shipmenttrack/${waybill}`
+        : `https://www.delhivery.com/track/package/${waybill}`;
+
       const customerName = `${order.customer?.firstName || 'Customer'}`.trim();
 
       const message = `🚚 *Your DailyFix Order has Shipped!*
@@ -304,11 +310,11 @@ Hello *${customerName}*,
 
 Great news! Your package for Order *#${order.orderId}* is on its way.
 
-📦 *Courier Partner:* Delhivery Express
+📦 *Courier Partner:* ${courierName}
 🏷️ *AWB / Tracking Number:* ${waybill}
 
 🔎 *Live Courier Tracking:*
-https://www.delhivery.com/track/package/${waybill}
+${trackingUrl}
 
 You can also track on our website:
 https://dailyfixcare.com/track-order?orderId=${order.orderId}
@@ -316,7 +322,7 @@ https://dailyfixcare.com/track-order?orderId=${order.orderId}
 Thank you for shopping with DailyFix!`;
 
       const res = await this.sendTextMessage(customerPhone, message);
-      console.log(`[WhatsApp] Shipment tracking notification sent for ${order.orderId}:`, res.ok ? 'SUCCESS' : res.message);
+      console.log(`[WhatsApp] Shipment tracking notification sent for ${order.orderId} (${courierName}):`, res.ok ? 'SUCCESS' : res.message);
       return res;
     } catch (err) {
       console.warn('[WhatsApp] Failed to send shipment notification:', err.message);
@@ -377,7 +383,13 @@ Thank you for shopping with DailyFix!`;
 
       const customerName = `${order.customer?.firstName || order.customerName || 'Customer'}`.trim();
       const orderId = order.orderId;
-      const waybill = order.delhivery?.waybill;
+
+      const isEkart = order.carrier === 'Ekart' || (!order.delhivery?.waybill && (order.ekart?.waybill || order.ekart?.trackingId));
+      const courierName = isEkart ? 'Ekart Logistics' : 'Delhivery Express';
+      const waybill = (isEkart ? (order.ekart?.waybill || order.ekart?.trackingId) : order.delhivery?.waybill);
+      const trackingUrl = isEkart
+        ? `https://ekartlogistics.com/shipmenttrack/${waybill}`
+        : `https://www.delhivery.com/track/package/${waybill}`;
 
       let title = `📦 *Order Update - DailyFix Care*`;
       let statusDesc = `Your order *#${orderId}* status has been updated to *${newStatus}*.`;
@@ -393,8 +405,8 @@ Thank you for shopping with DailyFix!`;
           break;
         case 'Shipped':
           title = `🚚 *Order Shipped - DailyFix Care*`;
-          statusDesc = `Your package for order *#${orderId}* is on its way via Delhivery Express!${
-            waybill ? `\n🏷️ *AWB:* ${waybill}\n🔎 *Track Live:* https://www.delhivery.com/track/package/${waybill}` : ''
+          statusDesc = `Your package for order *#${orderId}* is on its way via ${courierName}!${
+            waybill ? `\n🏷️ *AWB:* ${waybill}\n🔎 *Track Live:* ${trackingUrl}` : ''
           }`;
           break;
         case 'Out for Delivery':
@@ -449,20 +461,25 @@ ${statusDesc}
       if (newStatus === 'Shipped') statusEmoji = '🚚';
       if (newStatus === 'Confirmed') statusEmoji = '✅';
 
+      const isEkart = order.carrier === 'Ekart' || (!order.delhivery?.waybill && (order.ekart?.waybill || order.ekart?.trackingId));
+      const waybillStr = isEkart
+        ? (order.ekart?.waybill ? `📦 *Ekart AWB:* ${order.ekart.waybill}\n` : '')
+        : (order.delhivery?.waybill ? `🚚 *Delhivery AWB:* ${order.delhivery.waybill}\n` : '');
+
       const message = `${statusEmoji} *ORDER STATUS CHANGED - DailyFix*
 
 📦 *Order ID:* ${order.orderId}
 👤 *Customer:* ${customerName} (${customerPhone})
 📊 *New Status:* *${newStatus}* ${previousStatus ? `(was: ${previousStatus})` : ''}
 💵 *Amount:* ₹${order.total || order.totalAmount || 0}
-${order.delhivery?.waybill ? `🚚 *Delhivery AWB:* ${order.delhivery.waybill}\n` : ''}
-🔗 *View in Admin:* https://dailyfixcare.com/admin/orders`;
+${waybillStr}🔗 *View in Admin:* https://dailyfixcare.com/admin/orders`;
 
       await this.sendAdminAlert(message);
     } catch (err) {
       console.warn('[WhatsApp] Failed to send admin status alert:', err.message);
     }
   }
+
 }
 
 export default new WhatsAppService();

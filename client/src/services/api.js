@@ -152,19 +152,37 @@ export const orderAPI = {
     }
   },
   
-  // Delhivery functions
+  // Courier & Shipping functions
   createDelhiveryShipment: async (orderId) => {
     try {
       const res = await api.post(`/orders/${orderId}/create-shipment`)
       return { ok: true, data: res.data }
     } catch (err) {
-      return { ok: false, data: err.response?.data || { message: 'Failed to create shipment' } }
+      return { ok: false, data: err.response?.data || { message: 'Failed to create Delhivery shipment' } }
     }
   },
 
-  updateOrderWaybill: async (orderId, waybill) => {
+  createEkartShipment: async (orderId) => {
     try {
-      const res = await api.put(`/orders/${orderId}/waybill`, { waybill })
+      const res = await api.post(`/orders/${orderId}/create-ekart-shipment`)
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: 'Failed to create Ekart shipment' } }
+    }
+  },
+
+  cancelEkartShipment: async (orderId) => {
+    try {
+      const res = await api.get(`/orders/${orderId}/ekart-cancel`)
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: 'Failed to cancel Ekart shipment' } }
+    }
+  },
+
+  updateOrderWaybill: async (orderId, waybill, carrier = 'Delhivery') => {
+    try {
+      const res = await api.put(`/orders/${orderId}/waybill`, { waybill, carrier })
       return { ok: true, data: res.data }
     } catch (err) {
       return { ok: false, data: err.response?.data || { message: 'Failed to update waybill' } }

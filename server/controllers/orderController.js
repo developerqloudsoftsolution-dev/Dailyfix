@@ -5,8 +5,11 @@ import Product from "../models/Product.js";
 import sendEmail from "../utils/sendEmail.js";
 import customerOrderTemplate from "../templates/customerOrderTemplate.js";
 import adminOrderTemplate from "../templates/adminOrderTemplate.js";
-import delhiveryService from "../utils/delhivery.js";
+import delhiveryService, { mapDelhiveryStatus } from "../utils/delhivery.js";
+import ekartService, { mapEkartStatus } from "../utils/ekart.js";
 import razorpay, { isRazorpayConfigured } from "../utils/razorpay.js";
+
+
 import whatsappService from "../utils/whatsappService.js";
 
 const isValidObjectId = (id) => {
@@ -438,9 +441,13 @@ GET ORDER BY ID
 
 export const getOrderById = async (req, res) => {
   try {
-
-    const order = await Order.findById(req.params.id)
-      .populate("items.product");
+    const { id } = req.params;
+    const order = await Order.findOne({
+      $or: [
+        { _id: isValidObjectId(id) ? id : null },
+        { orderId: id }
+      ]
+    }).populate("items.product");
 
     if (!order) {
       return res.status(404).json({
@@ -456,16 +463,14 @@ export const getOrderById = async (req, res) => {
     });
 
   } catch (error) {
-
-    console.error(error);
-
+    console.error("GET ORDER BY ID ERROR:", error);
     return res.status(500).json({
       success: false,
       message: error.message,
     });
-
   }
 };
+
 
 /*
 ==========================================
@@ -511,6 +516,7 @@ export const createManualShipment = async (req, res) => {
       });
     }
 
+    order.carrier = "Delhivery";
     order.delhivery = {
       waybill: String(waybill),
       shipmentId: delhiveryService.getShipmentId(shipmentResponse) || "",
@@ -566,6 +572,106 @@ export const createManualShipment = async (req, res) => {
 
 /*
 ==========================================
+CREATE EKART SHIPMENT (Admin)
+==========================================
+*/
+
+export const createEkartShipment = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    const order = await Order.findOne({
+      $or: [
+        { orderId },
+        { _id: isValidObjectId(orderId) ? orderId : null }
+      ]
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    if (order.ekart?.waybill || order.ekart?.trackingId) {
+      return res.status(400).json({
+        success: false,
+        message: "Ekart shipment already created. Tracking ID: " + (order.ekart.waybill || order.ekart.trackingId),
+      });
+    }
+
+    const shipmentPayload = ekartService.buildShipmentPayload(order);
+    const shipmentResponse = await ekartService.createShipment(shipmentPayload);
+
+    const waybill = ekartService.extractTrackingId(shipmentResponse);
+
+    if (!waybill) {
+      return res.status(500).json({
+        success: false,
+        message: "Failed to generate Ekart waybill/tracking ID. Please check Ekart API configuration.",
+        raw: shipmentResponse,
+      });
+    }
+
+    order.carrier = "Ekart";
+    order.ekart = {
+      trackingId: String(waybill),
+      waybill: String(waybill),
+      shipmentId: ekartService.getShipmentId(shipmentResponse) || "",
+      pickupRequestId: ekartService.getPickupRequestId(shipmentResponse) || "",
+      currentStatus: "Manifested",
+      labelUrl: ekartService.getLabelURL(shipmentResponse) || "",
+      invoiceUrl: ekartService.getInvoiceURL(shipmentResponse) || "",
+      expectedDelivery: ekartService.getEstimatedDelivery(shipmentResponse) || null,
+      shipmentResponse,
+      trackingHistory: [],
+      lastSynced: new Date(),
+    };
+    await order.save();
+    console.log("✅ EKART DETAILS SAVED TO MONGODB");
+
+    try {
+      const label = await ekartService.generateShippingLabel(waybill);
+      order.ekart.label = label;
+      await order.save();
+    } catch (labelErr) {
+      console.log("Ekart label generation skipped:", labelErr.message);
+    }
+
+    // Trigger WhatsApp tracking notification to customer
+    whatsappService.notifyShipmentTrackCustomer(order).catch((err) => {
+      console.log("[WhatsApp] Shipment notification skipped:", err.message);
+    });
+
+    return res.json({
+      success: true,
+      message: "Ekart shipment created successfully",
+      waybill,
+      order,
+    });
+  } catch (error) {
+    console.error("CREATE EKART SHIPMENT ERROR:", error);
+    let userMessage = error.message || "Ekart shipment creation failed";
+
+    if (error.response?.status === 401 || String(error.message).includes("401")) {
+      userMessage = "Ekart API authentication failed (401: Invalid Client ID / Secret). Please verify EKART_CLIENT_ID in .env or enter the AWB manually.";
+    } else if (error.response?.status === 404 || String(error.message).includes("404")) {
+      userMessage = "Ekart API endpoint returned 404. Please check if your Ekart merchant portal provides a specific API URL or assign the AWB manually.";
+    } else if (error.response?.data?.message) {
+      userMessage = error.response.data.message;
+    }
+
+    return res.status(400).json({
+      success: false,
+      message: userMessage,
+    });
+  }
+
+};
+
+/*
+==========================================
 UPDATE AWB/WAYBILL MANUALLY (Admin)
 ==========================================
 */
@@ -573,7 +679,7 @@ UPDATE AWB/WAYBILL MANUALLY (Admin)
 export const updateOrderWaybill = async (req, res) => {
   try {
     const { orderId } = req.params;
-    const { waybill } = req.body;
+    const { waybill, carrier } = req.body;
 
     if (!waybill || !waybill.trim()) {
       return res.status(400).json({
@@ -596,12 +702,24 @@ export const updateOrderWaybill = async (req, res) => {
       });
     }
 
-    if (!order.delhivery) {
-      order.delhivery = {};
+    const selectedCarrier = carrier || order.carrier || "Delhivery";
+    order.carrier = selectedCarrier;
+
+    if (selectedCarrier === "Ekart") {
+      if (!order.ekart) {
+        order.ekart = {};
+      }
+      order.ekart.waybill = waybill.trim();
+      order.ekart.trackingId = waybill.trim();
+      order.ekart.lastSynced = new Date();
+    } else {
+      if (!order.delhivery) {
+        order.delhivery = {};
+      }
+      order.delhivery.waybill = waybill.trim();
+      order.delhivery.lastSynced = new Date();
     }
 
-    order.delhivery.waybill = waybill.trim();
-    order.delhivery.lastSynced = new Date();
     await order.save();
 
     // Trigger WhatsApp tracking notification to customer
@@ -622,6 +740,7 @@ export const updateOrderWaybill = async (req, res) => {
     });
   }
 };
+
 
 /*
 ==========================================
@@ -662,8 +781,14 @@ UPDATE ORDER STATUS
 
 export const updateOrderStatus = async (req, res) => {
   try {
+    const { id } = req.params;
     const { status } = req.body;
-    const order = await Order.findById(req.params.id);
+    const order = await Order.findOne({
+      $or: [
+        { _id: isValidObjectId(id) ? id : null },
+        { orderId: id }
+      ]
+    });
 
     if (!order) {
       return res.status(404).json({
@@ -672,30 +797,44 @@ export const updateOrderStatus = async (req, res) => {
       });
     }
 
+
     const previousStatus = order.status;
     order.status = status;
 
-    let delhiveryMsg = "";
-    let delhiverySuccess = false;
+    let courierMsg = "";
+    let courierSuccess = false;
 
     // If order is changed to Cancelled
     if (status === "Cancelled" && previousStatus !== "Cancelled") {
-      // 1. If waybill is present, automatically cancel on Delhivery
-      if (order.delhivery?.waybill && order.delhivery.currentStatus !== "Cancelled") {
+      // 1. If Ekart waybill is present, auto-cancel on Ekart
+      if ((order.carrier === "Ekart" || order.ekart?.waybill) && order.ekart?.waybill && order.ekart.currentStatus !== "Cancelled") {
+        try {
+          console.log(`[Ekart] Auto-cancelling shipment for order ${order.orderId} (Waybill: ${order.ekart.waybill})...`);
+          await ekartService.cancelShipment(order.ekart.waybill);
+          order.ekart.currentStatus = "Cancelled";
+          courierSuccess = true;
+          courierMsg = ` Ekart shipment (AWB: ${order.ekart.waybill}) was cancelled on courier portal.`;
+        } catch (ekartErr) {
+          console.warn(`[Ekart] Auto-cancellation notice:`, ekartErr.message);
+          courierMsg = ` (Ekart notice: ${ekartErr.message})`;
+        }
+      }
+      // 2. If Delhivery waybill is present, auto-cancel on Delhivery
+      else if (order.delhivery?.waybill && order.delhivery.currentStatus !== "Cancelled") {
         try {
           console.log(`[Delhivery] Auto-cancelling shipment for order ${order.orderId} (Waybill: ${order.delhivery.waybill})...`);
           const delhiveryRes = await delhiveryService.cancelShipment(order.delhivery.waybill);
           order.delhivery.currentStatus = "Cancelled";
-          delhiverySuccess = true;
-          delhiveryMsg = ` Delhivery shipment (AWB: ${order.delhivery.waybill}) was cancelled on courier portal.`;
+          courierSuccess = true;
+          courierMsg = ` Delhivery shipment (AWB: ${order.delhivery.waybill}) was cancelled on courier portal.`;
           console.log(`[Delhivery] Shipment cancelled successfully:`, delhiveryRes);
         } catch (delhiveryErr) {
           console.warn(`[Delhivery] Auto-cancellation notice:`, delhiveryErr.message);
-          delhiveryMsg = ` (Courier notice: ${delhiveryErr.message})`;
+          courierMsg = ` (Courier notice: ${delhiveryErr.message})`;
         }
       }
 
-      // 2. Restock product quantities
+      // 3. Restock product quantities
       try {
         if (order.items && order.items.length > 0) {
           for (const item of order.items) {
@@ -715,7 +854,7 @@ export const updateOrderStatus = async (req, res) => {
 
     await order.save();
 
-    // 3. Dispatch WhatsApp notifications (Non-blocking)
+    // 4. Dispatch WhatsApp notifications (Non-blocking)
     if (status !== previousStatus) {
       whatsappService.notifyOrderStatusCustomer(order, status).catch((err) => {
         console.warn(`[WhatsApp] Failed to notify customer of status change:`, err.message);
@@ -727,9 +866,9 @@ export const updateOrderStatus = async (req, res) => {
 
     return res.json({
       success: true,
-      message: `Order status updated to ${status}.${delhiveryMsg}`,
+      message: `Order status updated to ${status}.${courierMsg}`,
       order,
-      delhiveryCancelled: delhiverySuccess,
+      courierCancelled: courierSuccess,
     });
   } catch (error) {
     console.error(error);
@@ -739,23 +878,25 @@ export const updateOrderStatus = async (req, res) => {
     });
   }
 };
+
 /*
 =================================================
-TRACK DELHIVERY SHIPMENT
+TRACK SHIPMENT (DELHIVERY & EKART UNIFIED)
 =================================================
 */
 
 export const trackDelhiveryOrder = async (req, res) => {
   try {
     const { orderId } = req.params;
-
     const trimmedId = orderId.trim();
 
     const order = await Order.findOne({
       $or: [
         { orderId: trimmedId },
-        { "delhivery.waybill": trimmedId }
-      ]
+        { "delhivery.waybill": trimmedId },
+        { "ekart.waybill": trimmedId },
+        { "ekart.trackingId": trimmedId },
+      ],
     }).populate("items.product");
 
     if (!order) {
@@ -765,12 +906,80 @@ export const trackDelhiveryOrder = async (req, res) => {
       });
     }
 
-    const waybill = order.delhivery?.waybill;
-
+    const carrier = order.carrier || (order.ekart?.waybill ? "Ekart" : "Delhivery");
     let tracking = null;
     let trackingData = null;
 
-    if (waybill) {
+    // --- EKART LOGISTICS TRACKING ---
+    if (carrier === "Ekart" && (order.ekart?.waybill || order.ekart?.trackingId)) {
+      const trackingId = order.ekart.waybill || order.ekart.trackingId;
+      try {
+        tracking = await ekartService.trackShipment(trackingId);
+        const shipmentData = tracking?.data || tracking?.shipment || tracking;
+
+        order.ekart.currentStatus =
+          shipmentData?.status ||
+          shipmentData?.current_status ||
+          order.ekart.currentStatus;
+
+        order.ekart.lastSynced = new Date();
+
+        const scans = shipmentData?.scans || shipmentData?.tracking_history || shipmentData?.events || [];
+        if (Array.isArray(scans) && scans.length > 0) {
+          order.ekart.trackingHistory = scans.map((scan) => ({
+            status: scan?.status || scan?.event || scan?.scan_type || "",
+            location: scan?.location || scan?.hub || "",
+            remarks: scan?.remarks || scan?.description || scan?.instructions || "",
+            scanDate: scan?.date || scan?.timestamp || scan?.scan_date ? new Date(scan.date || scan.timestamp || scan.scan_date) : new Date(),
+          }));
+        }
+
+        await order.save();
+
+        const scanList = (order.ekart.trackingHistory || []).map((h) => ({
+          status: h.status,
+          location: h.location,
+          date: h.scanDate || h.date,
+          remarks: h.remarks,
+        }));
+
+        trackingData = {
+          carrier: "Ekart",
+          ShipmentData: [
+            {
+              Shipment: {
+                Status: { Status: order.ekart.currentStatus },
+                Scan: scanList,
+                Scans: scanList,
+              },
+            },
+          ],
+        };
+      } catch (ekartTrackingErr) {
+        console.warn("Ekart tracking fetch failed, using saved history:", ekartTrackingErr.message);
+        const scanList = (order.ekart?.trackingHistory || []).map((h) => ({
+          status: h.status,
+          location: h.location,
+          date: h.scanDate || h.date,
+          remarks: h.remarks,
+        }));
+
+        trackingData = {
+          carrier: "Ekart",
+          ShipmentData: [
+            {
+              Shipment: {
+                Status: { Status: order.ekart?.currentStatus || order.status },
+                Scan: scanList,
+              },
+            },
+          ],
+        };
+      }
+    }
+    // --- DELHIVERY LOGISTICS TRACKING ---
+    else if (order.delhivery?.waybill) {
+      const waybill = order.delhivery.waybill;
       try {
         tracking = await delhiveryService.trackShipment(waybill);
 
@@ -789,7 +998,7 @@ export const trackDelhiveryOrder = async (req, res) => {
           status: scan?.ScanDetail?.Scan || scan?.status || "",
           location: scan?.ScanDetail?.ScannedLocation || scan?.location || "",
           remarks: scan?.ScanDetail?.Instructions || scan?.remarks || "",
-          date: scan?.ScanDetail?.ScanDateTime || scan?.date || null,
+          scanDate: scan?.ScanDetail?.ScanDateTime || scan?.date || null,
         }));
 
         await order.save();
@@ -800,6 +1009,7 @@ export const trackDelhiveryOrder = async (req, res) => {
           [];
 
         trackingData = {
+          carrier: "Delhivery",
           ...tracking,
           ShipmentData: tracking?.ShipmentData?.map((sd) => ({
             ...sd,
@@ -817,43 +1027,48 @@ export const trackDelhiveryOrder = async (req, res) => {
         };
       } catch (trackingErr) {
         console.warn("Delhivery tracking fetch failed, using saved history:", trackingErr.message);
+        const scanList = (order.delhivery.trackingHistory || []).map((h) => ({
+          status: h.status,
+          location: h.location,
+          date: h.scanDate || h.date,
+          remarks: h.remarks,
+        }));
+
         trackingData = {
-          ShipmentData: [{
-            Shipment: {
-              Scan: order.delhivery.trackingHistory.map((h) => ({
-                status: h.status,
-                location: h.location,
-                date: h.date,
-                remarks: h.remarks,
-              })),
+          carrier: "Delhivery",
+          ShipmentData: [
+            {
+              Shipment: {
+                Status: { Status: order.delhivery.currentStatus },
+                Scan: scanList,
+              },
             },
-          }],
+          ],
         };
       }
     } else {
       trackingData = {
-        ShipmentData: [{
-          Shipment: {
-            Scan: order.delhivery?.trackingHistory?.map((h) => ({
-              status: h.status,
-              location: h.location,
-              date: h.date,
-              remarks: h.remarks,
-            })) || [],
+        carrier: carrier,
+        ShipmentData: [
+          {
+            Shipment: {
+              Status: { Status: order.status },
+              Scan: [],
+            },
           },
-        }],
+        ],
       };
     }
 
     return res.json({
       success: true,
+      carrier,
       tracking,
       trackingData,
       order,
     });
   } catch (error) {
     console.error(error);
-
     return res.status(500).json({
       success: false,
       message: error.message,
@@ -863,7 +1078,7 @@ export const trackDelhiveryOrder = async (req, res) => {
 
 /*
 =================================================
-CANCEL SHIPMENT
+CANCEL DELHIVERY SHIPMENT
 =================================================
 */
 
@@ -871,9 +1086,7 @@ export const cancelDelhiveryShipment = async (req, res) => {
   try {
     const { orderId } = req.params;
 
-    const order = await Order.findOne({
-      orderId,
-    });
+    const order = await Order.findOne({ orderId });
 
     if (!order) {
       return res.status(404).json({
@@ -885,28 +1098,23 @@ export const cancelDelhiveryShipment = async (req, res) => {
     if (!order.delhivery?.waybill) {
       return res.status(400).json({
         success: false,
-        message: "Shipment not created.",
+        message: "Delhivery shipment not created.",
       });
     }
 
-    const response =
-      await delhiveryService.cancelShipment(
-        order.delhivery.waybill
-      );
+    const response = await delhiveryService.cancelShipment(order.delhivery.waybill);
 
     order.status = "Cancelled";
     order.delhivery.currentStatus = "Cancelled";
-
     await order.save();
 
     return res.json({
       success: true,
-      message: "Shipment cancelled.",
+      message: "Delhivery shipment cancelled.",
       response,
     });
   } catch (error) {
     console.error(error);
-
     return res.status(500).json({
       success: false,
       message: error.message,
@@ -916,20 +1124,15 @@ export const cancelDelhiveryShipment = async (req, res) => {
 
 /*
 =================================================
-DOWNLOAD SHIPPING LABEL
+CANCEL EKART SHIPMENT
 =================================================
 */
 
-export const downloadShippingLabel = async (
-  req,
-  res
-) => {
+export const cancelEkartShipment = async (req, res) => {
   try {
     const { orderId } = req.params;
 
-    const order = await Order.findOne({
-      orderId,
-    });
+    const order = await Order.findOne({ orderId });
 
     if (!order) {
       return res.status(404).json({
@@ -938,20 +1141,27 @@ export const downloadShippingLabel = async (
       });
     }
 
-    const pdf =
-      await delhiveryService.generateShippingLabel(
-        order.delhivery.waybill
-      );
+    const trackingId = order.ekart?.waybill || order.ekart?.trackingId;
+    if (!trackingId) {
+      return res.status(400).json({
+        success: false,
+        message: "Ekart shipment not created.",
+      });
+    }
 
-    res.set({
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename=${order.orderId}.pdf`,
+    const response = await ekartService.cancelShipment(trackingId);
+
+    order.status = "Cancelled";
+    order.ekart.currentStatus = "Cancelled";
+    await order.save();
+
+    return res.json({
+      success: true,
+      message: "Ekart shipment cancelled successfully.",
+      response,
     });
-
-    return res.send(pdf);
   } catch (error) {
     console.error(error);
-
     return res.status(500).json({
       success: false,
       message: error.message,
@@ -961,36 +1171,125 @@ export const downloadShippingLabel = async (
 
 /*
 =================================================
-SYNC TRACKING
+DOWNLOAD SHIPPING LABEL (DELHIVERY)
 =================================================
 */
 
-export const syncOrderTracking = async (
-  req,
-  res
-) => {
+export const downloadShippingLabel = async (req, res) => {
   try {
-    const activeOrders = await Order.find({
-      "delhivery.waybill": { $ne: "" },
-      status: { $nin: ["Delivered", "Cancelled", "Returned"] },
-    });
-    await Promise.allSettled(
-      activeOrders.map((order) => delhiveryService.syncTracking(order))
-    );
+    const { orderId } = req.params;
 
-    return res.json({
-      success: true,
-      message: `Synced tracking for ${activeOrders.length} active orders.`,
+    const order = await Order.findOne({ orderId });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    const pdf = await delhiveryService.generateShippingLabel(order.delhivery.waybill);
+
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename=Delhivery_${order.orderId}.pdf`,
     });
+
+    return res.send(pdf);
   } catch (error) {
     console.error(error);
-
     return res.status(500).json({
       success: false,
       message: error.message,
     });
   }
 };
+
+/*
+=================================================
+DOWNLOAD SHIPPING LABEL (EKART)
+=================================================
+*/
+
+export const downloadEkartShippingLabel = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    const order = await Order.findOne({ orderId });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    const trackingId = order.ekart?.waybill || order.ekart?.trackingId;
+    if (!trackingId) {
+      return res.status(400).json({
+        success: false,
+        message: "Ekart tracking ID not found on this order",
+      });
+    }
+
+    const pdf = await ekartService.generateShippingLabel(trackingId);
+
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename=Ekart_${order.orderId}.pdf`,
+    });
+
+    return res.send(pdf);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+/*
+=================================================
+SYNC TRACKING (DELHIVERY & EKART)
+=================================================
+*/
+
+export const syncOrderTracking = async (req, res) => {
+  try {
+    const activeDelhiveryOrders = await Order.find({
+      "delhivery.waybill": { $ne: "" },
+      status: { $nin: ["Delivered", "Cancelled", "Returned"] },
+    });
+
+    const activeEkartOrders = await Order.find({
+      $or: [
+        { "ekart.waybill": { $ne: "" } },
+        { "ekart.trackingId": { $ne: "" } },
+      ],
+      status: { $nin: ["Delivered", "Cancelled", "Returned"] },
+    });
+
+    await Promise.allSettled([
+      ...activeDelhiveryOrders.map((order) => delhiveryService.syncTracking(order)),
+      ...activeEkartOrders.map((order) => ekartService.syncTracking(order)),
+    ]);
+
+    const totalSynced = activeDelhiveryOrders.length + activeEkartOrders.length;
+
+    return res.json({
+      success: true,
+      message: `Synced tracking for ${totalSynced} active orders (${activeDelhiveryOrders.length} Delhivery, ${activeEkartOrders.length} Ekart).`,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 
 /*
 =================================================
@@ -1101,9 +1400,10 @@ export const getDashboardStats = async (req, res) => {
         .sort({ createdAt: -1 })
         .limit(50)
         .select(
-          "orderId status paymentMethod paymentStatus total customer shippingAddress items createdAt delhivery"
+          "orderId status paymentMethod paymentStatus total customer shippingAddress items createdAt delhivery ekart carrier"
         )
         .lean(),
+
       Product.find().select(
         "name slug price stock sku brand image isActive createdAt"
       ),
@@ -1530,5 +1830,179 @@ export const razorpayWebhook = async (req, res) => {
       success: false,
       message: error.message || "Webhook processing failed",
     });
+  }
+};
+
+/*
+=================================================
+DELHIVERY WEBHOOK (Real-time Status Updates)
+=================================================
+*/
+export const delhiveryWebhook = async (req, res) => {
+  try {
+    const payload = req.body;
+    console.log("📩 [Delhivery Webhook] Received:", JSON.stringify(payload));
+
+    const waybill =
+      payload.waybill ||
+      payload.Waybill ||
+      payload.AWB ||
+      payload.Shipment?.AWB ||
+      payload.ShipmentData?.[0]?.Shipment?.AWB ||
+      payload.awb;
+
+    if (!waybill) {
+      return res.status(400).json({ success: false, message: "Missing waybill in webhook payload" });
+    }
+
+    const order = await Order.findOne({ "delhivery.waybill": String(waybill).trim() });
+    if (!order) {
+      console.warn(`[Delhivery Webhook] No order found for AWB: ${waybill}`);
+      return res.status(200).json({ success: true, message: "Order not found, ignored" });
+    }
+
+    const courierStatus =
+      payload.Status?.Status ||
+      payload.status ||
+      payload.StatusType ||
+      payload.Shipment?.Status?.Status ||
+      "In Transit";
+
+    const scanType = payload.ScanType || payload.ScanDetail?.ScanType || payload.status_type || "";
+    const location = payload.Location || payload.ScannedLocation || payload.location || "";
+    const remarks = payload.Instructions || payload.Remarks || payload.remarks || "";
+    const scanDate = payload.ScanDateTime ? new Date(payload.ScanDateTime) : new Date();
+
+    order.delhivery.currentStatus = courierStatus;
+    if (location) order.delhivery.currentLocation = location;
+    order.delhivery.lastSynced = new Date();
+
+    if (!Array.isArray(order.delhivery.trackingHistory)) {
+      order.delhivery.trackingHistory = [];
+    }
+
+    order.delhivery.trackingHistory.unshift({
+      status: courierStatus,
+      location,
+      remarks,
+      scanDate,
+    });
+
+    const mappedStatus = mapDelhiveryStatus(courierStatus, scanType);
+    const prevStatus = order.status;
+
+    if (mappedStatus && order.status !== mappedStatus) {
+      console.log(`⚡ [Delhivery Webhook] Order ${order.orderId} status auto-updated: ${order.status} -> ${mappedStatus}`);
+      order.status = mappedStatus;
+
+      // Handle stock restock on cancellation
+      if (mappedStatus === "Cancelled" && prevStatus !== "Cancelled") {
+        if (order.items && order.items.length > 0) {
+          for (const item of order.items) {
+            const productRef = item.product || item.productId;
+            if (isValidObjectId(productRef)) {
+              await Product.findByIdAndUpdate(productRef, { $inc: { stock: Number(item.quantity || 1) } });
+            }
+          }
+        }
+      }
+
+      // Notify customer via WhatsApp
+      whatsappService.notifyOrderStatusCustomer(order, mappedStatus).catch(err => {
+        console.warn("[WhatsApp] Webhook notification skipped:", err.message);
+      });
+    }
+
+    await order.save();
+    return res.status(200).json({ success: true, message: "Delhivery status synced successfully", orderId: order.orderId, status: order.status });
+  } catch (error) {
+    console.error("❌ DELHIVERY WEBHOOK ERROR:", error);
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+/*
+=================================================
+EKART WEBHOOK (Real-time Status Updates)
+=================================================
+*/
+export const ekartWebhook = async (req, res) => {
+  try {
+    const payload = req.body;
+    console.log("📩 [Ekart Webhook] Received:", JSON.stringify(payload));
+
+    const trackingId =
+      payload.tracking_id ||
+      payload.trackingId ||
+      payload.waybill ||
+      payload.awb ||
+      payload.data?.tracking_id;
+
+    if (!trackingId) {
+      return res.status(400).json({ success: false, message: "Missing tracking_id in webhook payload" });
+    }
+
+    const order = await Order.findOne({
+      $or: [
+        { "ekart.waybill": String(trackingId).trim() },
+        { "ekart.trackingId": String(trackingId).trim() },
+      ]
+    });
+
+    if (!order) {
+      console.warn(`[Ekart Webhook] No order found for tracking ID: ${trackingId}`);
+      return res.status(200).json({ success: true, message: "Order not found, ignored" });
+    }
+
+    const courierStatus = payload.status || payload.event_name || payload.current_status || "In Transit";
+    const location = payload.location || payload.hub || "";
+    const remarks = payload.remarks || payload.description || "";
+    const scanDate = payload.timestamp || payload.date ? new Date(payload.timestamp || payload.date) : new Date();
+
+    order.ekart.currentStatus = courierStatus;
+    if (location) order.ekart.currentLocation = location;
+    order.ekart.lastSynced = new Date();
+
+    if (!Array.isArray(order.ekart.trackingHistory)) {
+      order.ekart.trackingHistory = [];
+    }
+
+    order.ekart.trackingHistory.unshift({
+      status: courierStatus,
+      location,
+      remarks,
+      scanDate,
+    });
+
+    const mappedStatus = mapEkartStatus(courierStatus);
+    const prevStatus = order.status;
+
+    if (mappedStatus && order.status !== mappedStatus) {
+      console.log(`⚡ [Ekart Webhook] Order ${order.orderId} status auto-updated: ${order.status} -> ${mappedStatus}`);
+      order.status = mappedStatus;
+
+      // Handle stock restock on cancellation
+      if (mappedStatus === "Cancelled" && prevStatus !== "Cancelled") {
+        if (order.items && order.items.length > 0) {
+          for (const item of order.items) {
+            const productRef = item.product || item.productId;
+            if (isValidObjectId(productRef)) {
+              await Product.findByIdAndUpdate(productRef, { $inc: { stock: Number(item.quantity || 1) } });
+            }
+          }
+        }
+      }
+
+      // Notify customer via WhatsApp
+      whatsappService.notifyOrderStatusCustomer(order, mappedStatus).catch(err => {
+        console.warn("[WhatsApp] Webhook notification skipped:", err.message);
+      });
+    }
+
+    await order.save();
+    return res.status(200).json({ success: true, message: "Ekart status synced successfully", orderId: order.orderId, status: order.status });
+  } catch (error) {
+    console.error("❌ EKART WEBHOOK ERROR:", error);
+    return res.status(500).json({ success: false, message: error.message });
   }
 };

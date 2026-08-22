@@ -34,6 +34,7 @@ import AdminOrders from './pages/admin/Orders'
 import AdminCustomers from './pages/admin/Customer'
 import AdminManagement from './pages/admin/AdminManagement'
 import WhatsAppConnect from './pages/admin/WhatsAppConnect'
+import AuthorizeApp from './pages/admin/AuthorizeApp'
 
 import AdminLayout from './layouts/AdminLayout'
 import MainLayout from './layouts/MainLayout'
@@ -66,6 +67,7 @@ function App() {
             </Route>
             
             <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/authorize-app" element={<AuthorizeApp />} />
             <Route element={<AdminLayout />}>
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/products" element={<AdminProducts />} />
@@ -80,5 +82,6 @@ function App() {
     </AuthProvider>
   )
 }
+
 
 export default App

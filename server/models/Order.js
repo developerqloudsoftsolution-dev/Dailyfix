@@ -138,7 +138,16 @@ const orderSchema = new mongoose.Schema(
       default: "Pending",
     },
 
-// ==========================
+    // ==========================
+    // CARRIER / LOGISTICS INTEGRATION
+    // ==========================
+    carrier: {
+      type: String,
+      enum: ["Delhivery", "Ekart", "Manual"],
+      default: "Delhivery",
+    },
+
+    // ==========================
     // DELHIVERY INTEGRATION
     // ==========================
     delhivery: {
@@ -146,6 +155,34 @@ const orderSchema = new mongoose.Schema(
         type: String,
         default: "",
         index: true, // Crucial for fast webhook updates by AWB
+        trim: true,
+      },
+      shipmentId: { type: String, default: "", trim: true },
+      pickupRequestId: { type: String, default: "", trim: true },
+      labelUrl: { type: String, default: "", trim: true },
+      invoiceUrl: { type: String, default: "", trim: true },
+      currentStatus: { type: String, default: "Pending", trim: true },
+      currentLocation: { type: String, default: "", trim: true },
+      expectedDelivery: { type: Date, default: null },
+      trackingHistory: { type: [trackingHistorySchema], default: [] },
+      shipmentResponse: { type: mongoose.Schema.Types.Mixed, default: {} },
+      lastSynced: { type: Date, default: null },
+    },
+
+    // ==========================
+    // EKART LOGISTICS INTEGRATION
+    // ==========================
+    ekart: {
+      trackingId: {
+        type: String,
+        default: "",
+        index: true,
+        trim: true,
+      },
+      waybill: {
+        type: String,
+        default: "",
+        index: true,
         trim: true,
       },
       shipmentId: { type: String, default: "", trim: true },

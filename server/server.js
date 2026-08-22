@@ -1,4 +1,9 @@
 console.log("🚀 Starting server...");
+import dns from 'dns';
+try {
+  dns.setServers(['8.8.8.8', '8.8.4.4', '1.1.1.1']);
+} catch (e) {}
+
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -8,6 +13,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+
 
 // Load environment variables first
 const __filename = fileURLToPath(import.meta.url);
@@ -24,10 +30,13 @@ if (fs.existsSync(serverEnvPath)) {
   dotenv.config();
 }
 
-// Database
 import connectDB from './config/db.js';
 import Admin from './models/Admin.js';
+import Order from './models/Order.js';
+import delhiveryService from './utils/delhivery.js';
+import ekartService from './utils/ekart.js';
 import bcrypt from 'bcryptjs';
+
 
 // Routes
 import adminRoutes from './routes/adminRoutes.js';
@@ -37,6 +46,9 @@ import orderRoutes from './routes/orderRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 import instagramRoute from "./routes/instagram.js";
 import whatsappRoutes from './routes/whatsappRoutes.js';
+import apiAuthRoutes from './routes/apiAuthRoutes.js';
+import wcRoutes from './routes/wcRoutes.js';
+
 
 const app = express();
 
@@ -101,6 +113,15 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/contact', contactRoutes);
 app.use("/api/instagram", instagramRoute);
 app.use('/api/admin/whatsapp', whatsappRoutes);
+
+// WooCommerce / Third-Party App Authorization Routes
+app.use('/api/auth', apiAuthRoutes);
+app.use('/wc-auth/v1', apiAuthRoutes);
+
+// WooCommerce REST API Compatibility Routes
+app.use('/wp-json/wc/v3', wcRoutes);
+app.use('/api/wc/v3', wcRoutes);
+
 // ===============================
 // FRONTEND (dist folder serving)
 //   Supports 3 paths, checked in this order:
@@ -113,10 +134,11 @@ const envPath = process.env.FRONTEND_DIST_PATH;
 
 const candidatePaths = [
   envPath ? (path.isAbsolute(envPath) ? envPath : path.resolve(projectRoot, envPath)) : null,
-  path.join(projectRoot, 'dist'),
   path.join(projectRoot, 'client', 'dist'),
+  path.join(projectRoot, 'dist'),
   path.join(__dirname, 'dist')
 ].filter(Boolean);
+
 
 let frontendPath = candidatePaths.find((p) => fs.existsSync(p) && fs.existsSync(path.join(p, 'index.html'))) || candidatePaths[0];
 const frontendExists = Boolean(frontendPath && fs.existsSync(path.join(frontendPath, 'index.html')));
@@ -198,18 +220,44 @@ connectDB()
     };
 
     try {
-      const envAdminEmail = process.env.ADMIN_EMAIL;
-      const envAdminPass = process.env.ADMIN_PASSWORD;
-      if (envAdminEmail && envAdminPass) {
-        await ensureAdmin(envAdminEmail, envAdminPass, 'Env Admin');
-      }
-      await ensureAdmin('orders@dailyfixcare.com', 'Orders@123', 'Dailyfix Orders Admin');
-      await ensureAdmin('amarvcode', 'Password123', 'Testing Admin (Username)');
-      await ensureAdmin('amarvcode@gmail.com', 'Password123', 'Testing Admin (Gmail)');
-      await ensureAdmin('amarvcode@dailyfixcare.com', 'Password123', 'Testing Admin (Dailyfix)');
+      const envAdminEmail = process.env.ADMIN_EMAIL || 'orders@dailyfixcare.com';
+      const envAdminPass = process.env.ADMIN_PASSWORD || 'Admin@123';
+      await ensureAdmin(envAdminEmail, envAdminPass, 'Primary Store Admin');
     } catch (seedError) {
       console.error('⚠ Admin seeding failed:', seedError.message);
     }
+
+    // 📡 Background Courier Live Tracking Auto-Sync (Runs on startup & every 2 minutes)
+    const runCourierAutoSync = async () => {
+      try {
+        const activeOrders = await Order.find({
+          $or: [
+            { "delhivery.waybill": { $ne: "" } },
+            { "ekart.waybill": { $ne: "" } },
+          ],
+          status: { $nin: ["Delivered", "Cancelled", "Returned"] },
+        });
+
+        if (activeOrders.length > 0) {
+          console.log(`📡 [Auto-Sync] Checking live courier updates for ${activeOrders.length} active shipments...`);
+          for (const order of activeOrders) {
+            if (order.carrier === "Ekart" || (!order.delhivery?.waybill && order.ekart?.waybill)) {
+              await ekartService.syncTracking(order).catch(() => {});
+            } else if (order.delhivery?.waybill) {
+              await delhiveryService.syncTracking(order).catch(() => {});
+            }
+          }
+        }
+      } catch (syncErr) {
+        console.warn("⚠ [Auto-Sync] Courier sync notice:", syncErr.message);
+      }
+    };
+
+    // Run first sync 5 seconds after startup, then automatically every 2 minutes
+    setTimeout(runCourierAutoSync, 5 * 1000);
+    setInterval(runCourierAutoSync, 2 * 60 * 1000);
+
+
   })
   .catch((error) => {
     console.error(
@@ -217,6 +265,7 @@ connectDB()
       error.message
     );
   });
+
 
 // ===============================
 // ERROR HANDLING

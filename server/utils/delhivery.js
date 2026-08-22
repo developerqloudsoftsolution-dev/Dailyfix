@@ -282,26 +282,139 @@ const delhiveryService = {
       const tracking = await delhiveryService.trackShipment(
         order.delhivery.waybill
       );
-      order.delhivery.currentStatus =
-        tracking?.ShipmentData?.[0]?.Shipment?.Status?.Status ||
+      const shipment = tracking?.ShipmentData?.[0]?.Shipment;
+      const statusObj = shipment?.Status;
+      const courierStatus =
+        statusObj?.Status ||
+        statusObj?.StatusType ||
+        statusObj?.StatusLocation ||
+        shipment?.StatusType ||
         order.delhivery.currentStatus;
+
+      order.delhivery.currentStatus = courierStatus;
+      if (statusObj?.StatusLocation) {
+        order.delhivery.currentLocation = statusObj.StatusLocation;
+      }
       order.delhivery.lastSynced = new Date();
-      const scans = tracking?.ShipmentData?.[0]?.Shipment?.Scans || [];
-      order.delhivery.trackingHistory = scans.map((scan) => ({
-        status: scan.ScanDetail.Scan,
-        location: scan.ScanDetail.ScannedLocation,
-        remarks: scan.ScanDetail.Instructions,
-        scanDate: scan.ScanDetail.ScanDateTime
-          ? new Date(scan.ScanDetail.ScanDateTime)
-          : null,
-      }));
+
+      const rawScans = shipment?.Scans || [];
+      if (Array.isArray(rawScans) && rawScans.length > 0) {
+        order.delhivery.trackingHistory = rawScans.map((scan) => ({
+          status: scan.ScanDetail?.Scan || scan.Scan || "Scanned",
+          location: scan.ScanDetail?.ScannedLocation || scan.location || "In Transit",
+          remarks: scan.ScanDetail?.Instructions || scan.remarks || "",
+          scanDate: scan.ScanDetail?.ScanDateTime
+            ? new Date(scan.ScanDetail.ScanDateTime)
+            : new Date(),
+        }));
+      }
+
+      // Automatically map courier status (including cancellation instructions) to main order status
+      const latestScan = rawScans[rawScans.length - 1] || rawScans[0];
+      const mappedStatus = mapDelhiveryStatus(statusObj || courierStatus, latestScan);
+
+      if (mappedStatus && order.status !== mappedStatus) {
+        console.log(`🔄 [Delhivery Sync] Order ${order.orderId} status auto-updated: ${order.status} -> ${mappedStatus} (Courier: ${courierStatus}, Instructions: ${statusObj?.Instructions || "none"})`);
+        order.status = mappedStatus;
+      }
+
       await order.save();
       return order;
     } catch (err) {
-      console.error("Tracking sync failed:", err.message);
+      console.error("Delhivery tracking sync failed:", err.message);
       return null;
     }
   },
 };
 
+export function mapDelhiveryStatus(statusObjOrString, scanDetailOrType) {
+  let courierStatus = "";
+  let instructions = "";
+  let statusCode = "";
+  let statusType = "";
+
+  if (typeof statusObjOrString === "object" && statusObjOrString !== null) {
+    courierStatus = statusObjOrString.Status || statusObjOrString.status || "";
+    instructions = statusObjOrString.Instructions || statusObjOrString.instructions || "";
+    statusCode = statusObjOrString.StatusCode || statusObjOrString.statusCode || "";
+    statusType = statusObjOrString.StatusType || statusObjOrString.statusType || "";
+  } else {
+    courierStatus = String(statusObjOrString || "");
+  }
+
+  if (typeof scanDetailOrType === "object" && scanDetailOrType !== null) {
+    const detail = scanDetailOrType.ScanDetail || scanDetailOrType;
+    instructions = instructions || detail.Instructions || detail.instructions || "";
+    statusCode = statusCode || detail.StatusCode || detail.statusCode || "";
+    statusType = statusType || detail.ScanType || detail.scanType || detail.Scan || "";
+  } else if (typeof scanDetailOrType === "string") {
+    statusType = statusType || scanDetailOrType;
+  }
+
+  const s = courierStatus.trim().toLowerCase();
+  const instr = instructions.trim().toLowerCase();
+  const code = statusCode.trim().toUpperCase();
+  const type = statusType.trim().toUpperCase();
+
+  // 1. Check for Cancellation / RTO
+  if (
+    instr.includes("cancel") ||
+    instr.includes("seller cancelled") ||
+    instr.includes("buyer cancelled") ||
+    instr.includes("cancelled by client") ||
+    instr.includes("not received from client") ||
+    s.includes("cancel") ||
+    s.includes("rto") ||
+    s.includes("returned") ||
+    s.includes("return to origin") ||
+    code === "DTUP-210" ||
+    code.startsWith("RT") ||
+    code.startsWith("CAN") ||
+    type === "RT" ||
+    type === "CN"
+  ) {
+    return "Cancelled";
+  }
+
+  // 2. Check for Delivered
+  if (
+    s.includes("delivered") ||
+    instr.includes("delivered") ||
+    type === "DL" ||
+    code.startsWith("DL")
+  ) {
+    return "Delivered";
+  }
+
+  // 3. Check for Out for Delivery
+  if (
+    s.includes("out for delivery") ||
+    instr.includes("out for delivery") ||
+    type === "OFD" ||
+    code === "OFD"
+  ) {
+    return "Out for Delivery";
+  }
+
+  // 4. Check for In Transit / Shipped
+  if (
+    s.includes("in transit") ||
+    s.includes("in-transit") ||
+    s.includes("dispatched") ||
+    s.includes("manifest") ||
+    s.includes("reached") ||
+    s.includes("pickup") ||
+    s.includes("picked") ||
+    type === "UD" ||
+    type === "IT"
+  ) {
+    return "Shipped";
+  }
+
+  return null;
+}
+
 export default delhiveryService;
+
+
+
