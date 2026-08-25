@@ -20,6 +20,8 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    document.title = "DailyFix | Beard Colour for Men | Natural, Ammonia-Free Shades";
+
     const fetchProducts = async () => {
       try {
         const res = await api.get('/products');
@@ -101,7 +103,7 @@ const Home = () => {
             >
               <div className="inline-flex items-center  gap-2  bg-white/10 border border-white/20 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full backdrop-blur-md">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <p className="text-white font-bold text-[10px] sm:text-xs tracking-widest uppercase">Dailyfix Grooming</p>
+                <p className="text-white font-bold text-[10px] sm:text-xs tracking-widest uppercase">DailyFix Grooming</p>
               </div>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl mb-6 font-semibold text-white tracking-tight leading-[1.1]">
                 Premium Men's <br />
@@ -160,7 +162,7 @@ const Home = () => {
               </div>
 
               <p className="text-stone-700 text-lg leading-relaxed max-w-xl">
-                Dailyfix is committed to providing high-quality grooming products that enhance your natural look. Our beard colour is formulated with natural ingredients for a safe, seamless, and effective experience.
+                DailyFix is committed to providing high-quality grooming products that enhance your natural look. Our beard colour is formulated with natural ingredients for a safe, seamless, and effective experience.
               </p>
 
               <hr className="border-stone-200 my-8" />
@@ -357,7 +359,7 @@ const Home = () => {
               BENEFITS
             </p>
             <h2 className="text-3xl md:text-4xl font-bold text-black">
-              Why Choose Dailyfix Beard Colour
+              Why Choose DailyFix Beard Colour
             </h2>
           </motion.div>
 
@@ -431,7 +433,7 @@ const Home = () => {
               Ready to Transform Your Look?
             </h2>
             <p className="text-white/70 text-sm md:text-base mb-10 max-w-2xl mx-auto">
-              Experience the difference with Dailyfix Men's Beard Colour. Achieve a natural, well-groomed look with our ammonia-free formula.
+              Experience the difference with DailyFix Men's Beard Colour. Achieve a natural, well-groomed look with our ammonia-free formula.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
               <Link
