@@ -10,6 +10,7 @@ import { useCart } from '../context/CartContext';
 import api from '../services/api';
 import { getProductGallery, getListingImage } from '../utils/productImages';
 import { getProductDetailData } from '../data/productDetailData';
+import RelatedProducts from '../components/RelatedProducts';
 import toast from 'react-hot-toast';
 
 const ProductPage = () => {
@@ -591,6 +592,9 @@ const ProductPage = () => {
             </div>
           </div>
         </div>
+
+        {/* ==================== RELATED PRODUCTS / OTHER SHADES ==================== */}
+        <RelatedProducts currentSlug={product?.slug || id} currentProduct={product} />
       </div>
 
       {/* Lightbox / click-to-expand modal */}
