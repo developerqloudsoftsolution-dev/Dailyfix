@@ -204,7 +204,10 @@ connectDB()
     const ensureSoleAdmin = async () => {
       try {
         const soleEmail = "admin@dailyfixcare.com";
-        const strongPass = (process.env.ADMIN_PASSWORD || "DailyFix#Admin@2026!Secured").trim();
+        let strongPass = (process.env.ADMIN_PASSWORD || "").trim();
+        if (!strongPass || strongPass === "Admin@123" || strongPass === "admin@123") {
+          strongPass = "DailyFix#Admin@2026!Secured";
+        }
         const hashedPassword = await bcrypt.hash(strongPass, 10);
 
         // Delete all obsolete / other admin accounts
