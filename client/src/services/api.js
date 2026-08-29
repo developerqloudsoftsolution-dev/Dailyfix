@@ -214,6 +214,42 @@ export const orderAPI = {
     } catch (err) {
       return { ok: false, data: err.response?.data || { message: 'Failed to get shipping rate' } }
     }
+  },
+
+  initiateReturn: async (data) => {
+    try {
+      const res = await api.post('/orders/return-request', data)
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: err.response?.data?.message || err.message || 'Failed to submit return request' } }
+    }
+  },
+
+  getReturnRequests: async () => {
+    try {
+      const res = await api.get('/orders/returns/list')
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: 'Failed to fetch return requests' } }
+    }
+  },
+
+  approveReturn: async (orderId, options = {}) => {
+    try {
+      const res = await api.post(`/orders/${orderId}/approve-return`, options)
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: 'Failed to approve return request' } }
+    }
+  },
+
+  rejectReturn: async (orderId, options = {}) => {
+    try {
+      const res = await api.post(`/orders/${orderId}/reject-return`, options)
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: 'Failed to reject return request' } }
+    }
   }
 }
 

@@ -316,6 +316,101 @@ const ekartService = {
   },
 
   /**
+   * Build Ekart Reverse Return Shipment Payload
+   */
+  async buildReverseShipmentPayload(order, customReason = "") {
+    const totalAmount = Math.max(1, Math.round(Number(order.total || 0)));
+    const taxValue = Math.round(Number(order.tax || 0));
+    const taxableAmount = Math.max(1, totalAmount - taxValue);
+
+    const customer = order.customer || {};
+    const address = order.shippingAddress || {};
+    const consigneeName = `${customer.firstName || ""} ${customer.lastName || ""}`.trim() || "Valued Customer";
+
+    let phoneDigits = String(customer.phone || "9876543210").replace(/\D/g, "").slice(-10);
+    if (phoneDigits.length < 10) phoneDigits = "9876543210";
+    const primaryPhoneInt = parseInt(phoneDigits, 10);
+
+    let altPhoneDigits = String(customer.alternatePhone || address.alternatePhone || "").replace(/\D/g, "").slice(-10);
+    if (!altPhoneDigits || altPhoneDigits.length < 10 || altPhoneDigits === phoneDigits) {
+      const lastDigit = parseInt(phoneDigits.slice(-1), 10);
+      altPhoneDigits = phoneDigits.slice(0, -1) + ((lastDigit + 1) % 10);
+    }
+
+    const itemsDesc = (order.items || [])
+      .map((i) => `${i.name} (x${i.quantity || 1})`)
+      .join(", ") || "Dailyfix Return / Replacement";
+
+    const pickupAlias = await this.getPickupLocationAlias();
+
+    const weightGrams = Math.max(1, Math.round(Number(order.packageDetails?.weight || 500)));
+    const lengthCm = Math.max(1, Math.round(Number(order.packageDetails?.length || 15)));
+    const widthCm = Math.max(1, Math.round(Number(order.packageDetails?.width || 10)));
+    const heightCm = Math.max(1, Math.round(Number(order.packageDetails?.height || 5)));
+    const quantity = (order.items || []).reduce((acc, i) => acc + Number(i.quantity || 1), 0) || 1;
+
+    const fullCustomerAddress = [
+      address.address || address.street || "Address line 1",
+      address.area || address.landmark || "",
+    ].filter(Boolean).join(", ").substring(0, 200) || "Customer Pickup Address";
+
+    const pinInt = parseInt(String(address.pincode || "400001").replace(/\D/g, ""), 10) || 400001;
+    const returnReason = customReason || order.returnRequest?.reason || "Product Return / Replacement";
+
+    return {
+      seller_name: process.env.DELHIVERY_CLIENT_NAME || "NAIMITRA VENTURES PRIVATE LIMITED",
+      seller_address: process.env.DELHIVERY_PICKUP_ADDRESS || "Shop No.2, Chawl No.8, Mishra Sadan, Mohili Village, Kurla West, Mumbai-400072",
+      seller_gst_tin: process.env.DELHIVERY_GST_NUMBER || "27AALCN1163B1ZQ",
+      seller_gst_amount: 0,
+      consignee_gst_amount: 0,
+      integrated_gst_amount: 0,
+      order_number: `RET-${order.orderId}-${Date.now().toString().slice(-4)}`,
+      invoice_number: `RET-INV-${order.orderId}`,
+      invoice_date: new Date().toISOString().split("T")[0],
+      consignee_name: consigneeName.substring(0, 100),
+      consignee_alternate_phone: altPhoneDigits,
+      products_desc: itemsDesc.substring(0, 150),
+      payment_mode: "Prepaid",
+      category_of_goods: "Cosmetics",
+      total_amount: totalAmount,
+      tax_value: taxValue,
+      taxable_amount: taxableAmount,
+      commodity_value: String(taxableAmount),
+      cod_amount: 0,
+      quantity,
+      weight: weightGrams,
+      length: lengthCm,
+      width: widthCm,
+      height: heightCm,
+      return_reason: returnReason,
+      drop_location: {
+        location_type: "Home",
+        name: consigneeName.substring(0, 100),
+        phone: primaryPhoneInt,
+        address: fullCustomerAddress,
+        city: String(address.city || "Mumbai").trim().substring(0, 50),
+        state: String(address.state || "Maharashtra").trim().substring(0, 50),
+        country: "India",
+        pin: pinInt,
+      },
+      pickup_location: {
+        name: pickupAlias,
+      },
+      return_location: {
+        name: pickupAlias,
+      },
+    };
+  },
+
+  /**
+   * Create Reverse Return Shipment on Ekart Elite
+   */
+  async createReverseShipment(order, customReason = "") {
+    const payload = await this.buildReverseShipmentPayload(order, customReason);
+    return await this.createShipment(payload);
+  },
+
+  /**
    * Create Shipment on Ekart Elite (PUT /api/v1/package/create as per OpenAPI spec)
    */
   async createShipment(rawPayload) {

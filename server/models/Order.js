@@ -200,6 +200,36 @@ const orderSchema = new mongoose.Schema(
       shipmentResponse: { type: mongoose.Schema.Types.Mixed, default: {} },
       lastSynced: { type: Date, default: null },
     },
+
+    // ==========================
+    // RETURN / REPLACEMENT REQUEST
+    // ==========================
+    returnRequest: {
+      status: {
+        type: String,
+        enum: ["None", "Pending", "Approved", "Pickup Scheduled", "Rejected", "Completed"],
+        default: "None",
+      },
+      reason: { type: String, default: "", trim: true },
+      returnType: {
+        type: String,
+        enum: ["Replacement", "Refund"],
+        default: "Replacement",
+      },
+      customerComments: { type: String, default: "", trim: true },
+      proofImages: { type: [String], default: [] },
+      upiId: { type: String, default: "", trim: true },
+      bankDetails: {
+        accountNumber: { type: String, default: "", trim: true },
+        ifscCode: { type: String, default: "", trim: true },
+        accountHolder: { type: String, default: "", trim: true },
+      },
+      returnWaybill: { type: String, default: "", trim: true },
+      returnCarrier: { type: String, default: "Ekart", trim: true },
+      adminNotes: { type: String, default: "", trim: true },
+      requestedAt: { type: Date, default: null },
+      processedAt: { type: Date, default: null },
+    },
   },
   {
     timestamps: true,

@@ -2146,3 +2146,326 @@ export const ekartWebhook = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+/*
+=================================================
+CUSTOMER INITIATE RETURN / REPLACEMENT REQUEST
+=================================================
+*/
+
+export const initiateReturnRequest = async (req, res) => {
+  try {
+    const {
+      orderId,
+      phone,
+      email,
+      reason,
+      returnType = "Replacement",
+      customerComments = "",
+      proofImages = [],
+      upiId = "",
+      bankDetails = {},
+    } = req.body;
+
+    if (!orderId) {
+      return res.status(400).json({
+        success: false,
+        message: "Order ID is required to initiate a return request.",
+      });
+    }
+
+    if (!reason) {
+      return res.status(400).json({
+        success: false,
+        message: "Please select a valid reason for return / replacement.",
+      });
+    }
+
+    const cleanOrderId = String(orderId).trim();
+    const cleanPhone = String(phone || "").replace(/\D/g, "").slice(-10);
+    const cleanEmail = String(email || "").trim().toLowerCase();
+
+    const order = await Order.findOne({ orderId: cleanOrderId });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: `Order #${cleanOrderId} not found. Please verify your Order ID.`,
+      });
+    }
+
+    // Verify customer ownership by phone or email
+    const orderPhone = String(order.customer?.phone || "").replace(/\D/g, "").slice(-10);
+    const orderEmail = String(order.customer?.email || "").trim().toLowerCase();
+
+    const matchesPhone = cleanPhone && (orderPhone === cleanPhone || orderPhone.endsWith(cleanPhone) || cleanPhone.endsWith(orderPhone));
+    const matchesEmail = cleanEmail && orderEmail === cleanEmail;
+
+    if (!matchesPhone && !matchesEmail) {
+      return res.status(403).json({
+        success: false,
+        message: "Phone number or email does not match the customer details for this order.",
+      });
+    }
+
+    // Check if return request already pending or approved
+    if (order.returnRequest && ["Pending", "Approved", "Pickup Scheduled"].includes(order.returnRequest.status)) {
+      return res.status(400).json({
+        success: false,
+        message: `A return request is already in '${order.returnRequest.status}' status for this order.`,
+        returnRequest: order.returnRequest,
+      });
+    }
+
+    // Update returnRequest object on the order
+    order.returnRequest = {
+      status: "Pending",
+      reason: String(reason).trim(),
+      returnType: returnType === "Refund" ? "Refund" : "Replacement",
+      customerComments: String(customerComments || "").trim(),
+      proofImages: Array.isArray(proofImages) ? proofImages : [],
+      upiId: String(upiId || "").trim(),
+      bankDetails: {
+        accountNumber: String(bankDetails?.accountNumber || "").trim(),
+        ifscCode: String(bankDetails?.ifscCode || "").trim(),
+        accountHolder: String(bankDetails?.accountHolder || "").trim(),
+      },
+      returnWaybill: "",
+      returnCarrier: "Ekart",
+      adminNotes: "",
+      requestedAt: new Date(),
+      processedAt: null,
+    };
+
+    await order.save();
+
+    console.log(`📦 [Return Request] New return request for order ${order.orderId} (${returnType}: ${reason})`);
+
+    // Broadcast notification email to all admin recipients
+    try {
+      const adminRecipients = getAdminNotifyEmails();
+      const customerName = `${order.customer.firstName || ""} ${order.customer.lastName || ""}`.trim() || "Customer";
+      const totalFormatted = `₹${order.total}`;
+
+      await sendEmail({
+        to: adminRecipients,
+        subject: `🚨 Return/Replacement Request - Order #${order.orderId} (${returnType})`,
+        html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+          <div style="background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); padding: 24px; color: #ffffff; text-align: center;">
+            <h2 style="margin: 0; font-size: 20px;">New Customer Return Request</h2>
+            <p style="margin: 6px 0 0 0; opacity: 0.9; font-size: 14px;">Order #${order.orderId}</p>
+          </div>
+          <div style="padding: 24px; color: #334155; font-size: 14px; line-height: 1.6;">
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+              <tr>
+                <td style="padding: 8px 0; font-weight: bold; width: 140px; color: #64748b;">Customer:</td>
+                <td style="padding: 8px 0; color: #0f172a;">${customerName} (${order.customer.phone})</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; font-weight: bold; color: #64748b;">Order Total:</td>
+                <td style="padding: 8px 0; color: #0f172a; font-weight: bold;">${totalFormatted} (${order.paymentMethod})</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; font-weight: bold; color: #64748b;">Requested Action:</td>
+                <td style="padding: 8px 0; color: #be123c; font-weight: bold;">${returnType}</td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 0; font-weight: bold; color: #64748b;">Reason:</td>
+                <td style="padding: 8px 0; color: #0f172a;">${reason}</td>
+              </tr>
+              ${customerComments ? `
+              <tr>
+                <td style="padding: 8px 0; font-weight: bold; color: #64748b;">Comments:</td>
+                <td style="padding: 8px 0; color: #475569;">${customerComments}</td>
+              </tr>` : ''}
+              ${upiId ? `
+              <tr>
+                <td style="padding: 8px 0; font-weight: bold; color: #64748b;">Refund UPI ID:</td>
+                <td style="padding: 8px 0; color: #0f172a; font-family: monospace; font-weight: bold;">${upiId}</td>
+              </tr>` : ''}
+            </table>
+
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; text-align: center;">
+              <p style="margin: 0 0 12px 0; font-size: 13px; color: #64748b;">Review and book Ekart Reverse Pickup in Admin Panel:</p>
+              <a href="https://dailyfixcare.com/admin/orders" style="display: inline-block; background: #059669; color: #ffffff; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 13px;">Open Admin Orders</a>
+            </div>
+          </div>
+        </div>
+        `,
+      });
+    } catch (emailErr) {
+      console.warn("⚠️ Return request admin email notice:", emailErr.message);
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Your return/replacement request has been registered. Our support team will review it within 24 hours.",
+      order,
+    });
+  } catch (error) {
+    console.error("❌ INITIATE RETURN REQUEST ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to submit return request",
+    });
+  }
+};
+
+/*
+=================================================
+ADMIN GET ALL RETURN REQUESTS
+=================================================
+*/
+
+export const getReturnRequests = async (req, res) => {
+  try {
+    const returns = await Order.find({
+      "returnRequest.status": { $in: ["Pending", "Approved", "Pickup Scheduled", "Rejected", "Completed"] },
+    }).sort({ "returnRequest.requestedAt": -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: returns.length,
+      returns,
+    });
+  } catch (error) {
+    console.error("GET RETURN REQUESTS ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to fetch return requests",
+    });
+  }
+};
+
+/*
+=================================================
+ADMIN APPROVE RETURN & BOOK EKART REVERSE PICKUP
+=================================================
+*/
+
+export const approveReturnRequest = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { action = "ekart_pickup", adminNotes = "" } = req.body;
+
+    const order = await Order.findOne({
+      $or: [
+        { _id: isValidObjectId(orderId) ? orderId : null },
+        { orderId },
+      ],
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    let reverseTrackingId = "";
+    let bookingNotice = "";
+
+    // 1. If action is Ekart reverse pickup, book with Ekart Elite
+    if (action === "ekart_pickup") {
+      try {
+        console.log(`📦 [Ekart Reverse Pickup] Booking return pickup for order ${order.orderId}...`);
+        const ekartRes = await ekartService.createReverseShipment(order, order.returnRequest?.reason || "Customer Return");
+        reverseTrackingId = ekartService.extractTrackingId(ekartRes);
+
+        if (reverseTrackingId) {
+          order.returnRequest.returnWaybill = reverseTrackingId;
+          order.returnRequest.returnCarrier = "Ekart";
+          order.returnRequest.status = "Pickup Scheduled";
+          bookingNotice = ` Ekart reverse pickup scheduled with AWB: ${reverseTrackingId}.`;
+        } else {
+          order.returnRequest.status = "Approved";
+          bookingNotice = " Return approved.";
+        }
+      } catch (ekartErr) {
+        console.error("❌ Ekart reverse booking error:", ekartErr.message);
+        order.returnRequest.status = "Approved";
+        bookingNotice = ` Return approved, but automatic Ekart booking returned: ${ekartErr.message}`;
+      }
+    } else {
+      order.returnRequest.status = "Approved";
+      bookingNotice = " Return request approved.";
+    }
+
+    order.returnRequest.processedAt = new Date();
+    if (adminNotes) order.returnRequest.adminNotes = adminNotes;
+    order.status = "Returned";
+
+    await order.save();
+
+    console.log(`✅ [Return Approved] Order ${order.orderId} return approved. Notice: ${bookingNotice}`);
+
+    // Notify customer via WhatsApp
+    try {
+      whatsappService.notifyOrderStatusCustomer(order, "Returned").catch(() => {});
+    } catch (waErr) {}
+
+    return res.status(200).json({
+      success: true,
+      message: `Return request approved successfully.${bookingNotice}`,
+      order,
+    });
+  } catch (error) {
+    console.error("APPROVE RETURN ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to approve return request",
+    });
+  }
+};
+
+/*
+=================================================
+ADMIN REJECT RETURN REQUEST
+=================================================
+*/
+
+export const rejectReturnRequest = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { rejectionReason = "Return request does not meet eligibility criteria" } = req.body;
+
+    const order = await Order.findOne({
+      $or: [
+        { _id: isValidObjectId(orderId) ? orderId : null },
+        { orderId },
+      ],
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    if (!order.returnRequest) {
+      order.returnRequest = { status: "None" };
+    }
+
+    order.returnRequest.status = "Rejected";
+    order.returnRequest.adminNotes = rejectionReason;
+    order.returnRequest.processedAt = new Date();
+
+    await order.save();
+
+    console.log(`🚫 [Return Rejected] Order ${order.orderId} return request rejected: ${rejectionReason}`);
+
+    return res.status(200).json({
+      success: true,
+      message: "Return request rejected.",
+      order,
+    });
+  } catch (error) {
+    console.error("REJECT RETURN ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to reject return request",
+    });
+  }
+};

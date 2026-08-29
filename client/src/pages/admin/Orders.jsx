@@ -61,6 +61,57 @@ export default function Orders() {
   const [revertTargetStatus, setRevertTargetStatus] = useState("Processing");
   const [revertCancelCourier, setRevertCancelCourier] = useState(true);
 
+  // Return Request Management
+  const [returnModalOrder, setReturnModalOrder] = useState(null);
+  const [approvingReturn, setApprovingReturn] = useState(false);
+  const [rejectingReturn, setRejectingReturn] = useState(false);
+  const [rejectionReasonInput, setRejectionReasonInput] = useState("");
+  const [showRejectForm, setShowRejectForm] = useState(false);
+
+  const handleApproveReturn = async (actionType = "ekart_pickup") => {
+    if (!returnModalOrder) return;
+    try {
+      setApprovingReturn(true);
+      toast.loading("Processing return approval & Ekart booking...", { id: "ret-toast" });
+      const res = await orderAPI.approveReturn(returnModalOrder._id, { action: actionType });
+      if (res.ok) {
+        toast.success(res.data?.message || "Return approved & reverse pickup scheduled!", { id: "ret-toast" });
+        setReturnModalOrder(null);
+        fetchOrders();
+      } else {
+        toast.error(res.data?.message || "Failed to approve return", { id: "ret-toast" });
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Error approving return", { id: "ret-toast" });
+    } finally {
+      setApprovingReturn(false);
+    }
+  };
+
+  const handleRejectReturn = async () => {
+    if (!returnModalOrder) return;
+    try {
+      setRejectingReturn(true);
+      toast.loading("Rejecting return request...", { id: "ret-toast" });
+      const res = await orderAPI.rejectReturn(returnModalOrder._id, {
+        rejectionReason: rejectionReasonInput || "Return request does not meet eligibility criteria",
+      });
+      if (res.ok) {
+        toast.success("Return request rejected", { id: "ret-toast" });
+        setReturnModalOrder(null);
+        setShowRejectForm(false);
+        setRejectionReasonInput("");
+        fetchOrders();
+      } else {
+        toast.error(res.data?.message || "Failed to reject return", { id: "ret-toast" });
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Error rejecting return", { id: "ret-toast" });
+    } finally {
+      setRejectingReturn(false);
+    }
+  };
+
   const handleRevertShipment = async () => {
     if (!revertModalOrder) return;
     try {
@@ -164,12 +215,17 @@ export default function Orders() {
         o.customer?.phone?.includes(search) ||
         o.delhivery?.waybill?.toLowerCase().includes(searchLower) ||
         o.ekart?.waybill?.toLowerCase().includes(searchLower) ||
-        o.ekart?.trackingId?.toLowerCase().includes(searchLower)
+        o.ekart?.trackingId?.toLowerCase().includes(searchLower) ||
+        o.returnRequest?.returnWaybill?.toLowerCase().includes(searchLower)
       );
     }
 
     if (status !== "All") {
-      data = data.filter((o) => o.status === status);
+      if (status === "Returns") {
+        data = data.filter((o) => o.returnRequest && o.returnRequest.status !== "None");
+      } else {
+        data = data.filter((o) => o.status === status);
+      }
     }
 
     setFilteredOrders(data);
@@ -185,6 +241,9 @@ export default function Orders() {
   const pendingOrders = orders.filter((o) => o.status === "Pending").length;
   const deliveredOrders = orders.filter((o) => o.status === "Delivered").length;
   const shippedOrders = orders.filter((o) => o.status === "Shipped").length;
+  const returnRequestsCount = orders.filter(
+    (o) => o.returnRequest && ["Pending", "Approved", "Pickup Scheduled"].includes(o.returnRequest.status)
+  ).length;
 
   const updateStatus = async (id, newStatus) => {
     try {
@@ -391,40 +450,60 @@ export default function Orders() {
 
 
       {/* Cards */}
-      <div className="grid md:grid-cols-4 gap-5">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <motion.div
           whileHover={{ y: -3 }}
-          className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm"
+          className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm"
         >
-          <ShoppingBag className="text-blue-600 mb-2" size={24} />
-          <h2 className="text-3xl font-bold text-slate-900 mt-1">{orders.length}</h2>
-          <p className="text-slate-500 text-sm">Total Orders</p>
+          <ShoppingBag className="text-blue-600 mb-2" size={22} />
+          <h2 className="text-2xl font-bold text-slate-900 mt-1">{orders.length}</h2>
+          <p className="text-slate-500 text-xs">Total Orders</p>
         </motion.div>
         <motion.div
           whileHover={{ y: -3 }}
-          className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm"
+          className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm"
         >
-          <IndianRupee className="text-emerald-600 mb-2" size={24} />
-          <h2 className="text-3xl font-bold text-slate-900 mt-1">
+          <IndianRupee className="text-emerald-600 mb-2" size={22} />
+          <h2 className="text-2xl font-bold text-slate-900 mt-1">
             ₹{totalRevenue.toLocaleString("en-IN")}
           </h2>
-          <p className="text-slate-500 text-sm">Revenue</p>
+          <p className="text-slate-500 text-xs">Revenue</p>
         </motion.div>
         <motion.div
           whileHover={{ y: -3 }}
-          className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm"
+          className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm"
         >
-          <Truck className="text-purple-600 mb-2" size={24} />
-          <h2 className="text-3xl font-bold text-slate-900 mt-1">{shippedOrders}</h2>
-          <p className="text-slate-500 text-sm">Shipped</p>
+          <Truck className="text-purple-600 mb-2" size={22} />
+          <h2 className="text-2xl font-bold text-slate-900 mt-1">{shippedOrders}</h2>
+          <p className="text-slate-500 text-xs">Shipped</p>
         </motion.div>
         <motion.div
           whileHover={{ y: -3 }}
-          className="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm"
+          className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm"
         >
-          <CheckCircle2 className="text-teal-600 mb-2" size={24} />
-          <h2 className="text-3xl font-bold text-slate-900 mt-1">{deliveredOrders}</h2>
-          <p className="text-slate-500 text-sm">Delivered</p>
+          <CheckCircle2 className="text-teal-600 mb-2" size={22} />
+          <h2 className="text-2xl font-bold text-slate-900 mt-1">{deliveredOrders}</h2>
+          <p className="text-slate-500 text-xs">Delivered</p>
+        </motion.div>
+        <motion.div
+          whileHover={{ y: -3 }}
+          onClick={() => setStatus(status === "Returns" ? "All" : "Returns")}
+          className={`col-span-2 md:col-span-1 rounded-2xl p-5 border transition cursor-pointer shadow-sm ${
+            status === "Returns"
+              ? "bg-rose-50 border-rose-300 ring-2 ring-rose-500/20"
+              : "bg-white border-slate-100 hover:border-rose-200"
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <RotateCcw className="text-rose-600 mb-2" size={22} />
+            {returnRequestsCount > 0 && (
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-600 text-white animate-pulse">
+                Action Required
+              </span>
+            )}
+          </div>
+          <h2 className="text-2xl font-bold text-slate-900 mt-1">{returnRequestsCount}</h2>
+          <p className="text-slate-500 text-xs">Returns / Replacements</p>
         </motion.div>
       </div>
 
@@ -449,12 +528,14 @@ export default function Orders() {
           className="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:outline-none"
         >
           <option value="All">All Statuses</option>
+          <option value="Returns">📦 Return Requests ({returnRequestsCount})</option>
           <option value="Pending">Pending</option>
           <option value="Confirmed">Confirmed</option>
           <option value="Processing">Processing</option>
           <option value="Shipped">Shipped</option>
           <option value="Delivered">Delivered</option>
           <option value="Cancelled">Cancelled</option>
+          <option value="Returned">Returned</option>
         </select>
       </div>
 
@@ -549,26 +630,53 @@ export default function Orders() {
 
                     {/* Status Select */}
                     <td className="px-6 py-4">
-                      <select
-                        value={order.status}
-                        onChange={(e) => updateStatus(order._id, e.target.value)}
-                        className={`text-xs font-medium px-2.5 py-1.5 rounded-lg border focus:outline-none ${
-                          order.status === "Delivered"
-                            ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                            : order.status === "Shipped"
-                            ? "bg-purple-50 text-purple-700 border-purple-200"
-                            : order.status === "Cancelled"
-                            ? "bg-rose-50 text-rose-700 border-rose-200"
-                            : "bg-slate-50 text-slate-700 border-slate-200"
-                        }`}
-                      >
-                        <option value="Pending">Pending</option>
-                        <option value="Confirmed">Confirmed</option>
-                        <option value="Processing">Processing</option>
-                        <option value="Shipped">Shipped</option>
-                        <option value="Delivered">Delivered</option>
-                        <option value="Cancelled">Cancelled</option>
-                      </select>
+                      <div className="flex flex-col gap-1.5 items-start">
+                        <select
+                          value={order.status}
+                          onChange={(e) => updateStatus(order._id, e.target.value)}
+                          className={`text-xs font-medium px-2.5 py-1.5 rounded-lg border focus:outline-none ${
+                            order.status === "Delivered"
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                              : order.status === "Shipped"
+                              ? "bg-purple-50 text-purple-700 border-purple-200"
+                              : order.status === "Cancelled"
+                              ? "bg-rose-50 text-rose-700 border-rose-200"
+                              : order.status === "Returned"
+                              ? "bg-amber-50 text-amber-700 border-amber-200"
+                              : "bg-slate-50 text-slate-700 border-slate-200"
+                          }`}
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="Confirmed">Confirmed</option>
+                          <option value="Processing">Processing</option>
+                          <option value="Shipped">Shipped</option>
+                          <option value="Delivered">Delivered</option>
+                          <option value="Cancelled">Cancelled</option>
+                          <option value="Returned">Returned</option>
+                        </select>
+
+                        {order.returnRequest && order.returnRequest.status !== "None" && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setReturnModalOrder(order);
+                              setShowRejectForm(false);
+                            }}
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border transition cursor-pointer ${
+                              order.returnRequest.status === "Pending"
+                                ? "bg-rose-100 text-rose-800 border-rose-300 animate-pulse shadow-sm"
+                                : order.returnRequest.status === "Pickup Scheduled"
+                                ? "bg-purple-100 text-purple-800 border-purple-300 shadow-sm"
+                                : order.returnRequest.status === "Approved"
+                                ? "bg-emerald-100 text-emerald-800 border-emerald-300 shadow-sm"
+                                : "bg-slate-100 text-slate-700 border-slate-300"
+                            }`}
+                          >
+                            <RotateCcw size={10} />
+                            <span>Return: {order.returnRequest.status}</span>
+                          </button>
+                        )}
+                      </div>
                     </td>
 
                     {/* Waybill / AWB */}
@@ -1345,6 +1453,224 @@ export default function Orders() {
                     </>
                   )}
                 </button>
+              </div>
+            </div>
+          );
+        })()}
+      </Modal>
+
+      {/* Return Request Details & Action Modal */}
+      <Modal
+        isOpen={Boolean(returnModalOrder)}
+        onClose={() => !approvingReturn && !rejectingReturn && setReturnModalOrder(null)}
+        title="Return Request Management"
+        size="lg"
+      >
+        {returnModalOrder && (() => {
+          const ret = returnModalOrder.returnRequest || {};
+          const customer = returnModalOrder.customer || {};
+          const address = returnModalOrder.shippingAddress || {};
+
+          return (
+            <div>
+              {/* Header */}
+              <div className="flex justify-between items-center px-6 py-4 border-b bg-gradient-to-r from-rose-50 to-amber-50">
+                <div className="flex items-center gap-2">
+                  <RotateCcw size={20} className="text-rose-600" />
+                  <div>
+                    <h2 className="text-base font-bold text-slate-900">
+                      Return Request: #{returnModalOrder.orderId}
+                    </h2>
+                    <p className="text-xs text-slate-500">
+                      Requested on {ret.requestedAt ? new Date(ret.requestedAt).toLocaleString("en-IN") : "Recent"}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => !approvingReturn && !rejectingReturn && setReturnModalOrder(null)}
+                  disabled={approvingReturn || rejectingReturn}
+                  className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded-lg transition disabled:opacity-50"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+                {/* Status Bar */}
+                <div className="flex items-center justify-between p-3.5 bg-slate-50 border rounded-2xl">
+                  <div>
+                    <span className="text-[11px] text-slate-400 block font-semibold">RETURN STATUS</span>
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                      ret.status === "Pending"
+                        ? "bg-rose-100 text-rose-800 border border-rose-200"
+                        : ret.status === "Pickup Scheduled"
+                        ? "bg-purple-100 text-purple-800 border border-purple-200"
+                        : ret.status === "Approved"
+                        ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                        : "bg-slate-200 text-slate-700"
+                    }`}>
+                      {ret.status || "Pending"}
+                    </span>
+                  </div>
+
+                  <div>
+                    <span className="text-[11px] text-slate-400 block font-semibold">REQUESTED ACTION</span>
+                    <span className="text-xs font-bold text-slate-900">{ret.returnType || "Replacement"}</span>
+                  </div>
+
+                  <div>
+                    <span className="text-[11px] text-slate-400 block font-semibold">ORDER VALUE</span>
+                    <span className="text-xs font-bold text-slate-900">₹{returnModalOrder.total} ({returnModalOrder.paymentMethod})</span>
+                  </div>
+                </div>
+
+                {/* Reason & Comments */}
+                <div className="p-4 bg-amber-50/60 border border-amber-200 rounded-2xl space-y-2 text-xs">
+                  <div className="flex items-center gap-1.5 text-amber-900 font-bold">
+                    <AlertTriangle size={15} />
+                    <span>Customer Stated Reason:</span>
+                  </div>
+                  <p className="font-semibold text-slate-800 text-sm">{ret.reason || "Not specified"}</p>
+                  {ret.customerComments && (
+                    <p className="text-slate-600 bg-white/80 p-2.5 rounded-xl border border-amber-100 italic">
+                      "{ret.customerComments}"
+                    </p>
+                  )}
+                </div>
+
+                {/* Proof Photos */}
+                {Array.isArray(ret.proofImages) && ret.proofImages.length > 0 && (
+                  <div className="space-y-2">
+                    <span className="text-xs font-bold text-slate-700 block">Customer Uploaded Photos ({ret.proofImages.length}):</span>
+                    <div className="flex flex-wrap gap-3">
+                      {ret.proofImages.map((img, i) => (
+                        <a
+                          key={i}
+                          href={img}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="w-24 h-24 rounded-xl border border-slate-200 overflow-hidden shadow-sm hover:opacity-90 transition group relative"
+                        >
+                          <img src={img} alt={`Proof ${i + 1}`} className="w-full h-full object-cover" />
+                          <span className="absolute bottom-1 right-1 bg-black/60 text-white text-[9px] px-1.5 py-0.5 rounded font-mono">Zoom</span>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Customer Details & Pickup Address */}
+                <div className="p-4 bg-slate-50 border rounded-2xl space-y-2 text-xs">
+                  <span className="font-bold text-slate-800 block">Pickup Location & Customer Contact:</span>
+                  <p className="text-slate-700">
+                    <strong>{customer.firstName} {customer.lastName}</strong> • Phone: <a href={`tel:${customer.phone}`} className="text-indigo-600 font-mono">{customer.phone}</a>
+                  </p>
+                  <p className="text-slate-600">
+                    {address.address}, {address.city}, {address.state} - {address.pincode}
+                  </p>
+
+                  {ret.upiId && (
+                    <div className="pt-2 border-t mt-2 flex items-center justify-between">
+                      <span className="text-slate-500">Refund UPI ID:</span>
+                      <span className="font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">{ret.upiId}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Ekart Reverse Waybill Info if Booked */}
+                {ret.returnWaybill && (
+                  <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center justify-between text-xs">
+                    <div>
+                      <span className="text-emerald-900 font-bold block">🚚 Ekart Reverse Pickup Booked:</span>
+                      <span className="text-emerald-700 font-mono text-sm font-bold">{ret.returnWaybill}</span>
+                    </div>
+                    <a
+                      href={`https://app.elite.ekartlogistics.in/track/${ret.returnWaybill}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg font-semibold text-xs transition"
+                    >
+                      Track Reverse Courier
+                    </a>
+                  </div>
+                )}
+
+                {/* Rejection Form Input */}
+                {showRejectForm && (
+                  <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl space-y-2">
+                    <label className="text-xs font-bold text-rose-900 block">Reason for Rejection:</label>
+                    <input
+                      type="text"
+                      value={rejectionReasonInput}
+                      onChange={(e) => setRejectionReasonInput(e.target.value)}
+                      placeholder="e.g. Return request is outside the 7-day policy window"
+                      className="w-full px-3 py-2 bg-white border border-rose-300 rounded-xl text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-rose-500"
+                    />
+                    <div className="flex justify-end gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => setShowRejectForm(false)}
+                        className="px-3 py-1 bg-slate-200 text-slate-700 rounded-lg text-xs font-medium"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleRejectReturn}
+                        disabled={rejectingReturn}
+                        className="px-3 py-1 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold"
+                      >
+                        Confirm Reject
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Footer Actions */}
+              <div className="px-6 py-4 bg-slate-50 border-t flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  {!showRejectForm && ret.status !== "Rejected" && (
+                    <button
+                      type="button"
+                      onClick={() => setShowRejectForm(true)}
+                      className="text-xs text-rose-600 hover:text-rose-800 font-semibold cursor-pointer underline"
+                    >
+                      Reject Return Request
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setReturnModalOrder(null)}
+                    disabled={approvingReturn || rejectingReturn}
+                    className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-semibold transition cursor-pointer"
+                  >
+                    Close
+                  </button>
+
+                  {ret.status !== "Pickup Scheduled" && (
+                    <button
+                      type="button"
+                      onClick={() => handleApproveReturn("ekart_pickup")}
+                      disabled={approvingReturn || rejectingReturn}
+                      className="inline-flex items-center gap-1.5 px-5 py-2.5 bg-purple-700 hover:bg-purple-800 active:bg-purple-900 text-white rounded-xl text-xs font-bold transition shadow-md shadow-purple-700/20 disabled:opacity-60 cursor-pointer"
+                    >
+                      {approvingReturn ? (
+                        <>
+                          <RefreshCw size={13} className="animate-spin" /> Booking Ekart Reverse Pickup...
+                        </>
+                      ) : (
+                        <>
+                          <Truck size={14} /> Approve & Book Ekart Reverse Pickup
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           );

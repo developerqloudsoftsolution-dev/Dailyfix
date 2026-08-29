@@ -165,6 +165,22 @@ function OrderTrackingPage() {
                 <span>₹{order.total || 0}</span>
               </div>
             </div>
+
+            {/* Return / Replace CTA */}
+            <div className="mt-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div>
+                <h4 className="text-sm font-bold text-emerald-950">Issue with your order?</h4>
+                <p className="text-xs text-emerald-800">
+                  Received a damaged product or wrong shade? Easily initiate a return or free replacement.
+                </p>
+              </div>
+              <a
+                href={`/return-order`}
+                className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl transition shadow whitespace-nowrap"
+              >
+                Initiate Return / Replacement
+              </a>
+            </div>
           </div>
         );
       })()}

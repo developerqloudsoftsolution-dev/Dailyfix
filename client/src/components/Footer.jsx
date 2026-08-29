@@ -81,6 +81,8 @@ const Footer = () => {
                 { label: 'Home', path: '/' },
                 { label: 'About Us', path: '/about' },
                 { label: 'Beard Colour', path: '/shop' },
+                { label: 'Track Order', path: '/track-order' },
+                { label: 'Return Order', path: '/return-order' },
                 { label: 'Contact', path: '/contact' },
                 { label: 'Store Locator', path: '/store-locator' }
               ].map((link, index) => (
@@ -120,6 +122,15 @@ const Footer = () => {
                 >
                   <span className="w-1 h-1 bg-emerald-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
                   Beard Oil
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/return-order" 
+                  className="text-emerald-400 hover:text-emerald-300 hover:pl-2 transition-all duration-300 text-sm flex items-center gap-2 group font-semibold"
+                >
+                  <span className="w-1 h-1 bg-emerald-400 rounded-full"></span>
+                  Easy Returns & Replacement
                 </Link>
               </li>
             </ul>

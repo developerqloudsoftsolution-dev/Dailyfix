@@ -30,6 +30,10 @@ import {
   delhiveryWebhook,
   ekartWebhook,
 
+  initiateReturnRequest,
+  getReturnRequests,
+  approveReturnRequest,
+  rejectReturnRequest,
 } from "../controllers/orderController.js";
 
 /*
@@ -104,6 +108,12 @@ router.get("/:orderId/ekart-cancel", authMiddleware, cancelEkartShipment);
 
 // Revert Shipment (Reset to Unshipped / Processing)
 router.post("/:orderId/revert-shipment", authMiddleware, revertShipment);
+
+// Returns & Replacements
+router.post("/return-request", initiateReturnRequest);
+router.get("/returns/list", authMiddleware, getReturnRequests);
+router.post("/:orderId/approve-return", authMiddleware, approveReturnRequest);
+router.post("/:orderId/reject-return", authMiddleware, rejectReturnRequest);
 
 // Update AWB Manually (Supports carrier specification)
 router.put("/:orderId/waybill", authMiddleware, updateOrderWaybill);

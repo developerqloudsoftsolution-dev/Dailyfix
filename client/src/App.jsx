@@ -26,6 +26,7 @@ import CheckoutPage from './pages/CheckoutPage'
 import OrderSuccessPage from './pages/OrderSuccessPage'
 import OrderSummaryPage from './pages/OrderSummaryPage'
 import OrderTrackingPage from './pages/OrderTrackingPage'
+import ReturnOrderPage from './pages/ReturnOrderPage'
 import Debug from './pages/Debug'
 import AdminLogin from './pages/admin/Login'
 import AdminDashboard from './pages/admin/Dashboard'
@@ -64,7 +65,10 @@ function App() {
               <Route path="/order-success/:id" element={<OrderSuccessPage />} />
               <Route path="/order-summary/:id" element={<OrderSummaryPage />} />
               <Route path="/track-order" element={<OrderTrackingPage />} />
-            <Route path="/debug" element={<Debug />} />
+              <Route path="/order-tracking" element={<OrderTrackingPage />} />
+              <Route path="/return-order" element={<ReturnOrderPage />} />
+              <Route path="/returns" element={<ReturnOrderPage />} />
+              <Route path="/debug" element={<Debug />} />
             </Route>
             
             <Route path="/admin/login" element={<AdminLogin />} />
