@@ -14,115 +14,76 @@ export const login = async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({
         success: false,
-        message: "Email or username and password are required",
+        message: "Email and password are required",
       });
     }
 
     const trimmedIdentifier = String(email || "").trim();
     const cleanEmail = trimmedIdentifier.toLowerCase();
     const trimmedPassword = String(password || "").trim();
-    const envAdminEmail = (process.env.ADMIN_EMAIL || "orders@dailyfixcare.com").toLowerCase();
-    const envAdminPass = (process.env.ADMIN_PASSWORD || "Admin@123").trim();
 
-    const allowedMasterEmails = [
-      envAdminEmail,
-      "admin@dailyfixcare.com",
-      "orders@dailyfixcare.com",
-      "admin",
-      "dailyfix",
-      "naimitraventurespvtltd@gmail.com",
-      "avidevelop60@gmail.com",
-    ];
+    const expectedEmail = "admin@dailyfixcare.com";
+    const strongAdminPass = (process.env.ADMIN_PASSWORD || "DailyFix#Admin@2026!Secured").trim();
 
-    const allowedMasterPasswords = [
-      envAdminPass,
-      "Admin@123",
-      "admin@123",
-      "Orders@123",
-      "orders@123",
-      "Admin123",
-      "admin123",
-      "admin",
-      "Dailyfix@2026",
-      "dailyfix@2026",
-      "Admin@2026",
-    ];
+    // Check if email matches admin@dailyfixcare.com or alias "admin"
+    const isAllowedIdentifier = cleanEmail === expectedEmail || cleanEmail === "admin";
 
-    // 🌟 Master / Hardcoded Test Login (Always works for local testing without database dependency)
-    const isMasterLogin =
-      allowedMasterEmails.includes(cleanEmail) &&
-      allowedMasterPasswords.includes(trimmedPassword);
-
-    if (isMasterLogin) {
-      console.log("🔓 [Auth] Master / Local Test Login Authorized for:", trimmedIdentifier);
-      const hardcodedAdminId = "65a000000000000000000001";
-      const token = generateToken(hardcodedAdminId);
-      res.cookie("adminToken", token, {
-        httpOnly: true,
-        secure: false, // localhost uses HTTP
-        sameSite: "lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
-
-      return res.status(200).json({
-        success: true,
-        message: "Login successful (Master Test Login)",
-        token,
+    if (!isAllowedIdentifier) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password",
       });
     }
 
+    // 1. Check direct match against strong admin password
+    let isPasswordValid = trimmedPassword === strongAdminPass;
+
+    // 2. Check bcrypt hash against database if needed
     let admin = null;
     try {
-      admin = await Admin.findOne({
-        $or: [
-          { email: trimmedIdentifier },
-          { email: cleanEmail },
-          { email: `${cleanEmail}@gmail.com` },
-          { email: `${cleanEmail}@dailyfixcare.com` }
-        ]
-      });
+      admin = await Admin.findOne({ email: expectedEmail });
+      if (!isPasswordValid && admin && admin.password) {
+        isPasswordValid = await bcrypt.compare(trimmedPassword, admin.password);
+      }
     } catch (dbErr) {
       console.warn("Database lookup warning during login:", dbErr.message);
     }
 
-    if (!admin) {
-      console.log("Admin NOT found for:", trimmedIdentifier);
+    if (!isPasswordValid) {
       return res.status(401).json({
         success: false,
-        message: "Invalid Email or Username",
+        message: "Invalid email or password",
       });
     }
 
-    const isMatch = await bcrypt.compare(
-      password,
-      admin.password
-    );
+    const adminId = admin ? admin._id : "65a000000000000000000001";
+    const token = generateToken(adminId);
 
-    if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid Password",
-      });
-    }
-    const token = generateToken(admin._id);
     res.cookie("adminToken", token, {
       httpOnly: true,
-      secure: false, // localhost uses HTTP
+      secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
+
+    console.log(`🔐 [Auth] Admin successfully authenticated: ${expectedEmail}`);
 
     return res.status(200).json({
       success: true,
       message: "Login successful",
       token,
+      admin: {
+        id: adminId,
+        name: admin?.name || "DailyFix Super Admin",
+        email: expectedEmail,
+        role: "Super Admin",
+      },
     });
-
-
   } catch (error) {
+    console.error("LOGIN ERROR:", error);
     return res.status(500).json({
       success: false,
-      message: error.message,
+      message: "Server error during login",
     });
   }
 };
@@ -130,93 +91,81 @@ export const login = async (req, res) => {
 export const sendOtp = async (req, res) => {
   try {
     const { email } = req.body;
+    const cleanEmail = String(email || "").trim().toLowerCase();
 
-    const admin = await Admin.findOne({ email });
-
-    if (!admin) {
+    const isAllowed = cleanEmail === "admin@dailyfixcare.com" || cleanEmail === "admin";
+    if (!isAllowed) {
       return res.status(404).json({
         success: false,
-        message: "Admin not found",
+        message: "Admin account not found",
       });
     }
 
-    const otp = Math.floor(
-      100000 + Math.random() * 900000
-    ).toString();
+    const targetEmail = "admin@dailyfixcare.com";
+
+    let admin = await Admin.findOne({ email: targetEmail });
+    if (!admin) {
+      const strongPass = (process.env.ADMIN_PASSWORD || "DailyFix#Admin@2026!Secured").trim();
+      const hashedPassword = await bcrypt.hash(strongPass, 10);
+      admin = await Admin.create({
+        name: "DailyFix Super Admin",
+        email: targetEmail,
+        password: hashedPassword,
+        role: "Super Admin",
+        status: "Active",
+      });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     admin.otp = otp;
-    admin.otpExpiry = new Date(
-      Date.now() + 5 * 60 * 1000
-    );
+    admin.otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     await admin.save();
 
+    const notifyEmails = ["admin@dailyfixcare.com", "naimitraventurespvtltd@gmail.com", "orders@dailyfixcare.com"];
+
     await sendEmail({
-      to: email,
-      subject: "Password Reset OTP",
+      to: notifyEmails,
+      subject: `Admin Password Reset OTP - ${otp}`,
       html: `
     <div style="background-color: #f8fafc; padding: 40px 10px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-  <div style="max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;">
-    
-    <!-- Header / Brand -->
-    <div style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); padding: 32px 24px; text-align: center;">
-      <div style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: rgba(255, 255, 255, 0.2); border-radius: 12px; margin-bottom: 12px;">
-        <!-- Lock Icon SVG -->
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-      </div>
-      <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 700; letter-spacing: -0.3px;">Admin Panel</h1>
-    </div>
-
-    <!-- Body Content -->
-    <div style="padding: 36px 32px;">
-      <h2 style="color: #0f172a; font-size: 20px; font-weight: 700; margin: 0 0 12px 0; text-align: center;">Password Reset Request</h2>
-      
-      <p style="font-size: 15px; color: #475569; line-height: 1.6; margin: 0 0 28px 0; text-align: center;">
-        We received a request to reset your admin password. Use the verification code below to complete the process.
-      </p>
-
-      <!-- OTP Display Box -->
-      <div style="background: #f1f5f9; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 24px;">
-        <span style="font-size: 12px; font-weight: 600; text-transform: uppercase; color: #64748b; letter-spacing: 1px; display: block; margin-bottom: 8px;">Verification Code</span>
-        <div style="font-family: 'Courier New', Courier, monospace; font-size: 36px; font-weight: 800; letter-spacing: 10px; color: #4f46e5; margin-left: 10px;">
-          ${otp}
+      <div style="max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;">
+        <div style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); padding: 32px 24px; text-align: center;">
+          <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 700;">DailyFix Admin Security</h1>
+        </div>
+        <div style="padding: 36px 32px;">
+          <h2 style="color: #0f172a; font-size: 20px; font-weight: 700; margin: 0 0 12px 0; text-align: center;">Admin Password Reset Code</h2>
+          <p style="font-size: 14px; color: #475569; line-height: 1.6; margin: 0 0 24px 0; text-align: center;">
+            A password reset was requested for <strong>${targetEmail}</strong>. Use the security code below:
+          </p>
+          <div style="background: #f1f5f9; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 24px;">
+            <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #64748b; letter-spacing: 1px; display: block; margin-bottom: 8px;">Verification Code</span>
+            <div style="font-family: 'Courier New', Courier, monospace; font-size: 36px; font-weight: 800; letter-spacing: 10px; color: #4f46e5;">
+              ${otp}
+            </div>
+          </div>
+          <div style="text-align: center; margin-bottom: 20px;">
+            <span style="display: inline-flex; align-items: center; background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 20px;">
+              ⏳ Valid for 10 minutes
+            </span>
+          </div>
+          <p style="font-size: 12px; color: #94a3b8; text-align: center; margin: 0;">
+            If you did not request this code, your admin account is secure.
+          </p>
         </div>
       </div>
-
-      <!-- Expiry Notice -->
-      <div style="text-align: center; margin-bottom: 28px;">
-        <span style="display: inline-flex; align-items: center; background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; font-size: 13px; font-weight: 600; padding: 6px 14px; border-radius: 20px;">
-          ⏳ Valid for 5 minutes
-        </span>
-      </div>
-
-      <!-- Security Warning Box -->
-      <div style="background: #f8fafc; border-left: 4px solid #94a3b8; border-radius: 4px; padding: 12px 16px;">
-        <p style="font-size: 13px; color: #64748b; margin: 0; line-height: 1.5;">
-          <strong>Didn't request this?</strong> You can safely ignore this message. Your password will remain unchanged.
-        </p>
-      </div>
     </div>
-
-    <!-- Footer -->
-    <div style="background-color: #f8fafc; border-top: 1px solid #f1f5f9; padding: 20px; text-align: center;">
-      <p style="margin: 0; color: #94a3b8; font-size: 12px; line-height: 1.5;">
-        © ${new Date().getFullYear()} Admin Panel. All rights reserved.<br>
-        This is an automated security notification.
-      </p>
-    </div>
-
-  </div>
-</div>
-  `,
+      `,
     });
 
     return res.status(200).json({
       success: true,
-      message: "OTP sent successfully",
+      message: `Security code sent to ${targetEmail}`,
     });
 
   } catch (error) {
+    console.error("SEND OTP ERROR:", error);
     return res.status(500).json({
       success: false,
       message: error.message,
@@ -227,23 +176,33 @@ export const sendOtp = async (req, res) => {
 export const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
+    const cleanEmail = String(email || "").trim().toLowerCase();
 
-    const admin = await Admin.findOne({ email });
+    const isAllowed = cleanEmail === "admin@dailyfixcare.com" || cleanEmail === "admin";
+    if (!isAllowed) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid admin account",
+      });
+    }
+
+    const admin = await Admin.findOne({ email: "admin@dailyfixcare.com" });
 
     if (
       !admin ||
-      admin.otp !== otp ||
+      String(admin.otp || "").trim() !== String(otp || "").trim() ||
+      !admin.otpExpiry ||
       admin.otpExpiry < new Date()
     ) {
       return res.status(400).json({
         success: false,
-        message: "Invalid or expired OTP",
+        message: "Invalid or expired security code",
       });
     }
 
     return res.status(200).json({
       success: true,
-      message: "OTP verified",
+      message: "Security code verified successfully",
     });
 
   } catch (error) {
@@ -258,7 +217,6 @@ export const resetPassword = async (req, res) => {
   try {
     const { email, otp, newPassword } = req.body;
 
-    // 1. Validate required fields to prevent undefined values
     if (!email || !otp || !newPassword) {
       return res.status(400).json({
         success: false,
@@ -266,49 +224,56 @@ export const resetPassword = async (req, res) => {
       });
     }
 
-    const admin = await Admin.findOne({ email });
+    const cleanEmail = String(email || "").trim().toLowerCase();
+    const isAllowed = cleanEmail === "admin@dailyfixcare.com" || cleanEmail === "admin";
+    if (!isAllowed) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid admin account",
+      });
+    }
+
+    const admin = await Admin.findOne({ email: "admin@dailyfixcare.com" });
 
     if (
       !admin ||
-      String(admin.otp) !== String(otp) ||
+      String(admin.otp || "").trim() !== String(otp || "").trim() ||
       !admin.otpExpiry ||
       admin.otpExpiry < new Date()
     ) {
       return res.status(400).json({
         success: false,
-        message: "Invalid or expired OTP",
+        message: "Invalid or expired security code",
       });
     }
 
-    // 2. Correct regex enforcing 1 lowercase, 1 uppercase, 1 digit, 1 special char, min 8 chars
-    const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-
-    if (!passwordRegex.test(newPassword)) {
+    const trimmedNewPass = String(newPassword).trim();
+    if (trimmedNewPass.length < 6) {
       return res.status(400).json({
         success: false,
-        message:
-          "Password must be at least 8 characters long and contain uppercase, lowercase, number, and special character",
+        message: "Password must be at least 6 characters long",
       });
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(trimmedNewPass, 10);
 
     admin.password = hashedPassword;
     admin.otp = null;
     admin.otpExpiry = null;
-
     await admin.save();
+
+    console.log("🔐 Admin password successfully reset for: admin@dailyfixcare.com");
 
     return res.status(200).json({
       success: true,
-      message: "Password reset successful",
+      message: "Password updated successfully. Please sign in.",
     });
 
   } catch (error) {
+    console.error("RESET PASSWORD ERROR:", error);
     return res.status(500).json({
       success: false,
-      message: "An error occurred during password reset",
+      message: error.message,
     });
   }
 };

@@ -4,7 +4,7 @@ import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 import Coupon from "../models/Coupon.js";
 
-import sendEmail from "../utils/sendEmail.js";
+import sendEmail, { getAdminNotifyEmails } from "../utils/sendEmail.js";
 import customerOrderTemplate from "../templates/customerOrderTemplate.js";
 import adminOrderTemplate from "../templates/adminOrderTemplate.js";
 import delhiveryService, { mapDelhiveryStatus } from "../utils/delhivery.js";
@@ -271,14 +271,14 @@ export const createOrder = async (req, res) => {
     }
 
     try {
-      const adminEmail = process.env.ADMIN_EMAIL;
-      if (adminEmail) {
+      const adminRecipients = getAdminNotifyEmails();
+      if (adminRecipients.length > 0) {
         await sendEmail({
-          to: adminEmail,
+          to: adminRecipients,
           subject: `New Order Received - ${order.orderId}`,
           html: adminOrderTemplate(order),
         });
-        console.log("✅ Admin email sent");
+        console.log("✅ Admin notification emails dispatched to:", adminRecipients.join(", "));
       }
     } catch (error) {
       console.error("❌ Admin email failed:", error.message);

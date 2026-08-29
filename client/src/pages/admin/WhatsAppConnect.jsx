@@ -211,6 +211,30 @@ export default function WhatsAppConnect() {
     }
   };
 
+  const handleResetSession = async () => {
+    try {
+      setLoadingQr(true);
+      toast.loading("Clearing session and generating fresh QR...", { id: "wa-reset" });
+      await whatsappAPI.logout();
+      const res = await whatsappAPI.connect();
+      if (res.ok) {
+        await new Promise((r) => setTimeout(r, 1500));
+        const found = await fetchQrCode(5);
+        if (found) {
+          toast.success("Fresh QR generated! Scan now with WhatsApp.", { id: "wa-reset" });
+        } else {
+          toast.error("QR generating... please click Refresh in 3 seconds.", { id: "wa-reset" });
+        }
+      } else {
+        toast.error("Failed to reset session", { id: "wa-reset" });
+      }
+    } catch (err) {
+      toast.error("Error resetting WhatsApp session", { id: "wa-reset" });
+    } finally {
+      setLoadingQr(false);
+    }
+  };
+
   const handleAddAdminPhone = (e) => {
     e.preventDefault();
     if (!newPhone.trim()) {
@@ -410,17 +434,28 @@ export default function WhatsAppConnect() {
                         alt="Scan WhatsApp QR"
                         className="w-56 h-56 rounded-xl border border-slate-200 shadow-sm bg-white p-2"
                       />
-                      <div className="mt-3 flex items-center justify-between w-full px-4 text-xs">
-                        <span className="flex items-center gap-1 text-slate-500 font-medium">
+                      <div className="mt-3 flex items-center justify-between w-full px-2 text-xs">
+                        <span className="flex items-center gap-1 text-slate-500 font-medium text-[11px]">
                           <RefreshCw size={11} className="animate-spin text-emerald-600" />
                           <span>Refreshes in {qrCountdown}s</span>
                         </span>
-                        <button
-                          onClick={() => fetchQrCode(2)}
-                          className="text-emerald-700 hover:text-emerald-800 font-bold hover:underline"
-                        >
-                          Refresh QR
-                        </button>
+                        <div className="flex items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={() => fetchQrCode(2)}
+                            className="text-emerald-700 hover:text-emerald-800 font-bold hover:underline cursor-pointer text-xs"
+                          >
+                            Refresh QR
+                          </button>
+                          <button
+                            type="button"
+                            onClick={handleResetSession}
+                            className="text-rose-600 hover:text-rose-700 font-bold hover:underline cursor-pointer text-xs"
+                            title="Purge session files if phone says 'Couldn't link device'"
+                          >
+                            Reset Session
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ) : (
@@ -432,18 +467,27 @@ export default function WhatsAppConnect() {
                           Click below to start the WhatsApp connection and display your QR.
                         </p>
                       </div>
-                      <button
-                        onClick={handleConnect}
-                        className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition shadow-md shadow-emerald-600/20"
-                      >
-                        <QrCode size={15} /> Show QR Code
-                      </button>
+                      <div className="flex justify-center gap-2">
+                        <button
+                          onClick={handleConnect}
+                          className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-semibold transition shadow-md shadow-emerald-600/20 cursor-pointer"
+                        >
+                          <QrCode size={15} /> Show QR Code
+                        </button>
+                        <button
+                          onClick={handleResetSession}
+                          className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer"
+                          title="Generate fresh session"
+                        >
+                          <RefreshCw size={13} /> Reset Session
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
 
-                {/* 3 Step Guide */}
-                <div className="space-y-2 p-4 rounded-xl bg-slate-50 border border-slate-100 text-xs text-slate-600">
+                {/* 3 Step Guide & Troubleshooting */}
+                <div className="space-y-2.5 p-4 rounded-xl bg-slate-50 border border-slate-100 text-xs text-slate-600">
                   <p className="font-bold text-slate-800 flex items-center gap-1.5">
                     <Shield size={14} className="text-emerald-600" /> 3 Steps to link:
                   </p>
@@ -452,6 +496,15 @@ export default function WhatsAppConnect() {
                     <li>Go to <strong>Settings</strong> / <strong>⋮ Menu</strong> &gt; <strong>Linked Devices</strong></li>
                     <li>Tap <strong>Link a Device</strong> and scan the QR code above</li>
                   </ol>
+
+                  <div className="pt-2 border-t border-slate-200/80 text-[11px] text-slate-500 space-y-1">
+                    <p className="font-semibold text-amber-800">⚠️ Phone says "Couldn't link device"?</p>
+                    <ul className="list-disc list-inside space-y-0.5 text-slate-600 pl-1">
+                      <li>Check if you reached WhatsApp's limit (maximum 4 linked devices). Log out of old sessions on your phone.</li>
+                      <li>Click <strong>"Reset Session"</strong> above to clear stale handshake keys, then scan the new QR immediately within 20 seconds.</li>
+                      <li>Ensure your phone has active internet and disable any active VPN.</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             )}

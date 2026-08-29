@@ -1,4 +1,4 @@
-import sendEmail from '../utils/sendEmail.js';
+import sendEmail, { getAdminNotifyEmails } from '../utils/sendEmail.js';
 import contactEmailTemplate from '../templates/contactEmailTemplate.js';
 import whatsappService from '../utils/whatsappService.js';
 
@@ -21,12 +21,12 @@ export const sendContactForm = async (req, res) => {
       });
     }
 
-    const recipientEmail = process.env.ADMIN_EMAIL || 'orders@dailyfixcare.com';
+    const recipientEmails = getAdminNotifyEmails();
 
     const emailHtml = contactEmailTemplate({ name, email, phone, subject, message });
 
     const result = await sendEmail({
-      to: recipientEmail,
+      to: recipientEmails,
       subject: `[Contact Form] ${subject}`,
       html: emailHtml,
       text: `New Contact Form Submission:\n\nFrom: ${name} <${email}>\nPhone: ${phone || 'N/A'}\nSubject: ${subject}\n\nMessage:\n${message}`

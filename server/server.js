@@ -201,32 +201,42 @@ connectDB()
   .then(async () => {
     console.log('✅ Database connected successfully');
 
-    const ensureAdmin = async (email, plainPassword, label) => {
+    const ensureSoleAdmin = async () => {
       try {
-        const hashedPassword = await bcrypt.hash(plainPassword, 10);
-        const existing = await Admin.findOne({ email });
+        const soleEmail = "admin@dailyfixcare.com";
+        const strongPass = (process.env.ADMIN_PASSWORD || "DailyFix#Admin@2026!Secured").trim();
+        const hashedPassword = await bcrypt.hash(strongPass, 10);
+
+        // Delete all obsolete / other admin accounts
+        try {
+          await Admin.deleteMany({ email: { $ne: soleEmail } });
+        } catch (delErr) {}
+
+        const existing = await Admin.findOne({ email: soleEmail });
         if (!existing) {
-          await Admin.create({ email, password: hashedPassword });
-          console.log(`✅ ${label} created: ${email} / ${plainPassword}`);
-          return;
-        }
-        const matches = await bcrypt.compare(plainPassword, existing.password);
-        if (!matches) {
-          existing.password = hashedPassword;
-          await existing.save();
-          console.log(`🔄 ${label} password reset: ${email} / ${plainPassword}`);
+          await Admin.create({
+            name: "DailyFix Super Admin",
+            email: soleEmail,
+            password: hashedPassword,
+            role: "Super Admin",
+            status: "Active",
+          });
+          console.log(`✅ Sole Admin Account created: ${soleEmail}`);
         } else {
-          console.log(`ℹ️  ${label} ready: ${email}`);
+          existing.password = hashedPassword;
+          existing.name = "DailyFix Super Admin";
+          existing.role = "Super Admin";
+          existing.status = "Active";
+          await existing.save();
+          console.log(`✅ Sole Admin Account synchronized: ${soleEmail}`);
         }
       } catch (err) {
-        console.error(`⚠ ${label} seed failed for ${email}:`, err.message);
+        console.error("⚠ Sole Admin setup error:", err.message);
       }
     };
 
     try {
-      const envAdminEmail = process.env.ADMIN_EMAIL || 'orders@dailyfixcare.com';
-      const envAdminPass = process.env.ADMIN_PASSWORD || 'Admin@123';
-      await ensureAdmin(envAdminEmail, envAdminPass, 'Primary Store Admin');
+      await ensureSoleAdmin();
     } catch (seedError) {
       console.error('⚠ Admin seeding failed:', seedError.message);
     }

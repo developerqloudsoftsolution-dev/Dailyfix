@@ -18,20 +18,37 @@ if (fs.existsSync(serverEnvPath)) {
   dotenv.config();
 }
 
+export const ADMIN_NOTIFY_EMAILS = [
+  "naimitraventurespvtltd@gmail.com",
+  "admin@dailyfixcare.com",
+  "orders@dailyfixcare.com",
+];
+
+export const getAdminNotifyEmails = () => {
+  const envRaw = process.env.ADMIN_EMAIL || process.env.ADMIN_EMAILS || "";
+  const envList = envRaw
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+
+  const combined = new Set([...ADMIN_NOTIFY_EMAILS, ...envList]);
+  return Array.from(combined);
+};
+
 let transporter = null;
 
 if (process.env.SMTP_HOST && process.env.SMTP_USER) {
   transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: parseInt(process.env.SMTP_PORT, 10) || 465,
-    secure: (parseInt(process.env.SMTP_PORT, 10) === 465),
+    secure: parseInt(process.env.SMTP_PORT, 10) === 465,
     auth: {
       user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS
+      pass: process.env.SMTP_PASS,
     },
     tls: {
-      rejectUnauthorized: false
-    }
+      rejectUnauthorized: false,
+    },
   });
 
   transporter.verify((error, success) => {
@@ -52,17 +69,22 @@ const sendEmail = async ({ to, subject, html, text }) => {
   }
 
   try {
-    const fromName = process.env.SMTP_FROM_NAME || 'DailyFixCare';
-    const fromEmail = process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER || 'noreply@dailyfixcare.com';
+    const fromName = process.env.SMTP_FROM_NAME || "DailyFixCare";
+    const fromEmail =
+      process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER || "noreply@dailyfixcare.com";
+
+    // Format recipient list: string or array
+    const recipientTo = Array.isArray(to) ? to.join(", ") : to;
+
     const mailOptions = {
       from: `"${fromName}" <${fromEmail}>`,
-      to,
+      to: recipientTo,
       subject,
       html,
-      text
+      text,
     };
 
-    console.log(`📧 Sending email to: ${to} with subject: ${subject}`);
+    console.log(`📧 Sending email to: ${recipientTo} with subject: ${subject}`);
     const info = await transporter.sendMail(mailOptions);
     console.log(`✅ Email sent successfully! Message ID: ${info.messageId}`);
     return info;

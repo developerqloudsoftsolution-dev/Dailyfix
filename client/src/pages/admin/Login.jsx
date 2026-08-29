@@ -261,7 +261,7 @@ function AdminLogin() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                      placeholder="admin@dailyfixcare.com or username"
+                      placeholder="Enter your email"
                     />
                   </div>
                 </div>
@@ -275,6 +275,7 @@ function AdminLogin() {
                       type="button"
                       onClick={() => {
                         setScreen("sendOtp");
+                        setEmail("admin@dailyfixcare.com");
                         setMessage("");
                       }}
                       className="text-xs font-medium text-indigo-600 hover:text-indigo-700 transition"
@@ -293,7 +294,7 @@ function AdminLogin() {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                       className="w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                      placeholder="••••••••••••"
+                      placeholder="Enter your password"
                     />
                     <button
                       type="button"
@@ -305,7 +306,7 @@ function AdminLogin() {
                   </div>
                 </div>
 
-                <div className="pt-2 space-y-2">
+                <div className="pt-2">
                   <button
                     type="submit"
                     disabled={isLoading}
@@ -322,18 +323,6 @@ function AdminLogin() {
                         <ArrowRight size={15} />
                       </>
                     )}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setEmail("orders@dailyfixcare.com");
-                      setPassword("Admin@123");
-                    }}
-                    className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium rounded-xl border border-slate-200/80 transition flex items-center justify-center gap-1.5 cursor-pointer"
-                  >
-                    <KeyRound size={13} className="text-indigo-600" />
-                    <span>Auto-fill Default Admin (orders@dailyfixcare.com / Admin@123)</span>
                   </button>
                 </div>
               </motion.form>
@@ -352,7 +341,7 @@ function AdminLogin() {
               >
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-slate-700 block">
-                    Account Email
+                    Admin Account Email
                   </label>
                   <div className="relative">
                     <Mail
@@ -365,7 +354,7 @@ function AdminLogin() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                      placeholder="admin@company.com"
+                      placeholder="admin@dailyfixcare.com"
                     />
                   </div>
                 </div>
