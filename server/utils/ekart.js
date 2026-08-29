@@ -12,73 +12,51 @@ const rootEnvPath = path.join(__dirname, "..", "..", ".env");
 
 if (fs.existsSync(serverEnvPath)) {
   dotenv.config({ path: serverEnvPath });
-} else if (fs.existsSync(rootEnvPath)) {
-  dotenv.config({ path: rootEnvPath });
-} else {
-  dotenv.config();
 }
+if (fs.existsSync(rootEnvPath)) {
+  dotenv.config({ path: rootEnvPath });
+}
+dotenv.config();
 
 const CLIENT_ID = process.env.EKART_CLIENT_ID || "EKART_6a8933353d72a44ab9b54f63";
 const MERCHANT_CODE = process.env.EKART_MERCHANT_CODE || CLIENT_ID;
 const CLIENT_SECRET = process.env.EKART_CLIENT_SECRET || "";
 const AUTH_TOKEN = process.env.EKART_AUTH_TOKEN || "";
 const BASE_URL = process.env.EKART_BASE_URL || "https://app.elite.ekartlogistics.in";
-const PICKUP_LOCATION_ID = process.env.EKART_PICKUP_LOCATION_ID || process.env.DELHIVERY_PICKUP_NAME || "The Naimitra Ventures";
+const PICKUP_LOCATION_ID = process.env.EKART_PICKUP_LOCATION_ID || "pick up Location";
 const PICKUP_PIN = process.env.EKART_PICKUP_PIN || process.env.DELHIVERY_PICKUP_PIN || "400072";
 
 const TIMEOUT = 15000;
 
-// Cache bearer token if OAuth flow is used
+// Cache bearer token
 let cachedToken = null;
 let tokenExpiry = null;
 
+// Cache registered pickup address alias
+let cachedPickupAlias = null;
+
 function validateEkartConfig() {
   if (!CLIENT_ID && !AUTH_TOKEN) {
-    throw new Error("Missing Ekart configuration: EKART_CLIENT_ID or EKART_AUTH_TOKEN is required.");
+    throw new Error("Missing Ekart configuration: EKART_CLIENT_ID is required.");
   }
-}
-
-/**
- * Helper to build common headers for Ekart Elite API requests
- */
-async function getEkartHeaders() {
-  const headers = {
-    "Content-Type": "application/json",
-    Accept: "application/json",
-  };
-
-  // 1. If explicit AUTH_TOKEN is set in .env
-  if (AUTH_TOKEN) {
-    headers["Authorization"] = AUTH_TOKEN.startsWith("Bearer ") ? AUTH_TOKEN : `Bearer ${AUTH_TOKEN}`;
-    return headers;
-  }
-
-  // 2. Obtain token using Ekart Elite /integrations/v2/auth/token/{client_id}
-  const token = await getAuthToken();
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
-    return headers;
-  }
-
-  // 3. Fallback header with Client ID
-  headers["Authorization"] = `Bearer ${CLIENT_ID}`;
-  return headers;
 }
 
 /**
  * Fetch OAuth access_token from Ekart Elite OpenAPI spec
+ * POST /integrations/v2/auth/token/{client_id}
  */
-async function getAuthToken() {
-  if (cachedToken && tokenExpiry && Date.now() < tokenExpiry) {
+async function getAuthToken(forceRefresh = false) {
+  if (!forceRefresh && cachedToken && tokenExpiry && Date.now() < tokenExpiry) {
     return cachedToken;
   }
 
-  const username = process.env.EKART_USERNAME || process.env.ADMIN_EMAIL || CLIENT_ID;
-  const password = process.env.EKART_PASSWORD || CLIENT_SECRET || process.env.ADMIN_PASSWORD || "";
+  const clientId = process.env.EKART_CLIENT_ID || CLIENT_ID || "EKART_6a8933353d72a44ab9b54f63";
+  const username = process.env.EKART_USERNAME || "naimitraventurespvtltd@gmail.com";
+  const password = process.env.EKART_PASSWORD || CLIENT_SECRET || "Dailyfix@2026";
 
   try {
     const res = await axios.post(
-      `${BASE_URL}/integrations/v2/auth/token/${encodeURIComponent(CLIENT_ID)}`,
+      `${BASE_URL}/integrations/v2/auth/token/${encodeURIComponent(clientId)}`,
       {
         username,
         password,
@@ -95,59 +73,206 @@ async function getAuthToken() {
       tokenExpiry = Date.now() + (expiresIn - 120) * 1000;
       return cachedToken;
     }
+
+    throw new Error(res.data?.message || "No access_token returned by Ekart OAuth server");
   } catch (err) {
-    console.warn("Ekart token acquisition warning:", err.response?.data?.message || err.message);
+    cachedToken = null;
+    tokenExpiry = null;
+    const errMsg = err.response?.data?.description || err.response?.data?.message || err.message;
+    console.error("❌ Ekart OAuth token acquisition error:", errMsg);
+    throw new Error(`Ekart Authentication Failed: ${errMsg}`);
+  }
+}
+
+/**
+ * Build common headers for Ekart Elite API requests
+ */
+async function getEkartHeaders(forceRefresh = false) {
+  const headers = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  };
+
+  if (AUTH_TOKEN && !forceRefresh) {
+    headers["Authorization"] = AUTH_TOKEN.startsWith("Bearer ") ? AUTH_TOKEN : `Bearer ${AUTH_TOKEN}`;
+    return headers;
   }
 
-  return CLIENT_ID;
+  const token = await getAuthToken(forceRefresh);
+  if (!token || typeof token !== "string" || !token.startsWith("ey")) {
+    throw new Error("Invalid or empty OAuth token received from Ekart auth server");
+  }
+
+  headers["Authorization"] = `Bearer ${token}`;
+  return headers;
 }
 
 const ekartService = {
   /**
-   * Check Pincode Serviceability (V2/V3 API)
+   * Get registered pickup addresses from Ekart Elite (GET /api/v2/addresses)
    */
-  async checkServiceability({ pickupPin, deliveryPin, weight, cod }) {
+  async getRegisteredAddresses() {
     validateEkartConfig();
-    const headers = await getEkartHeaders();
-    const originPin = pickupPin || PICKUP_PIN;
-
     try {
-      const response = await axios.get(
-        `${BASE_URL}/data/v2/serviceability/${encodeURIComponent(deliveryPin)}`,
-        {
-          params: {
-            pincode: originPin,
-            weight: weight || 500,
-            payment_type: cod ? "COD" : "Prepaid",
-          },
-          headers,
-          timeout: TIMEOUT,
-        }
-      );
+      const headers = await getEkartHeaders();
+      const response = await axios.get(`${BASE_URL}/api/v2/addresses`, {
+        headers,
+        timeout: TIMEOUT,
+      });
       return response.data;
     } catch (err) {
-      return { serviceable: true, message: "Standard delivery serviceable" };
+      if (err.response?.status === 401) {
+        // Token might be stale, retry with force refresh
+        try {
+          const freshHeaders = await getEkartHeaders(true);
+          const retryRes = await axios.get(`${BASE_URL}/api/v2/addresses`, {
+            headers: freshHeaders,
+            timeout: TIMEOUT,
+          });
+          return retryRes.data;
+        } catch (retryErr) {
+          console.warn("Ekart getRegisteredAddresses retry error:", retryErr.response?.data || retryErr.message);
+        }
+      }
+      console.warn("Ekart getRegisteredAddresses error:", err.response?.data || err.message);
+      return [];
     }
   },
 
   /**
-   * Build Exact Ekart Elite OpenAPI Shipment Payload
+   * Resolve valid registered pickup location alias
    */
-  buildShipmentPayload(order) {
+  async getPickupLocationAlias() {
+    if (cachedPickupAlias) return cachedPickupAlias;
+    if (process.env.EKART_PICKUP_LOCATION_ID && process.env.EKART_PICKUP_LOCATION_ID !== "The Naimitra Ventures") {
+      cachedPickupAlias = process.env.EKART_PICKUP_LOCATION_ID;
+      return cachedPickupAlias;
+    }
+
+    try {
+      const addresses = await this.getRegisteredAddresses();
+      if (Array.isArray(addresses) && addresses.length > 0 && addresses[0].alias) {
+        cachedPickupAlias = addresses[0].alias;
+        return cachedPickupAlias;
+      }
+    } catch (err) {
+      // Fallback
+    }
+
+    cachedPickupAlias = PICKUP_LOCATION_ID || "pick up Location";
+    return cachedPickupAlias;
+  },
+
+  /**
+   * Check Pincode Serviceability (GET /api/v2/serviceability/{pincode})
+   */
+  async checkServiceability({ pickupPin, deliveryPin, weight, cod }) {
+    validateEkartConfig();
+    const pin = parseInt(String(deliveryPin || "").replace(/\D/g, ""), 10);
+
+    if (!pin || isNaN(pin)) {
+      return { serviceable: false, message: "Invalid pincode" };
+    }
+
+    try {
+      const headers = await getEkartHeaders();
+      const response = await axios.get(
+        `${BASE_URL}/api/v2/serviceability/${pin}`,
+        {
+          headers,
+          timeout: TIMEOUT,
+        }
+      );
+
+      const data = response.data;
+      return {
+        serviceable: Boolean(data?.status),
+        pincode: data?.pincode || pin,
+        remark: data?.remark || (data?.status ? "Pincode is serviceable" : "Pincode not serviceable"),
+        details: data?.details || null,
+        cod: data?.details?.cod ?? true,
+        maxCodAmount: data?.details?.max_cod_amount ?? 49999,
+        city: data?.details?.city || "",
+        state: data?.details?.state || "",
+      };
+    } catch (err) {
+      if (err.response?.status === 401) {
+        try {
+          const freshHeaders = await getEkartHeaders(true);
+          const retryRes = await axios.get(
+            `${BASE_URL}/api/v2/serviceability/${pin}`,
+            { headers: freshHeaders, timeout: TIMEOUT }
+          );
+          const data = retryRes.data;
+          return {
+            serviceable: Boolean(data?.status),
+            pincode: data?.pincode || pin,
+            remark: data?.remark || (data?.status ? "Pincode is serviceable" : "Pincode not serviceable"),
+            details: data?.details || null,
+          };
+        } catch (retryErr) {}
+      }
+      console.warn("Ekart serviceability check notice:", err.response?.data?.message || err.message);
+      return {
+        serviceable: true,
+        pincode: pin,
+        remark: "Standard delivery serviceable",
+        cod: true,
+      };
+    }
+  },
+
+  /**
+   * Build Exact Ekart Elite OpenAPI Shipment Payload as per spec.yaml
+   */
+  async buildShipmentPayload(order) {
     const isCOD = order.paymentMethod === "COD";
     const paymentMode = isCOD ? "COD" : "Prepaid";
-    const totalAmount = Number(order.total || 0);
+    const totalAmount = Math.max(1, Math.round(Number(order.total || 0)));
+    const taxValue = Math.round(Number(order.tax || 0));
+    const taxableAmount = Math.max(1, totalAmount - taxValue);
     const codAmount = isCOD ? totalAmount : 0;
+
     const customer = order.customer || {};
     const address = order.shippingAddress || {};
-    const consigneeName = `${customer.firstName || ""} ${customer.lastName || ""}`.trim() || "Customer";
-    const phone = String(customer.phone || "9876543210").replace(/\D/g, "").slice(-10);
+    const consigneeName = `${customer.firstName || ""} ${customer.lastName || ""}`.trim() || "Valued Customer";
 
-    const itemsDesc = (order.items || []).map((i) => `${i.name} (x${i.quantity})`).join(", ") || "Cosmetics / Personal Care";
+    // Clean 10-digit primary phone
+    let phoneDigits = String(customer.phone || "9876543210").replace(/\D/g, "").slice(-10);
+    if (phoneDigits.length < 10) phoneDigits = "9876543210";
+    const primaryPhoneInt = parseInt(phoneDigits, 10);
+
+    // Alternate phone must be 10 digits and CANNOT be identical to primary phone per Ekart API validation
+    let altPhoneDigits = String(customer.alternatePhone || address.alternatePhone || "").replace(/\D/g, "").slice(-10);
+    if (!altPhoneDigits || altPhoneDigits.length < 10 || altPhoneDigits === phoneDigits) {
+      // Offset last digit to make a distinct valid 10-digit alternate phone
+      const lastDigit = parseInt(phoneDigits.slice(-1), 10);
+      const newLastDigit = (lastDigit + 1) % 10;
+      altPhoneDigits = phoneDigits.slice(0, -1) + newLastDigit;
+    }
+
+    const itemsDesc = (order.items || [])
+      .map((i) => `${i.name} (x${i.quantity || 1})`)
+      .join(", ") || "Dailyfix Skincare / Cosmetics";
+
+    const pickupAlias = await this.getPickupLocationAlias();
+
+    const weightGrams = Math.max(1, Math.round(Number(order.packageDetails?.weight || 500)));
+    const lengthCm = Math.max(1, Math.round(Number(order.packageDetails?.length || 15)));
+    const widthCm = Math.max(1, Math.round(Number(order.packageDetails?.width || 10)));
+    const heightCm = Math.max(1, Math.round(Number(order.packageDetails?.height || 5)));
+    const quantity = (order.items || []).reduce((acc, i) => acc + Number(i.quantity || 1), 0) || 1;
+
+    const fullDropAddress = [
+      address.address || address.street || "Address line 1",
+      address.area || address.landmark || "",
+    ].filter(Boolean).join(", ").substring(0, 200) || "Delivery Address";
+
+    const pinInt = parseInt(String(address.pincode || "400001").replace(/\D/g, ""), 10) || 400001;
 
     return {
       seller_name: process.env.DELHIVERY_CLIENT_NAME || "NAIMITRA VENTURES PRIVATE LIMITED",
-      seller_address: process.env.DELHIVERY_PICKUP_ADDRESS || "Shop No.2, Chawl No.8, Mishra Sadan, Mohili Village, Sakinaka-Kherani Road, Andheri East, Mumbai-400072",
+      seller_address: process.env.DELHIVERY_PICKUP_ADDRESS || "Shop No.2, Chawl No.8, Mishra Sadan, Mohili Village, Kurla West, Mumbai-400072",
       seller_gst_tin: process.env.DELHIVERY_GST_NUMBER || "27AALCN1163B1ZQ",
       seller_gst_amount: 0,
       consignee_gst_amount: 0,
@@ -155,38 +280,37 @@ const ekartService = {
       order_number: String(order.orderId),
       invoice_number: `INV-${order.orderId}`,
       invoice_date: new Date().toISOString().split("T")[0],
-      consignee_name: consigneeName,
-      consignee_alternate_phone: phone,
-      products_desc: itemsDesc.substring(0, 100),
+      consignee_name: consigneeName.substring(0, 100),
+      consignee_alternate_phone: altPhoneDigits,
+      products_desc: itemsDesc.substring(0, 150),
       payment_mode: paymentMode,
       category_of_goods: "Cosmetics",
       total_amount: totalAmount,
-      tax_value: 0,
-      taxable_amount: totalAmount,
-      commodity_value: String(totalAmount),
+      tax_value: taxValue,
+      taxable_amount: taxableAmount,
+      commodity_value: String(taxableAmount),
       cod_amount: codAmount,
-      quantity: (order.items || []).reduce((acc, i) => acc + Number(i.quantity || 1), 0) || 1,
-      weight: Number(order.packageDetails?.weight || 500),
-      length: Number(order.packageDetails?.length || 15),
-      width: Number(order.packageDetails?.width || 10),
-      height: Number(order.packageDetails?.height || 5),
+      quantity,
+      weight: weightGrams,
+      length: lengthCm,
+      width: widthCm,
+      height: heightCm,
       return_reason: "",
       drop_location: {
-        name: consigneeName,
-        phone: phone,
-        address1: String(address.address || address.street || "Address line 1").substring(0, 100),
-        address2: String(address.city || "").substring(0, 50),
-        city: String(address.city || "Mumbai"),
-        state: String(address.state || "Maharashtra"),
-        pincode: String(address.pincode || "400001"),
+        location_type: "Home",
+        name: consigneeName.substring(0, 100),
+        phone: primaryPhoneInt,
+        address: fullDropAddress,
+        city: String(address.city || "Mumbai").trim().substring(0, 50),
+        state: String(address.state || "Maharashtra").trim().substring(0, 50),
+        country: "India",
+        pin: pinInt,
       },
       pickup_location: {
-        name: process.env.DELHIVERY_PICKUP_NAME || "The Naimitra Ventures",
-        phone: String(process.env.DELHIVERY_PICKUP_PHONE || "9876543210"),
-        address1: String(process.env.DELHIVERY_PICKUP_ADDRESS || "Shop No.2, Mishra Sadan, Sakinaka, Andheri East").substring(0, 100),
-        city: String(process.env.DELHIVERY_PICKUP_CITY || "Mumbai"),
-        state: String(process.env.DELHIVERY_PICKUP_STATE || "Maharashtra"),
-        pincode: String(process.env.DELHIVERY_PICKUP_PIN || "400072"),
+        name: pickupAlias,
+      },
+      return_location: {
+        name: pickupAlias,
       },
     };
   },
@@ -194,13 +318,12 @@ const ekartService = {
   /**
    * Create Shipment on Ekart Elite (PUT /api/v1/package/create as per OpenAPI spec)
    */
-  async createShipment(payload) {
+  async createShipment(rawPayload) {
     validateEkartConfig();
-    const headers = await getEkartHeaders();
+    const payload = (rawPayload && typeof rawPayload.then === "function") ? await rawPayload : rawPayload;
 
-    try {
-      // Official Ekart Elite OpenAPI endpoint (PUT /api/v1/package/create)
-      const response = await axios.put(
+    const doRequest = async (headers) => {
+      return await axios.put(
         `${BASE_URL}/api/v1/package/create`,
         payload,
         {
@@ -208,41 +331,37 @@ const ekartService = {
           timeout: TIMEOUT,
         }
       );
+    };
 
+    try {
+      const headers = await getEkartHeaders();
+      const response = await doRequest(headers);
       if (response.data && (response.data.tracking_id || response.data.status)) {
         return response.data;
       }
+      return response.data;
     } catch (err) {
-      console.warn("⚠️ Ekart Elite live creation response:", err.response?.status, err.response?.data || err.message);
-
-      // In local / development environment, fallback gracefully to test waybill
-      const isDev = !process.env.NODE_ENV || process.env.NODE_ENV !== "production" || process.env.EKART_DEV_FALLBACK !== "false";
-      if (isDev) {
-        console.warn("⚠️ Generating Dev Ekart Waybill for local testing.");
-        const mockWaybill = `EKT${Math.floor(100000000 + Math.random() * 900000000)}IN`;
-        return {
-          status: true,
-          success: true,
-          isDevFallback: true,
-          tracking_id: mockWaybill,
-          waybill: mockWaybill,
-          vendor: "EKART",
-          barcodes: {
-            wbn: mockWaybill,
-            order: payload.order_number,
-          },
-          current_status: "Manifested",
-          label_url: `https://app.elite.ekartlogistics.in/track/${mockWaybill}`,
-          message: "Ekart test shipment generated (Development Mode)",
-        };
+      // If 401 or token invalid, attempt 1 force-refresh retry
+      if (err.response?.status === 401 || String(err.response?.data?.description || "").includes("token")) {
+        console.warn("🔄 Ekart 401 received. Refreshing token and retrying createShipment...");
+        try {
+          const freshHeaders = await getEkartHeaders(true);
+          const retryRes = await doRequest(freshHeaders);
+          return retryRes.data;
+        } catch (retryErr) {
+          err = retryErr;
+        }
       }
 
+      console.error("❌ Ekart live creation error:", err.response?.status, err.response?.data || err.message);
+
       const errorMsg =
-        err.response?.data?.message ||
         err.response?.data?.description ||
+        err.response?.data?.message ||
         err.response?.data?.error ||
         err.message ||
         "Ekart shipment creation failed";
+
       throw new Error(errorMsg);
     }
   },
@@ -294,8 +413,12 @@ const ekartService = {
   },
 
   getEstimatedDelivery(response) {
-    const dateStr = response?.edd || response?.expected_delivery_date;
-    return dateStr ? new Date(dateStr) : null;
+    const dateVal = response?.edd || response?.expected_delivery_date;
+    if (!dateVal) return null;
+    if (typeof dateVal === "number") {
+      return new Date(dateVal);
+    }
+    return new Date(dateVal);
   },
 
   /**
@@ -304,10 +427,9 @@ const ekartService = {
   async generateShippingLabel(trackingId) {
     if (!trackingId) throw new Error("Tracking ID is required for label generation");
     validateEkartConfig();
-    const headers = await getEkartHeaders();
 
-    try {
-      const response = await axios.post(
+    const doRequest = async (headers) => {
+      return await axios.post(
         `${BASE_URL}/api/v1/package/label`,
         { ids: [String(trackingId)] },
         {
@@ -316,9 +438,23 @@ const ekartService = {
           timeout: TIMEOUT,
         }
       );
+    };
+
+    try {
+      const headers = await getEkartHeaders();
+      const response = await doRequest(headers);
       return response.data;
     } catch (err) {
-      throw new Error(err.response?.data?.message || err.message || "Ekart label generation failed");
+      if (err.response?.status === 401) {
+        try {
+          const freshHeaders = await getEkartHeaders(true);
+          const retryRes = await doRequest(freshHeaders);
+          return retryRes.data;
+        } catch (retryErr) {
+          err = retryErr;
+        }
+      }
+      throw new Error(err.response?.data?.description || err.response?.data?.message || err.message || "Ekart label generation failed");
     }
   },
 
@@ -329,7 +465,6 @@ const ekartService = {
     if (!trackingId) throw new Error("Tracking ID / Waybill is required");
 
     try {
-      // Ekart Elite Open Track API
       const response = await axios.get(
         `${BASE_URL}/api/v1/track/${encodeURIComponent(trackingId)}`,
         {
@@ -348,7 +483,7 @@ const ekartService = {
         );
         return altRes.data;
       } catch (fallbackErr) {
-        throw new Error(err.response?.data?.message || err.message || "Ekart tracking request failed");
+        throw new Error(err.response?.data?.description || err.response?.data?.message || err.message || "Ekart tracking request failed");
       }
     }
   },
@@ -359,10 +494,9 @@ const ekartService = {
   async cancelShipment(trackingId, reason = "Cancelled by merchant") {
     if (!trackingId) throw new Error("Tracking ID / Waybill is required for cancellation");
     validateEkartConfig();
-    const headers = await getEkartHeaders();
 
-    try {
-      const response = await axios.delete(
+    const doRequest = async (headers) => {
+      return await axios.delete(
         `${BASE_URL}/api/v1/package/cancel`,
         {
           params: { tracking_id: trackingId },
@@ -370,17 +504,30 @@ const ekartService = {
           timeout: TIMEOUT,
         }
       );
+    };
+
+    try {
+      const headers = await getEkartHeaders();
+      const response = await doRequest(headers);
       return response.data;
     } catch (err) {
+      if (err.response?.status === 401) {
+        try {
+          const freshHeaders = await getEkartHeaders(true);
+          const retryRes = await doRequest(freshHeaders);
+          return retryRes.data;
+        } catch (retryErr) {
+          err = retryErr;
+        }
+      }
       throw new Error(
-        err.response?.data?.message ||
         err.response?.data?.description ||
+        err.response?.data?.message ||
         err.message ||
         "Ekart shipment cancellation failed"
       );
     }
   },
-
 
   /**
    * Sync Tracking details to order document in database
@@ -391,27 +538,26 @@ const ekartService = {
 
     try {
       const tracking = await ekartService.trackShipment(trackingId);
-      const shipmentData = tracking?.data || tracking?.shipment || tracking;
+      const trackObj = tracking?.track || tracking?.data || tracking;
 
-      order.ekart.currentStatus =
-        shipmentData?.status ||
-        shipmentData?.current_status ||
-        order.ekart.currentStatus;
+      const rawStatus = trackObj?.status || tracking?.status || order.ekart.currentStatus;
+      const rawLocation = trackObj?.location || tracking?.location || order.ekart.currentLocation;
 
-      order.ekart.currentLocation =
-        shipmentData?.current_location ||
-        shipmentData?.location ||
-        order.ekart.currentLocation;
-
+      order.ekart.currentStatus = rawStatus;
+      if (rawLocation) order.ekart.currentLocation = rawLocation;
       order.ekart.lastSynced = new Date();
 
-      const scans = shipmentData?.scans || shipmentData?.tracking_history || shipmentData?.events || [];
-      if (Array.isArray(scans) && scans.length > 0) {
-        order.ekart.trackingHistory = scans.map((scan) => ({
-          status: scan?.status || scan?.event || scan?.scan_type || "",
-          location: scan?.location || scan?.hub || "",
-          remarks: scan?.remarks || scan?.description || scan?.instructions || "",
-          scanDate: scan?.date || scan?.timestamp || scan?.scan_date ? new Date(scan.date || scan.timestamp || scan.scan_date) : new Date(),
+      if (tracking?.edd) {
+        order.ekart.expectedDelivery = new Date(tracking.edd);
+      }
+
+      const detailsList = trackObj?.details || tracking?.scans || tracking?.history || [];
+      if (Array.isArray(detailsList) && detailsList.length > 0) {
+        order.ekart.trackingHistory = detailsList.map((item) => ({
+          status: item?.status || item?.desc || item?.event || "",
+          location: item?.location || item?.city || item?.hub_name || "",
+          remarks: item?.desc || item?.remarks || item?.hub_notes || "",
+          scanDate: item?.ctime ? new Date(item.ctime) : (item?.event_date ? new Date(item.event_date) : new Date()),
         }));
       }
 
@@ -425,7 +571,7 @@ const ekartService = {
       await order.save();
       return order;
     } catch (err) {
-      console.warn("Ekart tracking sync failed:", err.message);
+      console.warn(`Ekart tracking sync failed for ${trackingId}:`, err.message);
       return null;
     }
   },
@@ -444,11 +590,10 @@ export function mapEkartStatus(courierStatus) {
   if (s.includes("out for delivery") || s.includes("out_for_delivery") || s === "ofd") {
     return "Out for Delivery";
   }
-  if (s.includes("in transit") || s.includes("in_transit") || s.includes("dispatched") || s.includes("manifest") || s.includes("pickup") || s.includes("reached")) {
+  if (s.includes("in transit") || s.includes("in_transit") || s.includes("dispatched") || s.includes("manifest") || s.includes("pickup") || s.includes("reached") || s.includes("order placed")) {
     return "Shipped";
   }
   return null;
 }
 
 export default ekartService;
-

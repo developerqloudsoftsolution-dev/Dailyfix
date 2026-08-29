@@ -180,6 +180,15 @@ export const orderAPI = {
     }
   },
 
+  revertShipment: async (orderId, options = {}) => {
+    try {
+      const res = await api.post(`/orders/${orderId}/revert-shipment`, options)
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: 'Failed to revert shipment' } }
+    }
+  },
+
   updateOrderWaybill: async (orderId, waybill, carrier = 'Delhivery') => {
     try {
       const res = await api.put(`/orders/${orderId}/waybill`, { waybill, carrier })

@@ -282,7 +282,7 @@ export default function Products() {
             Products
           </h1>
           <p className="text-slate-500 mt-1 text-sm">
-            Manage your catalog, stock levels, and Delhivery shipping dimensions.
+            Manage your catalog, stock levels, and shipping package dimensions.
           </p>
         </div>
 
@@ -401,7 +401,7 @@ export default function Products() {
                 <th className="px-6 py-4 text-xs font-bold uppercase text-slate-500">Category</th>
                 <th className="px-6 py-4 text-xs font-bold uppercase text-slate-500">Price</th>
                 <th className="px-6 py-4 text-xs font-bold uppercase text-slate-500">Stock</th>
-                <th className="px-6 py-4 text-xs font-bold uppercase text-slate-500">Delhivery Weight</th>
+                <th className="px-6 py-4 text-xs font-bold uppercase text-slate-500">Shipping Weight</th>
                 <th className="px-6 py-4 text-xs font-bold uppercase text-slate-500">Status</th>
                 <th className="px-6 py-4 text-right text-xs font-bold uppercase text-slate-500">Actions</th>
               </tr>
@@ -709,10 +709,10 @@ export default function Products() {
                   )}
                 </div>
 
-                {/* Delhivery Shipping Specs */}
+                {/* Shipping Specs */}
                 <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
                   <span className="font-bold text-slate-800 flex items-center gap-1.5">
-                    <Truck size={14} className="text-emerald-600" /> Delhivery Shipping Dimensions
+                    <Truck size={14} className="text-emerald-600" /> Shipping Dimensions & Weight
                   </span>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     <div>
@@ -952,10 +952,10 @@ export default function Products() {
                   )}
                 </div>
 
-                {/* Delhivery Shipping Specs */}
+                {/* Shipping Specs */}
                 <div className="p-3.5 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
                   <span className="font-bold text-slate-800 flex items-center gap-1.5">
-                    <Truck size={14} className="text-emerald-600" /> Delhivery Shipping Dimensions
+                    <Truck size={14} className="text-emerald-600" /> Shipping Dimensions & Weight
                   </span>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                     <div>
@@ -1089,7 +1089,7 @@ export default function Products() {
                   </span>
                 </div>
                 <div className="p-3 bg-slate-50 rounded-xl">
-                  <span className="text-[11px] text-slate-400 block">Delhivery Weight</span>
+                  <span className="text-[11px] text-slate-400 block">Shipping Weight</span>
                   <span className="font-mono font-bold text-slate-800 text-xs mt-0.5 block">
                     {currentProduct.weight || 500} grams
                   </span>

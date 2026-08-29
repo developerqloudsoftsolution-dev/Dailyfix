@@ -18,6 +18,7 @@ import {
   cancelEkartShipment,
   downloadShippingLabel,
   downloadEkartShippingLabel,
+  revertShipment,
   syncOrderTracking,
   getShippingRate,
 
@@ -100,6 +101,9 @@ router.get("/:orderId/cancel", authMiddleware, cancelDelhiveryShipment);
 router.post("/:orderId/create-ekart-shipment", authMiddleware, createEkartShipment);
 router.get("/:orderId/ekart-label", authMiddleware, downloadEkartShippingLabel);
 router.get("/:orderId/ekart-cancel", authMiddleware, cancelEkartShipment);
+
+// Revert Shipment (Reset to Unshipped / Processing)
+router.post("/:orderId/revert-shipment", authMiddleware, revertShipment);
 
 // Update AWB Manually (Supports carrier specification)
 router.put("/:orderId/waybill", authMiddleware, updateOrderWaybill);

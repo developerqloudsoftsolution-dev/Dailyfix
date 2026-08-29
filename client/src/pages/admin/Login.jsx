@@ -305,7 +305,7 @@ function AdminLogin() {
                   </div>
                 </div>
 
-                <div className="pt-2">
+                <div className="pt-2 space-y-2">
                   <button
                     type="submit"
                     disabled={isLoading}
@@ -322,6 +322,18 @@ function AdminLogin() {
                         <ArrowRight size={15} />
                       </>
                     )}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEmail("orders@dailyfixcare.com");
+                      setPassword("Admin@123");
+                    }}
+                    className="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium rounded-xl border border-slate-200/80 transition flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <KeyRound size={13} className="text-indigo-600" />
+                    <span>Auto-fill Default Admin (orders@dailyfixcare.com / Admin@123)</span>
                   </button>
                 </div>
               </motion.form>

@@ -614,7 +614,7 @@ export const createEkartShipment = async (req, res) => {
       });
     }
 
-    const shipmentPayload = ekartService.buildShipmentPayload(order);
+    const shipmentPayload = await ekartService.buildShipmentPayload(order);
     const shipmentResponse = await ekartService.createShipment(shipmentPayload);
 
     const waybill = ekartService.extractTrackingId(shipmentResponse);
@@ -1091,6 +1091,113 @@ export const trackDelhiveryOrder = async (req, res) => {
 
 /*
 =================================================
+REVERT SHIPMENT (Reset to Unshipped / Processing)
+=================================================
+*/
+
+export const revertShipment = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { targetStatus = "Processing", cancelCourier = true } = req.body || {};
+
+    const order = await Order.findOne({
+      $or: [
+        { orderId },
+        { _id: isValidObjectId(orderId) ? orderId : null }
+      ]
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    const ekartWaybill = order.ekart?.waybill || order.ekart?.trackingId;
+    const delhiveryWaybill = order.delhivery?.waybill;
+
+    let courierCancelMessage = "";
+
+    // 1. Attempt courier cancellation if requested
+    if (cancelCourier) {
+      if (ekartWaybill) {
+        try {
+          console.log(`[Ekart] Cancelling shipment for reverted order ${order.orderId} (Waybill: ${ekartWaybill})...`);
+          await ekartService.cancelShipment(ekartWaybill, "Reverted by admin");
+          courierCancelMessage += " Cancelled on Ekart.";
+        } catch (ekartErr) {
+          console.warn(`[Ekart] Revert cancellation notice:`, ekartErr.message);
+          courierCancelMessage += ` (Ekart: ${ekartErr.message})`;
+        }
+      }
+
+      if (delhiveryWaybill) {
+        try {
+          console.log(`[Delhivery] Cancelling shipment for reverted order ${order.orderId} (Waybill: ${delhiveryWaybill})...`);
+          await delhiveryService.cancelShipment(delhiveryWaybill);
+          courierCancelMessage += " Cancelled on Delhivery.";
+        } catch (delhiveryErr) {
+          console.warn(`[Delhivery] Revert cancellation notice:`, delhiveryErr.message);
+          courierCancelMessage += ` (Delhivery: ${delhiveryErr.message})`;
+        }
+      }
+    }
+
+    // 2. Clear all shipment data from the order
+    order.delhivery = {
+      waybill: "",
+      shipmentId: "",
+      pickupRequestId: "",
+      labelUrl: "",
+      invoiceUrl: "",
+      currentStatus: "Pending",
+      currentLocation: "",
+      expectedDelivery: null,
+      trackingHistory: [],
+      shipmentResponse: {},
+      lastSynced: null,
+    };
+
+    order.ekart = {
+      trackingId: "",
+      waybill: "",
+      shipmentId: "",
+      pickupRequestId: "",
+      labelUrl: "",
+      invoiceUrl: "",
+      currentStatus: "Pending",
+      currentLocation: "",
+      expectedDelivery: null,
+      trackingHistory: [],
+      shipmentResponse: {},
+      lastSynced: null,
+    };
+
+    // 3. Reset status (e.g. "Processing", "Confirmed", or "Pending")
+    const validStatuses = ["Pending", "Confirmed", "Processing", "Cancelled", "Returned"];
+    order.status = validStatuses.includes(targetStatus) ? targetStatus : "Processing";
+
+    await order.save();
+
+    console.log(`🔄 [Shipment Revert] Order ${order.orderId} shipment reverted. Status reset to ${order.status}.`);
+
+    return res.json({
+      success: true,
+      message: `Shipment reverted successfully.${courierCancelMessage} Order reset to '${order.status}'.`,
+      order,
+    });
+  } catch (error) {
+    console.error("REVERT SHIPMENT ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to revert shipment",
+    });
+  }
+};
+
+/*
+=================================================
 CANCEL DELHIVERY SHIPMENT
 =================================================
 */
@@ -1099,7 +1206,12 @@ export const cancelDelhiveryShipment = async (req, res) => {
   try {
     const { orderId } = req.params;
 
-    const order = await Order.findOne({ orderId });
+    const order = await Order.findOne({
+      $or: [
+        { orderId },
+        { _id: isValidObjectId(orderId) ? orderId : null }
+      ]
+    });
 
     if (!order) {
       return res.status(404).json({
@@ -1145,7 +1257,12 @@ export const cancelEkartShipment = async (req, res) => {
   try {
     const { orderId } = req.params;
 
-    const order = await Order.findOne({ orderId });
+    const order = await Order.findOne({
+      $or: [
+        { orderId },
+        { _id: isValidObjectId(orderId) ? orderId : null }
+      ]
+    });
 
     if (!order) {
       return res.status(404).json({
@@ -1192,7 +1309,12 @@ export const downloadShippingLabel = async (req, res) => {
   try {
     const { orderId } = req.params;
 
-    const order = await Order.findOne({ orderId });
+    const order = await Order.findOne({
+      $or: [
+        { orderId },
+        { _id: isValidObjectId(orderId) ? orderId : null }
+      ]
+    });
 
     if (!order) {
       return res.status(404).json({
@@ -1228,7 +1350,12 @@ export const downloadEkartShippingLabel = async (req, res) => {
   try {
     const { orderId } = req.params;
 
-    const order = await Order.findOne({ orderId });
+    const order = await Order.findOne({
+      $or: [
+        { orderId },
+        { _id: isValidObjectId(orderId) ? orderId : null }
+      ]
+    });
 
     if (!order) {
       return res.status(404).json({

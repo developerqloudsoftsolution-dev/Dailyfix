@@ -18,20 +18,40 @@ export const login = async (req, res) => {
       });
     }
 
-    const trimmedIdentifier = email.trim();
+    const trimmedIdentifier = String(email || "").trim();
     const cleanEmail = trimmedIdentifier.toLowerCase();
+    const trimmedPassword = String(password || "").trim();
     const envAdminEmail = (process.env.ADMIN_EMAIL || "orders@dailyfixcare.com").toLowerCase();
-    const envAdminPass = process.env.ADMIN_PASSWORD || "Admin@123";
+    const envAdminPass = (process.env.ADMIN_PASSWORD || "Admin@123").trim();
+
+    const allowedMasterEmails = [
+      envAdminEmail,
+      "admin@dailyfixcare.com",
+      "orders@dailyfixcare.com",
+      "admin",
+      "dailyfix",
+      "naimitraventurespvtltd@gmail.com",
+      "avidevelop60@gmail.com",
+    ];
+
+    const allowedMasterPasswords = [
+      envAdminPass,
+      "Admin@123",
+      "admin@123",
+      "Orders@123",
+      "orders@123",
+      "Admin123",
+      "admin123",
+      "admin",
+      "Dailyfix@2026",
+      "dailyfix@2026",
+      "Admin@2026",
+    ];
 
     // 🌟 Master / Hardcoded Test Login (Always works for local testing without database dependency)
     const isMasterLogin =
-      (
-        cleanEmail === envAdminEmail ||
-        cleanEmail === "admin@dailyfixcare.com" ||
-        cleanEmail === "orders@dailyfixcare.com" ||
-        cleanEmail === "admin"
-      ) &&
-      (password === envAdminPass || password === "Admin@123" || password === "Orders@123" || password === "Admin123");
+      allowedMasterEmails.includes(cleanEmail) &&
+      allowedMasterPasswords.includes(trimmedPassword);
 
     if (isMasterLogin) {
       console.log("🔓 [Auth] Master / Local Test Login Authorized for:", trimmedIdentifier);

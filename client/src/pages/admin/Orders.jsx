@@ -26,6 +26,8 @@ import {
   Check,
   Send,
   Zap,
+  RotateCcw,
+  AlertTriangle,
 } from "lucide-react";
 
 export default function Orders() {
@@ -49,9 +51,41 @@ export default function Orders() {
   // Shipment Creation Modal
   const [shipmentModalOrder, setShipmentModalOrder] = useState(null);
   const [manualWaybill, setManualWaybill] = useState("");
-  const [manualCarrier, setManualCarrier] = useState("Delhivery");
+  const [manualCarrier, setManualCarrier] = useState("Ekart");
   const [markAsShipped, setMarkAsShipped] = useState(true);
   const [syncingTracking, setSyncingTracking] = useState(false);
+
+  // Revert Shipment Modal
+  const [revertModalOrder, setRevertModalOrder] = useState(null);
+  const [revertingShipment, setRevertingShipment] = useState(false);
+  const [revertTargetStatus, setRevertTargetStatus] = useState("Processing");
+  const [revertCancelCourier, setRevertCancelCourier] = useState(true);
+
+  const handleRevertShipment = async () => {
+    if (!revertModalOrder) return;
+    try {
+      setRevertingShipment(true);
+      const result = await orderAPI.revertShipment(revertModalOrder.orderId, {
+        targetStatus: revertTargetStatus,
+        cancelCourier: revertCancelCourier,
+      });
+      if (result.ok) {
+        toast.success(result.data?.message || "Shipment reverted successfully!");
+        setRevertModalOrder(null);
+        setTrackingOrder(null);
+        if (selectedOrder?._id === revertModalOrder._id) {
+          setSelectedOrder(null);
+        }
+        fetchOrders();
+      } else {
+        toast.error(result.data?.message || "Failed to revert shipment");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to revert shipment");
+    } finally {
+      setRevertingShipment(false);
+    }
+  };
 
   const handleSyncAllTracking = async () => {
     try {
@@ -184,7 +218,7 @@ export default function Orders() {
     setShipmentModalOrder(order);
     const existingWaybill = order.ekart?.waybill || order.delhivery?.waybill || "";
     setManualWaybill(existingWaybill);
-    setManualCarrier(order.carrier || (order.ekart?.waybill ? "Ekart" : "Delhivery"));
+    setManualCarrier(order.carrier === "Delhivery" ? "Ekart" : (order.carrier || "Ekart"));
     setMarkAsShipped(true);
   };
 
@@ -590,13 +624,28 @@ export default function Orders() {
                           ) : (
                             <span className="text-slate-400 text-xs">No AWB</span>
                           )}
-                          <button
-                            onClick={() => startEditingWaybill(order)}
-                            className="text-left text-[11px] text-slate-400 hover:text-emerald-600 flex items-center gap-1 transition"
-                          >
-                            <Edit2 size={10} />
-                            {order.ekart?.waybill || order.delhivery?.waybill ? "Edit AWB" : "+ Add AWB"}
-                          </button>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => startEditingWaybill(order)}
+                              className="text-left text-[11px] text-slate-400 hover:text-emerald-600 flex items-center gap-1 transition cursor-pointer"
+                            >
+                              <Edit2 size={10} />
+                              {order.ekart?.waybill || order.delhivery?.waybill ? "Edit AWB" : "+ Add AWB"}
+                            </button>
+                            {(order.ekart?.waybill || order.delhivery?.waybill) && (
+                              <button
+                                onClick={() => {
+                                  setRevertModalOrder(order);
+                                  setRevertTargetStatus("Processing");
+                                  setRevertCancelCourier(true);
+                                }}
+                                className="text-left text-[11px] text-rose-500 hover:text-rose-700 flex items-center gap-0.5 transition cursor-pointer"
+                                title="Revert shipment"
+                              >
+                                <RotateCcw size={10} /> Revert
+                              </button>
+                            )}
+                          </div>
                         </div>
                       )}
                     </td>
@@ -605,16 +654,29 @@ export default function Orders() {
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2 items-center flex-wrap">
                         {order.ekart?.waybill || order.delhivery?.waybill ? (
-                          <button
-                            onClick={() => openTrackingModal(order)}
-                            className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition"
-                          >
-                            <Truck size={13} /> Track
-                          </button>
+                          <>
+                            <button
+                              onClick={() => openTrackingModal(order)}
+                              className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer"
+                            >
+                              <Truck size={13} /> Track
+                            </button>
+                            <button
+                              onClick={() => {
+                                setRevertModalOrder(order);
+                                setRevertTargetStatus("Processing");
+                                setRevertCancelCourier(true);
+                              }}
+                              className="inline-flex items-center gap-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-2.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer"
+                              title="Revert shipment and cancel courier booking"
+                            >
+                              <RotateCcw size={12} /> Revert
+                            </button>
+                          </>
                         ) : (
                           <button
                             onClick={() => openShipmentModal(order)}
-                            className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition"
+                            className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer"
                           >
                             <Truck size={13} /> Shipment
                           </button>
@@ -622,7 +684,7 @@ export default function Orders() {
 
                         <button
                           onClick={() => setSelectedOrder(order)}
-                          className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold transition"
+                          className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer"
                         >
                           <Eye size={13} /> View
                         </button>
@@ -669,6 +731,27 @@ export default function Orders() {
 
             {/* Modal Body */}
             <div className="p-6 space-y-6">
+              {Boolean(shipmentModalOrder.ekart?.waybill || shipmentModalOrder.delhivery?.waybill) && (
+                <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between gap-3 text-xs text-amber-900">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle size={16} className="text-amber-600 shrink-0" />
+                    <span>
+                      An active shipment already exists for this order (<strong>{shipmentModalOrder.ekart?.waybill || shipmentModalOrder.delhivery?.waybill}</strong>).
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRevertModalOrder(shipmentModalOrder);
+                      setShipmentModalOrder(null);
+                    }}
+                    className="inline-flex items-center gap-1 bg-amber-200 hover:bg-amber-300 text-amber-900 px-2.5 py-1 rounded-lg font-semibold shrink-0 cursor-pointer transition"
+                  >
+                    <RotateCcw size={12} /> Revert Shipment
+                  </button>
+                </div>
+              )}
+
               {/* Method 1: Enter AWB / Tracking Number */}
               <div className="p-4 rounded-xl border border-emerald-100 bg-emerald-50/40 space-y-3">
                 <div className="flex items-center justify-between">
@@ -680,8 +763,8 @@ export default function Orders() {
                     onChange={(e) => setManualCarrier(e.target.value)}
                     className="text-xs font-semibold bg-white border border-emerald-300 text-emerald-900 rounded-lg px-2 py-1 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   >
-                    <option value="Delhivery">Delhivery Express</option>
                     <option value="Ekart">Ekart Logistics</option>
+                    <option value="Delhivery" className="hidden" style={{ display: "none" }}>Delhivery Express</option>
                   </select>
                 </div>
                 <p className="text-xs text-slate-600">
@@ -690,7 +773,7 @@ export default function Orders() {
                 <div className="space-y-2">
                   <input
                     type="text"
-                    placeholder={manualCarrier === "Ekart" ? "e.g. EKART_DFX... or FMPC12345" : "e.g. 1403215689123"}
+                    placeholder="e.g. EKART_DFX... or FMPC12345 or LUAP..."
                     value={manualWaybill}
                     onChange={(e) => setManualWaybill(e.target.value)}
                     className="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -708,7 +791,7 @@ export default function Orders() {
                 <button
                   onClick={handleSaveManualShipment}
                   disabled={savingWaybill}
-                  className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-2.5 rounded-xl transition disabled:opacity-50"
+                  className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-2.5 rounded-xl transition disabled:opacity-50 cursor-pointer"
                 >
                   <Check size={14} />
                   {savingWaybill ? "Saving..." : `Save ${manualCarrier} AWB & Enable Tracking`}
@@ -723,26 +806,14 @@ export default function Orders() {
               </div>
 
               {/* Grid for Auto Booking APIs */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Method 2: Automatic Delhivery API */}
-                <div className="p-4 rounded-xl border border-blue-200 bg-blue-50/40 space-y-3 flex flex-col justify-between">
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-1.5 font-semibold text-xs text-blue-900 uppercase tracking-wider">
-                      <Zap size={13} className="text-blue-600" /> Delhivery API
-                    </div>
-                    <p className="text-xs text-slate-500">
-                      Book shipment and generate waybill directly with Delhivery Express.
-                    </p>
-                  </div>
+              <div className="grid grid-cols-1 gap-4">
+                {/* Method 2: Automatic Delhivery API (Hidden with CSS) */}
+                <div className="hidden" style={{ display: "none" }}>
                   <button
                     onClick={handleAutoDelhiveryShipment}
                     disabled={loadingShipment === shipmentModalOrder._id}
-                    className="w-full inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold py-2.5 rounded-xl transition disabled:opacity-50"
                   >
-                    <Truck size={14} />
-                    {loadingShipment === shipmentModalOrder._id
-                      ? "Booking..."
-                      : "Book with Delhivery"}
+                    Book with Delhivery
                   </button>
                 </div>
 
@@ -751,25 +822,25 @@ export default function Orders() {
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-1.5 font-semibold text-xs text-purple-900 uppercase tracking-wider">
-                        <Zap size={13} className="text-purple-600" /> Ekart Logistics
+                        <Zap size={13} className="text-purple-600" /> Ekart Logistics API
                       </div>
                       <span className="text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded font-mono font-bold">
-                        API Connected
+                        Connected & Active
                       </span>
                     </div>
                     <p className="text-xs text-slate-500">
-                      Book shipment and generate tracking ID via Ekart Logistics API.
+                      Book shipment and generate tracking ID instantly via Ekart Logistics API.
                     </p>
                   </div>
                   <button
                     onClick={handleAutoEkartShipment}
                     disabled={loadingShipment === shipmentModalOrder._id}
-                    className="w-full inline-flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold py-2.5 rounded-xl transition disabled:opacity-50"
+                    className="w-full inline-flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold py-2.5 rounded-xl transition disabled:opacity-50 cursor-pointer shadow-md shadow-purple-500/20"
                   >
                     <Truck size={14} />
                     {loadingShipment === shipmentModalOrder._id
-                      ? "Booking..."
-                      : "Book with Ekart"}
+                      ? "Booking with Ekart..."
+                      : "Book Shipment with Ekart"}
                   </button>
                 </div>
               </div>
@@ -959,18 +1030,32 @@ export default function Orders() {
 
                 return (
                   <div className={`p-4 rounded-xl border ${borderClass} space-y-2`}>
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center flex-wrap gap-2">
                       <div className="flex items-center gap-2 font-semibold text-xs uppercase tracking-wider">
                         <Truck size={14} className={iconColor} /> {courierTitle}
                       </div>
-                      {waybill && (
-                        <button
-                          onClick={() => openTrackingModal(selectedOrder)}
-                          className={`text-xs font-semibold underline flex items-center gap-1 ${isEkart ? "text-purple-700 hover:text-purple-900" : "text-blue-700 hover:text-blue-900"}`}
-                        >
-                          Live Tracking <ExternalLink size={12} />
-                        </button>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {waybill && (
+                          <button
+                            onClick={() => openTrackingModal(selectedOrder)}
+                            className={`text-xs font-semibold underline flex items-center gap-1 ${isEkart ? "text-purple-700 hover:text-purple-900" : "text-blue-700 hover:text-blue-900"}`}
+                          >
+                            Live Tracking <ExternalLink size={12} />
+                          </button>
+                        )}
+                        {waybill && (
+                          <button
+                            onClick={() => {
+                              setRevertModalOrder(selectedOrder);
+                              setRevertTargetStatus("Processing");
+                              setRevertCancelCourier(true);
+                            }}
+                            className="inline-flex items-center gap-1 bg-rose-100 hover:bg-rose-200 text-rose-800 border border-rose-200 px-2.5 py-1 rounded-lg text-xs font-semibold transition cursor-pointer"
+                          >
+                            <RotateCcw size={11} /> Revert Shipment
+                          </button>
+                        )}
+                      </div>
                     </div>
                     <p className="text-xs text-slate-600">
                       AWB / Waybill:{" "}
@@ -987,7 +1072,7 @@ export default function Orders() {
             <div className="px-6 py-4 bg-slate-50 border-t flex justify-end gap-3">
               <button
                 onClick={() => setSelectedOrder(null)}
-                className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-semibold transition"
+                className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-semibold transition cursor-pointer"
               >
                 Close
               </button>
@@ -1122,12 +1207,143 @@ export default function Orders() {
               </div>
 
               {/* Footer */}
-              <div className="px-6 py-4 bg-slate-50 border-t flex justify-end">
+              <div className="px-6 py-4 bg-slate-50 border-t flex justify-between items-center">
+                <button
+                  onClick={() => {
+                    setRevertModalOrder(trackingOrder);
+                    setRevertTargetStatus("Processing");
+                    setRevertCancelCourier(true);
+                  }}
+                  className="inline-flex items-center gap-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-3 py-2 rounded-xl text-xs font-semibold transition cursor-pointer"
+                >
+                  <RotateCcw size={13} /> Revert Shipment
+                </button>
                 <button
                   onClick={() => setTrackingOrder(null)}
-                  className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-semibold transition"
+                  className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-semibold transition cursor-pointer"
                 >
                   Close
+                </button>
+              </div>
+            </div>
+          );
+        })()}
+      </Modal>
+
+      {/* ========================================= */}
+      {/* REVERT SHIPMENT CONFIRMATION MODAL        */}
+      {/* ========================================= */}
+      <Modal
+        isOpen={Boolean(revertModalOrder)}
+        onClose={() => !revertingShipment && setRevertModalOrder(null)}
+        maxWidth="max-w-md"
+      >
+        {revertModalOrder && (() => {
+          const isEkart = revertModalOrder.carrier === "Ekart" || (!revertModalOrder.delhivery?.waybill && revertModalOrder.ekart?.waybill);
+          const waybill = isEkart ? (revertModalOrder.ekart?.waybill || revertModalOrder.ekart?.trackingId) : revertModalOrder.delhivery?.waybill;
+          const courierName = isEkart ? "Ekart Logistics" : "Delhivery Express";
+
+          return (
+            <div>
+              {/* Header */}
+              <div className="flex justify-between items-center px-6 py-4 border-b bg-rose-50/60">
+                <div className="flex items-center gap-2 text-rose-800">
+                  <RotateCcw size={20} className="text-rose-600" />
+                  <h2 className="text-base font-bold text-slate-900">
+                    Revert Shipment
+                  </h2>
+                </div>
+                <button
+                  onClick={() => !revertingShipment && setRevertModalOrder(null)}
+                  disabled={revertingShipment}
+                  className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded-lg transition disabled:opacity-50"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div className="p-6 space-y-4">
+                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1 text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Order ID:</span>
+                    <span className="font-bold text-slate-900">#{revertModalOrder.orderId}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Customer:</span>
+                    <span className="font-medium text-slate-800">
+                      {revertModalOrder.customer?.firstName} {revertModalOrder.customer?.lastName}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-slate-500">Courier / AWB:</span>
+                    <span className="font-mono font-bold text-slate-900">
+                      {courierName} ({waybill || "Manual"})
+                    </span>
+                  </div>
+                </div>
+
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Reverting this shipment will <strong>clear the assigned AWB/tracking ID</strong> and return the order to unfulfilled status so you can re-ship, change courier, or edit package details.
+                </p>
+
+                <div className="space-y-3 pt-1">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-700 block">
+                      Reset Order Status To:
+                    </label>
+                    <select
+                      value={revertTargetStatus}
+                      onChange={(e) => setRevertTargetStatus(e.target.value)}
+                      disabled={revertingShipment}
+                      className="w-full px-3 py-2 text-xs font-medium bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500"
+                    >
+                      <option value="Processing">Processing (Recommended)</option>
+                      <option value="Confirmed">Confirmed</option>
+                      <option value="Pending">Pending</option>
+                    </select>
+                  </div>
+
+                  <label className="flex items-start gap-2.5 text-xs text-slate-700 p-2.5 bg-rose-50/50 border border-rose-100 rounded-xl cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={revertCancelCourier}
+                      onChange={(e) => setRevertCancelCourier(e.target.checked)}
+                      disabled={revertingShipment}
+                      className="mt-0.5 rounded border-slate-300 text-rose-600 focus:ring-rose-500"
+                    />
+                    <span>
+                      <strong>Auto-cancel on courier portal</strong> ({courierName}) via API request
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="px-6 py-4 bg-slate-50 border-t flex justify-end gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setRevertModalOrder(null)}
+                  disabled={revertingShipment}
+                  className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-semibold transition disabled:opacity-50 cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleRevertShipment}
+                  disabled={revertingShipment}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold transition shadow-md shadow-rose-500/20 disabled:opacity-60 cursor-pointer"
+                >
+                  {revertingShipment ? (
+                    <>
+                      <RefreshCw size={13} className="animate-spin" /> Reverting...
+                    </>
+                  ) : (
+                    <>
+                      <RotateCcw size={13} /> Confirm Revert Shipment
+                    </>
+                  )}
                 </button>
               </div>
             </div>
