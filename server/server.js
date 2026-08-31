@@ -51,8 +51,6 @@ import wcRoutes from './routes/wcRoutes.js';
 import couponRoutes from './routes/couponRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
 
-
-
 const app = express();
 
 // Important for Hostinger reverse proxy
