@@ -15,68 +15,44 @@ import { Link } from 'react-router-dom';
 
 const FAQ_DATA = [
   {
-    id: 'lasting',
+    id: 'natural-look',
     category: 'Results',
-    icon: Clock,
-    question: 'How long does Dailyfix Beard Colour last?',
-    answer:
-      'Dailyfix holds for up to 3 to 4 weeks depending on your beard growth rate and how frequently you wash your beard. The color locks deep into the hair cuticle and fades naturally without turning reddish or brassy.'
-  },
-  {
-    id: 'ammonia-free',
-    category: 'Safety',
-    icon: Leaf,
-    question: 'Does Dailyfix contain ammonia or cause skin burning / itching?',
-    answer:
-      'No! Dailyfix is 100% Ammonia-Free and formulated specifically for sensitive facial skin. Enriched with natural olive oil extracts and soothing agents, it eliminates the chemical stinging, redness, and harsh odors associated with regular hair dyes.'
-  },
-  {
-    id: 'application-speed',
-    category: 'Application',
     icon: Sparkles,
-    question: 'How fast does it work and how easy is it to apply at home?',
+    question: 'Will the beard color look natural?',
     answer:
-      'It takes just 5 to 10 minutes! Simply squeeze equal parts of Cream 1 and Cream 2 into the included applicator tray, comb it evenly through dry beard and mustache hairs, wait 5–10 minutes, and rinse thoroughly in the shower.'
+      'Yes, choosing the right shade and applying the product correctly can give your beard a natural and well-groomed appearance.'
   },
   {
-    id: 'shade-selection',
-    category: 'Shades',
+    id: 'easy-apply',
+    category: 'Application',
     icon: CheckCircle2,
-    question: 'How do I choose the perfect shade for my beard?',
+    question: 'Is it easy to apply at home?',
     answer:
-      'We offer 3 natural shades crafted for Indian and global hair profiles:\n• Natural Black: For jet black or deep dark hair.\n• Black Brown: For deep brown-black tones that look soft and rich.\n• Dark Brown: For warm brown, chestnut, or salt-and-pepper beards looking for subtle blending.'
+      'Yes, beard color can be easy to use at home when the application instructions are followed carefully.'
   },
   {
-    id: 'skin-stain',
-    category: 'Results',
+    id: 'fade-wash',
+    category: 'After-Care',
+    icon: Clock,
+    question: 'Will the color fade after washing my face?',
+    answer:
+      'Color longevity may depend on the product formula and your washing routine. Follow the recommended after-care instructions for better results.'
+  },
+  {
+    id: 'why-choose',
+    category: 'Benefits',
     icon: ShieldCheck,
-    question: 'Will Dailyfix stain my skin or look like fake painted dye?',
+    question: 'Why should I choose this beard color?',
     answer:
-      'No. Dailyfix has a non-drip cream formula engineered to color facial hair without staining the skin underneath. Its multi-tonal micro-pigments give a soft, natural shine rather than an artificial ink-painted look.'
-  },
-  {
-    id: 'mustache-stubble',
-    category: 'Application',
-    icon: Sparkles,
-    question: 'Can I use it on my mustache, sideburns, and short stubble?',
-    answer:
-      'Yes, absolutely. Every kit includes a dual-sided precision applicator comb designed specifically to reach short stubble, sideburns, goatees, and upper lips with clean lines and zero mess.'
-  },
-  {
-    id: 'patch-test',
-    category: 'Safety',
-    icon: HelpCircle,
-    question: 'Should I do a skin patch test before using Dailyfix?',
-    answer:
-      'Yes, as with all premium grooming products, we strongly recommend performing a 48-hour preliminary patch allergy test on a small area behind the ear or inside the elbow before your first application.'
+      'Our beard color is designed to help cover grey and white beard hair while giving a neat, confident, and well-groomed appearance.'
   }
 ];
 
-const CATEGORIES = ['All', 'Results', 'Safety', 'Application', 'Shades'];
+const CATEGORIES = ['All', 'Results', 'Application', 'After-Care', 'Benefits'];
 
 const HomeFAQ = () => {
   const [activeTab, setActiveTab] = useState('All');
-  const [openId, setOpenId] = useState('lasting'); // First item open by default
+  const [openId, setOpenId] = useState('natural-look'); // First item open by default
 
   const filteredFaqs =
     activeTab === 'All'
@@ -132,11 +108,10 @@ const HomeFAQ = () => {
               <button
                 key={cat}
                 onClick={() => setActiveTab(cat)}
-                className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all ${
-                  activeTab === cat
+                className={`px-4 py-2 rounded-full text-xs sm:text-sm font-bold transition-all ${activeTab === cat
                     ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20 scale-105'
                     : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-100 hover:border-stone-300'
-                }`}
+                  }`}
               >
                 {cat}
               </button>
@@ -157,24 +132,22 @@ const HomeFAQ = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
-                className={`rounded-2xl border transition-all duration-300 bg-white ${
-                  isOpen
+                className={`rounded-2xl border transition-all duration-300 bg-white ${isOpen
                     ? 'border-emerald-500/40 shadow-xl shadow-emerald-500/5 ring-1 ring-emerald-500/20'
                     : 'border-stone-200/90 shadow-soft hover:border-emerald-300 hover:shadow-md'
-                }`}
+                  }`}
               >
                 <button
                   onClick={() => toggleItem(faq.id)}
-                  className="w-full p-5 sm:p-6 flex items-center justify-between gap-4 text-left transition-colors"
+                  className="w-full p-5 sm:p-6 flex items-center justify-between gap-4 text-left transition-colors cursor-pointer"
                   aria-expanded={isOpen}
                 >
                   <div className="flex items-center gap-3.5 sm:gap-4">
                     <div
-                      className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${
-                        isOpen
+                      className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${isOpen
                           ? 'bg-emerald-600 text-white shadow-sm'
                           : 'bg-emerald-50 text-emerald-700'
-                      }`}
+                        }`}
                     >
                       <Icon size={19} />
                     </div>
@@ -190,11 +163,10 @@ const HomeFAQ = () => {
                   </div>
 
                   <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-transform duration-300 ${
-                      isOpen
+                    className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-transform duration-300 ${isOpen
                         ? 'bg-emerald-100 text-emerald-700 rotate-180'
                         : 'bg-stone-100 text-stone-500'
-                    }`}
+                      }`}
                   >
                     <ChevronDown size={18} />
                   </div>
@@ -243,7 +215,7 @@ const HomeFAQ = () => {
 
           <div className="flex items-center gap-3 w-full sm:w-auto">
             <Link
-              to="/about"
+              to="/contact"
               className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold text-sm shadow-lg shadow-emerald-500/25 transition-all hover:scale-105"
             >
               Contact Support
