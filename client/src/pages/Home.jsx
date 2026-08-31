@@ -14,6 +14,7 @@ import { getShadeSortRank } from '../data/productDetailData';
 import { blogPosts } from '../data/blogData.js';
 import toast from 'react-hot-toast';
 import InstagramFeed from '../components/Instagramfeed.jsx';
+import Marketplaces from '../components/Marketplaces.jsx';
 import HomeFAQ from '../components/HomeFAQ.jsx';
 
 const Home = () => {
@@ -415,6 +416,9 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Available on Marketplaces (Amazon, Flipkart, Shopsy, Nykaa) */}
+      <Marketplaces />
 
       {/* Frequently Asked Questions Section */}
       <HomeFAQ />
