@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Star } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { getProductImageSrc } from '../utils/productImages';
 
@@ -36,6 +36,17 @@ const ProductCard = ({ product }) => {
         
         {/* Content container */}
         <div className="p-8 space-y-4">
+          {/* Star rating snippet */}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-0.5">
+              {[1, 2, 3, 4, 5].map((s) => (
+                <Star key={s} size={14} className="fill-amber-400 text-amber-400" />
+              ))}
+            </div>
+            <span className="text-xs font-bold text-stone-900">4.9</span>
+            <span className="text-[11px] text-stone-500 font-medium">(148+ reviews)</span>
+          </div>
+
           <h3 className="text-2xl font-bold text-stone-900 group-hover:text-emerald-600 transition-colors duration-300">
             {product.name}
           </h3>

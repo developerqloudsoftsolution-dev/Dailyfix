@@ -11,6 +11,7 @@ import api from '../services/api';
 import { getProductGallery, getListingImage } from '../utils/productImages';
 import { getProductDetailData } from '../data/productDetailData';
 import RelatedProducts from '../components/RelatedProducts';
+import ProductReviews, { StarRating } from '../components/ProductReviews';
 import toast from 'react-hot-toast';
 
 const ProductPage = () => {
@@ -301,6 +302,32 @@ const ProductPage = () => {
               <h1 className="text-2xl  lg:text-4xl font-extrabold text-stone-900 leading-tight">
                 {product.name}
               </h1>
+
+              {/* Star Rating Badge */}
+              <div className="flex items-center gap-3 mt-3">
+                <a
+                  href="#customer-reviews"
+                  className="inline-flex items-center gap-2 group cursor-pointer hover:opacity-85 transition-opacity"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    document.getElementById('customer-reviews')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
+                  <StarRating rating={4.9} size={18} />
+                  <span className="text-sm font-extrabold text-stone-900 group-hover:text-emerald-600 transition-colors">
+                    4.9
+                  </span>
+                  <span className="text-xs text-stone-500 font-medium group-hover:underline">
+                    (148+ Verified Reviews)
+                  </span>
+                </a>
+                <span className="w-1 h-1 bg-stone-300 rounded-full"></span>
+                <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                  <CheckCircle2 size={12} className="text-emerald-600" />
+                  98% Recommend
+                </span>
+              </div>
+
               {detail.shortTagline && (
                 <p className="mt-3 sm:mt-4 text-base sm:text-lg text-emerald-700 font-semibold flex items-center gap-2">
                   <Sparkles size={18} className="flex-shrink-0" />
@@ -593,6 +620,9 @@ const ProductPage = () => {
           </div>
         </div>
 
+        {/* ==================== CUSTOMER REVIEWS & RATINGS ==================== */}
+        <ProductReviews product={product} slug={product?.slug || id} />
+
         {/* ==================== RELATED PRODUCTS / OTHER SHADES ==================== */}
         <RelatedProducts currentSlug={product?.slug || id} currentProduct={product} />
       </div>
@@ -600,7 +630,7 @@ const ProductPage = () => {
       {/* Lightbox / click-to-expand modal */}
       {lightboxOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-stone-900/95 backdrop-blur-sm"
+          className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-stone-900/95 backdrop-blur-sm"
           onClick={() => setLightboxOpen(false)}
         >
           <button

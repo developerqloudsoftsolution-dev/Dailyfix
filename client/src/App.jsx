@@ -37,6 +37,7 @@ import AdminManagement from './pages/admin/AdminManagement'
 import WhatsAppConnect from './pages/admin/WhatsAppConnect'
 import AuthorizeApp from './pages/admin/AuthorizeApp'
 import AdminCoupons from './pages/admin/Coupons'
+import AdminReviews from './pages/admin/Reviews'
 
 import AdminLayout from './layouts/AdminLayout'
 import MainLayout from './layouts/MainLayout'
@@ -79,6 +80,7 @@ function App() {
               <Route path="/admin/orders" element={<AdminOrders />} />
               <Route path="/admin/customers" element={<AdminCustomers />} />
               <Route path="/admin/coupons" element={<AdminCoupons />} />
+              <Route path="/admin/reviews" element={<AdminReviews />} />
               <Route path="/admin/admins" element={<AdminManagement />} />
               <Route path="/admin/whatsapp" element={<WhatsAppConnect />} />
             </Route>

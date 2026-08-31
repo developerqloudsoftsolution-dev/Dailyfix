@@ -49,6 +49,7 @@ import whatsappRoutes from './routes/whatsappRoutes.js';
 import apiAuthRoutes from './routes/apiAuthRoutes.js';
 import wcRoutes from './routes/wcRoutes.js';
 import couponRoutes from './routes/couponRoutes.js';
+import reviewRoutes from './routes/reviewRoutes.js';
 
 
 
@@ -116,6 +117,7 @@ app.use('/api/contact', contactRoutes);
 app.use("/api/instagram", instagramRoute);
 app.use('/api/admin/whatsapp', whatsappRoutes);
 app.use('/api/coupons', couponRoutes);
+app.use('/api/reviews', reviewRoutes);
 
 // WooCommerce / Third-Party App Authorization Routes
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ShoppingBag, ArrowRight, Sparkles, CheckCircle2, ShieldCheck, Zap } from 'lucide-react';
+import { ShoppingBag, ArrowRight, Sparkles, CheckCircle2, ShieldCheck, Zap, Star } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import api from '../services/api';
 import { getListingImage, getProductImageSrc } from '../utils/productImages';
@@ -234,9 +234,14 @@ const RelatedProducts = ({ currentSlug, currentProduct }) => {
                       <span className="text-xs font-bold uppercase tracking-widest text-emerald-600">
                         {item.brand || 'Dailyfix Grooming'}
                       </span>
-                      <span className="text-xs font-medium text-stone-500">
-                        SKU: {item.sku || detailData.shadeName}
-                      </span>
+                      <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-0.5">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star key={s} size={13} className="fill-amber-400 text-amber-400" />
+                          ))}
+                        </div>
+                        <span className="text-xs font-extrabold text-stone-900">4.9</span>
+                      </div>
                     </div>
 
                     {/* Title */}

@@ -14,6 +14,7 @@ import { getShadeSortRank } from '../data/productDetailData';
 import { blogPosts } from '../data/blogData.js';
 import toast from 'react-hot-toast';
 import InstagramFeed from '../components/Instagramfeed.jsx';
+import HomeFAQ from '../components/HomeFAQ.jsx';
 
 const Home = () => {
   const [products, setProducts] = useState([]);
@@ -414,6 +415,9 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Frequently Asked Questions Section */}
+      <HomeFAQ />
 
       {/* Get Started Section */}
       <section className="py-5 px-4 sm:px-8 md:px-16 bg-white relative overflow-hidden">
