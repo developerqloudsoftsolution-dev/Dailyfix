@@ -349,69 +349,58 @@ export const createOrder = async (req, res) => {
 
     /*
     ==========================================
-    DELHIVERY INTEGRATION (BACKGROUND, NON-BLOCKING)
+    EKART INTEGRATION (AUTO-SHIP IN BACKGROUND, NON-BLOCKING)
     ==========================================
     */
 
     try {
-      const shipmentPayload = delhiveryService.buildShipmentPayload(order);
-      console.log("📦 Delhivery Payload:", JSON.stringify(shipmentPayload, null, 2));
+      order.carrier = "Ekart";
+      const shipmentPayload = await ekartService.buildShipmentPayload(order);
+      console.log("📦 Ekart Payload:", JSON.stringify(shipmentPayload, null, 2));
 
-      const shipmentResponse = await delhiveryService.createShipment(shipmentPayload);
-      console.log("Shipment Response:", JSON.stringify(shipmentResponse, null, 2));
+      const shipmentResponse = await ekartService.createShipment(shipmentPayload);
+      console.log("Shipment Response (Ekart):", JSON.stringify(shipmentResponse, null, 2));
 
-      const waybill = delhiveryService.extractWaybill(shipmentResponse);
-      console.log("AWB :", waybill);
+      const trackingId =
+        shipmentResponse?.tracking_id ||
+        shipmentResponse?.waybill ||
+        shipmentResponse?.data?.tracking_id ||
+        ekartService.extractTrackingId(shipmentResponse);
 
-      if (!waybill) {
-        console.error("❌ Delhivery did not return a waybill");
-        throw new Error("Delhivery shipment created but AWB was not returned");
-      }
+      console.log("Ekart AWB / Tracking ID:", trackingId);
 
-      order.delhivery = {
-        waybill: String(waybill),
-        shipmentId: delhiveryService.getShipmentId(shipmentResponse) || "",
-        pickupRequestId: delhiveryService.getPickupRequestId(shipmentResponse) || "",
-        currentStatus: "Manifested",
-        labelUrl: delhiveryService.getLabelURL(shipmentResponse) || "",
-        invoiceUrl: delhiveryService.getInvoiceURL(shipmentResponse) || "",
-        expectedDelivery: delhiveryService.getEstimatedDelivery(shipmentResponse) || "",
-        shipmentResponse,
-        trackingHistory: [],
-        lastSynced: new Date(),
-      };
-      try {
-        const label = await delhiveryService.generateShippingLabel(waybill);
-        console.log("✅ Shipping Label Generated");
-        order.delhivery.label = label;
-        console.log("✅ Shipping Label Saved");
-      } catch (labelErr) {
-        console.log("⚠ Shipping Label Generation Failed:", labelErr.message);
-      }
+      if (trackingId) {
+        order.ekart = {
+          trackingId: String(trackingId),
+          waybill: String(trackingId),
+          shipmentId: ekartService.getShipmentId(shipmentResponse) || String(trackingId),
+          pickupRequestId: ekartService.getPickupRequestId(shipmentResponse) || "",
+          currentStatus: "Manifested",
+          labelUrl: ekartService.getLabelURL(shipmentResponse) || "",
+          invoiceUrl: ekartService.getInvoiceURL(shipmentResponse) || "",
+          expectedDelivery: ekartService.getEstimatedDelivery(shipmentResponse) || null,
+          shipmentResponse,
+          trackingHistory: [],
+          lastSynced: new Date(),
+        };
 
-      await order.save();
-      console.log("✅ Delhivery Details Saved");
-
-
-      try {
-        const deliveryPin = order.shippingAddress?.pincode || order.pincode;
-        const itemWeight = order.totalWeight || order.weight || 0.5; // Fallback weight if omitted
-
-        if (deliveryPin) {
-          const shippingRate = await delhiveryService.calculateShipping({
-            pickupPin: process.env.DELHIVERY_PICKUP_PIN,
-            deliveryPin: deliveryPin,
-            weight: itemWeight,
-          });
-          console.log("✅ Shipping Response:", JSON.stringify(shippingRate, null, 2));
+        try {
+          const label = await ekartService.generateShippingLabel(trackingId);
+          console.log("✅ Ekart Shipping Label Generated");
+          order.ekart.label = label;
+          console.log("✅ Ekart Shipping Label Saved");
+        } catch (labelErr) {
+          console.log("⚠ Ekart Shipping Label Generation Notice:", labelErr.message);
         }
-      } catch (shippingErr) {
-        console.warn("⚠️ Shipping calculation failed (skipping):", shippingErr.message);
-      }
 
-    } catch (delhiveryErr) {
-      console.error("❌ DELHIVERY SHIPMENT CREATION FAILED:");
-      console.error(delhiveryErr.message);
+        await order.save();
+        console.log("✅ Ekart Details Saved to MongoDB");
+      } else {
+        console.warn("⚠️ Ekart shipment created but tracking ID was not returned:", shipmentResponse);
+      }
+    } catch (ekartErr) {
+      console.error("❌ EKART AUTO-SHIPMENT FAILED:");
+      console.error(ekartErr.message);
     }
   }catch (error) {
     console.error("❌ Order creation failed:", error.message);

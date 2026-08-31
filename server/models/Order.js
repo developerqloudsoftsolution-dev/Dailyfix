@@ -147,8 +147,8 @@ const orderSchema = new mongoose.Schema(
     // ==========================
     carrier: {
       type: String,
-      enum: ["Delhivery", "Ekart", "Manual"],
-      default: "Delhivery",
+      enum: ["Ekart", "Delhivery", "Manual"],
+      default: "Ekart",
     },
 
     // ==========================

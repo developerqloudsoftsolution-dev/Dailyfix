@@ -105,32 +105,32 @@ const Footer = () => {
               Our Products
               <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-emerald-500 group-hover:w-full transition-all duration-300"></span>
             </h4>
-            <ul className="space-y-3">
+            <ul className="space-y-2.5">
               <li>
                 <Link 
-                  to="/shop" 
+                  to="/product/natural-black-beard-colour" 
                   className="text-slate-400 hover:text-emerald-400 hover:pl-2 transition-all duration-300 text-sm flex items-center gap-2 group"
                 >
                   <span className="w-1 h-1 bg-emerald-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                  Beard Colour
+                  Natural Black Beard Colour
                 </Link>
               </li>
               <li>
                 <Link 
-                  to="/beard-oil" 
+                  to="/product/black-brown-beard-colour" 
                   className="text-slate-400 hover:text-emerald-400 hover:pl-2 transition-all duration-300 text-sm flex items-center gap-2 group"
                 >
                   <span className="w-1 h-1 bg-emerald-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                  Beard Oil
+                  Black Brown Beard Colour
                 </Link>
               </li>
               <li>
                 <Link 
-                  to="/return-order" 
-                  className="text-emerald-400 hover:text-emerald-300 hover:pl-2 transition-all duration-300 text-sm flex items-center gap-2 group font-semibold"
+                  to="/product/dark-brown-beard-colour" 
+                  className="text-slate-400 hover:text-emerald-400 hover:pl-2 transition-all duration-300 text-sm flex items-center gap-2 group"
                 >
-                  <span className="w-1 h-1 bg-emerald-400 rounded-full"></span>
-                  Easy Returns & Replacement
+                  <span className="w-1 h-1 bg-emerald-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                  Dark Brown Beard Colour
                 </Link>
               </li>
             </ul>
