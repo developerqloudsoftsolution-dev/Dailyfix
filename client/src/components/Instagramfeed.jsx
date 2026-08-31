@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Instagram,
   Heart,
@@ -11,7 +11,6 @@ import {
   ExternalLink,
   Sparkles,
   Film,
-  X,
   ArrowUpRight
 } from "lucide-react";
 import api from "../services/api";
@@ -35,7 +34,8 @@ const SHOWCASE_ITEMS = [
     comments: 214,
     tag: "Reel • Transformation",
     badgeColor: "from-pink-500 to-rose-600",
-    shade: "Natural Black"
+    shade: "Natural Black",
+    permalink: INSTAGRAM_PROFILE_URL
   },
   {
     id: "ig-post-2",
@@ -46,7 +46,8 @@ const SHOWCASE_ITEMS = [
     comments: 156,
     tag: "Post • Results",
     badgeColor: "from-emerald-500 to-teal-600",
-    shade: "Natural Black"
+    shade: "Natural Black",
+    permalink: INSTAGRAM_PROFILE_URL
   },
   {
     id: "ig-reel-3",
@@ -58,11 +59,12 @@ const SHOWCASE_ITEMS = [
     comments: 320,
     tag: "Reel • Tutorial",
     badgeColor: "from-purple-500 to-indigo-600",
-    shade: "Black Brown"
+    shade: "Black Brown",
+    permalink: INSTAGRAM_PROFILE_URL
   }
 ];
 
-const ReelCard = ({ item, index, onOpenReel }) => {
+const ReelCard = ({ item, index }) => {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
@@ -70,6 +72,7 @@ const ReelCard = ({ item, index, onOpenReel }) => {
   const [likeCount, setLikeCount] = useState(item.likes || 2400);
 
   const isVideo = item.type === "VIDEO";
+  const postUrl = item.permalink || INSTAGRAM_PROFILE_URL;
 
   useEffect(() => {
     if (videoRef.current && isVideo) {
@@ -217,13 +220,16 @@ const ReelCard = ({ item, index, onOpenReel }) => {
               </div>
             </div>
 
-            <button
-              onClick={() => onOpenReel(item)}
-              className="text-xs font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 px-3.5 py-1.5 rounded-full shadow-md flex items-center gap-1.5 pointer-events-auto transition-all hover:scale-105"
+            {/* Direct Redirect to Instagram Reel/Post */}
+            <a
+              href={postUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="text-xs font-bold text-white bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 hover:from-purple-500 hover:via-pink-500 hover:to-rose-500 px-4 py-1.5 rounded-full shadow-lg shadow-pink-600/30 flex items-center gap-1.5 pointer-events-auto transition-all hover:scale-105"
             >
-              <span>Watch Reel</span>
-              <Play size={11} className="fill-white" />
-            </button>
+              <span>Watch on Instagram</span>
+              <ExternalLink size={12} />
+            </a>
           </div>
 
           {/* Caption */}
@@ -238,7 +244,6 @@ const ReelCard = ({ item, index, onOpenReel }) => {
 
 const InstagramFeed = () => {
   const [items, setItems] = useState(SHOWCASE_ITEMS);
-  const [activeModalItem, setActiveModalItem] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -251,7 +256,6 @@ const InstagramFeed = () => {
           res.data.posts.length > 0 &&
           res.data.source === "api"
         ) {
-          // Take top 3 for the 3-in-a-row layout
           const formatted = res.data.posts.slice(0, 3).map((p, i) => ({
             id: p.id || `api-${i}`,
             type: p.media_type === "VIDEO" ? "VIDEO" : "IMAGE",
@@ -262,7 +266,8 @@ const InstagramFeed = () => {
             likes: 2100 + i * 550,
             comments: 110 + i * 35,
             tag: p.media_type === "VIDEO" ? "Reel" : "Post",
-            badgeColor: p.media_type === "VIDEO" ? "from-pink-500 to-rose-600" : "from-emerald-500 to-teal-600"
+            badgeColor: p.media_type === "VIDEO" ? "from-pink-500 to-rose-600" : "from-emerald-500 to-teal-600",
+            permalink: p.permalink || INSTAGRAM_PROFILE_URL
           }));
           if (isMounted) setItems(formatted);
         }
@@ -323,12 +328,7 @@ const InstagramFeed = () => {
         {/* Exact 3-in-a-Row Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {items.slice(0, 3).map((item, index) => (
-            <ReelCard
-              key={item.id || index}
-              item={item}
-              index={index}
-              onOpenReel={(selected) => setActiveModalItem(selected)}
-            />
+            <ReelCard key={item.id || index} item={item} index={index} />
           ))}
         </div>
 
@@ -350,84 +350,6 @@ const InstagramFeed = () => {
           </a>
         </div>
       </div>
-
-      {/* ===================== INTERACTIVE FULLSCREEN REEL MODAL ===================== */}
-      <AnimatePresence>
-        {activeModalItem && (
-          <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-black/85 backdrop-blur-md">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-sm sm:max-w-md bg-stone-950 rounded-3xl overflow-hidden shadow-2xl border border-white/20 flex flex-col"
-            >
-              {/* Close Button */}
-              <button
-                onClick={() => setActiveModalItem(null)}
-                className="absolute top-4 right-4 z-40 w-10 h-10 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center transition-all border border-white/20"
-                aria-label="Close modal"
-              >
-                <X size={20} />
-              </button>
-
-              {/* Modal Video / Media Viewport */}
-              <div className="relative aspect-[9/14] w-full bg-black flex items-center justify-center">
-                {activeModalItem.type === "VIDEO" ? (
-                  <video
-                    src={activeModalItem.videoSrc || beardVideo}
-                    poster={activeModalItem.poster || posterImg}
-                    autoPlay
-                    controls
-                    loop
-                    playsInline
-                    className="w-full h-full object-contain"
-                  />
-                ) : (
-                  <img
-                    src={activeModalItem.imageSrc || activeModalItem.media_url || naturalBlackImg}
-                    alt={activeModalItem.caption}
-                    className="w-full h-full object-contain"
-                  />
-                )}
-              </div>
-
-              {/* Modal Footer info & Instagram link */}
-              <div className="p-5 bg-stone-900 border-t border-stone-800 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-400 via-rose-500 to-purple-600 p-[1.5px]">
-                      <div className="w-full h-full bg-black rounded-full flex items-center justify-center">
-                        <Instagram size={14} className="text-white" />
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-1">
-                        <span className="text-xs font-bold text-white">dailyfix_care</span>
-                        <CheckCircle2 size={12} className="text-blue-400 fill-blue-400" />
-                      </div>
-                      <span className="text-[10px] text-stone-400 font-medium">Dailyfix Official Instagram</span>
-                    </div>
-                  </div>
-
-                  <a
-                    href={INSTAGRAM_PROFILE_URL}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-xs shadow-md transition-all"
-                  >
-                    <span>View on Instagram</span>
-                    <ExternalLink size={12} />
-                  </a>
-                </div>
-
-                <p className="text-xs text-stone-300 leading-relaxed">
-                  {activeModalItem.caption}
-                </p>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </section>
   );
 };
