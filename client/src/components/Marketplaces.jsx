@@ -59,12 +59,15 @@ const MARKETPLACES = [
   }
 ];
 
+// Duplicate items for continuous seamless loop
+const SLIDER_ITEMS = [...MARKETPLACES, ...MARKETPLACES, ...MARKETPLACES, ...MARKETPLACES];
+
 const Marketplaces = () => {
   return (
-    <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white via-stone-50/80 to-white border-t border-stone-200/70">
-      <div className="max-w-7xl mx-auto">
+    <section className="py-16 sm:py-20 lg:py-24 px-0 bg-gradient-to-b from-white via-stone-50/80 to-white border-t border-stone-200/70 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -98,20 +101,53 @@ const Marketplaces = () => {
             Prefer shopping on your trusted platform? Order genuine Dailyfix Ammonia-Free Beard Colour with fast doorstep shipping across India.
           </motion.p>
         </div>
+      </div>
 
-        {/* 4 Marketplace Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-6">
-          {MARKETPLACES.map((market, index) => (
-            <motion.a
-              key={market.id}
+      {/* CSS Keyframes for Infinite Smooth Slider */}
+      <style>{`
+        @keyframes marquee-marketplaces {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-50%);
+          }
+        }
+        .marketplaces-marquee-wrap {
+          position: relative;
+          width: 100%;
+          overflow: hidden;
+        }
+        .marketplaces-marquee-track {
+          display: flex;
+          width: max-content;
+          animation: marquee-marketplaces 30s linear infinite;
+          will-change: transform;
+        }
+        .marketplaces-marquee-wrap:hover .marketplaces-marquee-track {
+          animation-play-state: paused;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .marketplaces-marquee-track {
+            animation: none;
+          }
+        }
+      `}</style>
+
+      {/* Infinite Slider Container */}
+      <div className="relative w-full marketplaces-marquee-wrap py-4" aria-label="Marketplaces carousel">
+        {/* Soft edge blur / fade overlays */}
+        <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-28 bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-28 bg-gradient-to-l from-white via-white/80 to-transparent z-10 pointer-events-none" />
+
+        <div className="marketplaces-marquee-track gap-5 sm:gap-6 pl-4 sm:pl-8">
+          {SLIDER_ITEMS.map((market, index) => (
+            <a
+              key={`${market.id}-${index}`}
               href={market.url}
               target="_blank"
               rel="noreferrer"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.08 }}
-              className={`group relative bg-white rounded-3xl p-6 sm:p-7 border border-stone-200 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-between hover:-translate-y-1.5 ${market.accentColor}`}
+              className={`group relative flex-shrink-0 w-[280px] sm:w-[320px] md:w-[340px] bg-white rounded-3xl p-6 sm:p-7 border border-stone-200 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col justify-between hover:-translate-y-1.5 ${market.accentColor}`}
             >
               {/* Top Row: Badge + Arrow */}
               <div className="flex items-center justify-between mb-5">
@@ -148,10 +184,12 @@ const Marketplaces = () => {
                   <ExternalLink size={14} />
                 </div>
               </div>
-            </motion.a>
+            </a>
           ))}
         </div>
+      </div>
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Bottom Trust Indicators */}
         <div className="mt-12 pt-8 border-t border-stone-200/80 grid grid-cols-1 sm:grid-cols-3 gap-6 text-center sm:text-left">
           <div className="flex items-center justify-center sm:justify-start gap-3">

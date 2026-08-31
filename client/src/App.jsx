@@ -20,6 +20,8 @@ import StoreLocator from './pages/StoreLocator'
 import BeardOil from './pages/BeardOil'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import TermsOfService from './pages/TermsOfService'
+import ReturnPolicy from './pages/ReturnPolicy'
+import ShippingPolicy from './pages/ShippingPolicy'
 import ProductPage from './pages/ProductPage'
 import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
@@ -60,6 +62,8 @@ function App() {
               <Route path="/beard-oil" element={<BeardOil />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="/return-policy" element={<ReturnPolicy />} />
+              <Route path="/shipping-policy" element={<ShippingPolicy />} />
               <Route path="/product/:id" element={<ProductPage />} />
               <Route path="/cart" element={<CartPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />

@@ -68,6 +68,20 @@
   </url>
 
   <url>
+    <loc>https://dailyfixcare.com/return-policy</loc>
+    <lastmod>2026-08-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://dailyfixcare.com/shipping-policy</loc>
+    <lastmod>2026-08-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
     <loc>https://dailyfixcare.com/privacy-policy</loc>
     <lastmod>2026-08-29</lastmod>
     <changefreq>monthly</changefreq>

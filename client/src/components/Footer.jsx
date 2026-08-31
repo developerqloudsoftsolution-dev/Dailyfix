@@ -82,7 +82,8 @@ const Footer = () => {
                 { label: 'About Us', path: '/about' },
                 { label: 'Beard Colour', path: '/shop' },
                 { label: 'Track Order', path: '/track-order' },
-                { label: 'Return Order', path: '/return-order' },
+                { label: 'Return Policy', path: '/return-policy' },
+                { label: 'Shipping Policy', path: '/shipping-policy' },
                 { label: 'Contact', path: '/contact' },
                 { label: 'Store Locator', path: '/store-locator' }
               ].map((link, index) => (
