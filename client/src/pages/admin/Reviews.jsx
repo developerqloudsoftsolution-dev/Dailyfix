@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Star,
@@ -18,7 +19,9 @@ import {
   Send,
   Eye,
   MessageSquare,
-  ShieldCheck
+  ShieldCheck,
+  ChevronDown,
+  Layers
 } from 'lucide-react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
@@ -41,7 +44,34 @@ export const StarRating = ({ rating = 5, size = 15 }) => (
   </div>
 );
 
+const PRODUCT_SHADES = [
+  {
+    slug: 'natural-black-beard-colour',
+    name: 'Natural Black',
+    fullName: "Dailyfix Men's Beard Colour – Natural Black",
+    colorHex: '#1c1917',
+    badgeClass: 'bg-stone-900 text-white border-stone-800'
+  },
+  {
+    slug: 'black-brown-beard-colour',
+    name: 'Black Brown',
+    fullName: "Dailyfix Men's Beard Colour – Black Brown",
+    colorHex: '#35251d',
+    badgeClass: 'bg-[#35251d] text-white border-amber-950'
+  },
+  {
+    slug: 'dark-brown-beard-colour',
+    name: 'Dark Brown',
+    fullName: "Dailyfix Men's Beard Colour – Dark Brown",
+    colorHex: '#4e3523',
+    badgeClass: 'bg-[#4e3523] text-white border-amber-900'
+  }
+];
+
 const AdminReviews = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialProductParam = searchParams.get('productSlug') || searchParams.get('shade') || 'All';
+
   const [reviews, setReviews] = useState([]);
   const [stats, setStats] = useState({
     totalAll: 0,
@@ -52,9 +82,11 @@ const AdminReviews = () => {
   });
   const [loading, setLoading] = useState(true);
 
+  // Active Product Tab ('All' | 'natural-black-beard-colour' | 'black-brown-beard-colour' | 'dark-brown-beard-colour')
+  const [activeProductTab, setActiveProductTab] = useState(initialProductParam);
+
   // Filters
   const [statusFilter, setStatusFilter] = useState('All');
-  const [shadeFilter, setShadeFilter] = useState('All');
   const [ratingFilter, setRatingFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -87,7 +119,6 @@ const AdminReviews = () => {
     try {
       const params = new URLSearchParams();
       if (statusFilter !== 'All') params.append('status', statusFilter);
-      if (shadeFilter !== 'All') params.append('productSlug', shadeFilter);
       if (ratingFilter !== 'All') params.append('rating', ratingFilter);
       if (searchQuery.trim()) params.append('search', searchQuery.trim());
 
@@ -106,7 +137,7 @@ const AdminReviews = () => {
 
   useEffect(() => {
     fetchAdminReviews();
-  }, [statusFilter, shadeFilter, ratingFilter]);
+  }, [statusFilter, ratingFilter]);
 
   // Debounced search
   useEffect(() => {
@@ -115,6 +146,41 @@ const AdminReviews = () => {
     }, 350);
     return () => clearTimeout(timer);
   }, [searchQuery]);
+
+  // Count reviews per product
+  const productCounts = useMemo(() => {
+    const counts = {
+      'All': reviews.length,
+      'natural-black-beard-colour': 0,
+      'black-brown-beard-colour': 0,
+      'dark-brown-beard-colour': 0
+    };
+    reviews.forEach((r) => {
+      const slug = r.productSlug || 'natural-black-beard-colour';
+      if (counts[slug] !== undefined) {
+        counts[slug]++;
+      }
+    });
+    return counts;
+  }, [reviews]);
+
+  // Filter reviews based on active product tab
+  const displayedReviews = useMemo(() => {
+    if (activeProductTab === 'All') return reviews;
+    return reviews.filter((r) => (r.productSlug || 'natural-black-beard-colour') === activeProductTab);
+  }, [reviews, activeProductTab]);
+
+  // Grouped reviews when "All" tab is active
+  const groupedByProduct = useMemo(() => {
+    const groups = {};
+    PRODUCT_SHADES.forEach((p) => {
+      groups[p.slug] = {
+        meta: p,
+        items: reviews.filter((r) => (r.productSlug || 'natural-black-beard-colour') === p.slug)
+      };
+    });
+    return groups;
+  }, [reviews]);
 
   // Status Change
   const handleStatusChange = async (id, newStatus) => {
@@ -125,7 +191,6 @@ const AdminReviews = () => {
         setReviews((prev) =>
           prev.map((r) => ((r._id === id || r.id === id) ? { ...r, status: newStatus } : r))
         );
-        fetchAdminReviews();
       }
     } catch (err) {
       toast.error('Failed to update review status');
@@ -158,7 +223,6 @@ const AdminReviews = () => {
       if (res.data?.success) {
         toast.success('Review deleted successfully');
         setReviews((prev) => prev.filter((r) => r._id !== id && r.id !== id));
-        fetchAdminReviews();
       }
     } catch (err) {
       toast.error('Failed to delete review');
@@ -184,6 +248,27 @@ const AdminReviews = () => {
     }
   };
 
+  // Open add review modal pre-selected for a specific product
+  const handleOpenAddModal = (productSlug = 'natural-black-beard-colour') => {
+    const product = PRODUCT_SHADES.find((p) => p.slug === productSlug) || PRODUCT_SHADES[0];
+    setFormData({
+      productSlug: product.slug,
+      productName: product.fullName,
+      author: '',
+      email: '',
+      rating: 5,
+      headline: '',
+      content: '',
+      shade: product.name,
+      status: 'Approved',
+      isFeatured: false,
+      skinType: 'Sensitive Skin',
+      usageDuration: 'Using for 3 months',
+      location: 'Mumbai, MH'
+    });
+    setIsAddModalOpen(true);
+  };
+
   // Add Review Submit
   const handleAddReviewSubmit = async (e) => {
     e.preventDefault();
@@ -201,21 +286,6 @@ const AdminReviews = () => {
       if (res.data?.success) {
         toast.success('New review created successfully!');
         setIsAddModalOpen(false);
-        setFormData({
-          productSlug: 'natural-black-beard-colour',
-          productName: "Dailyfix Men's Beard Colour – Natural Black",
-          author: '',
-          email: '',
-          rating: 5,
-          headline: '',
-          content: '',
-          shade: 'Natural Black',
-          status: 'Approved',
-          isFeatured: false,
-          skinType: 'Sensitive Skin',
-          usageDuration: 'Using for 3 months',
-          location: 'Mumbai, MH'
-        });
         fetchAdminReviews();
       }
     } catch (err) {
@@ -223,6 +293,157 @@ const AdminReviews = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Render Table Component for any list of reviews
+  const renderReviewTable = (reviewList, productMeta = null) => {
+    if (reviewList.length === 0) {
+      return (
+        <div className="text-center py-12 bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
+          <MessageSquare size={32} className="mx-auto text-slate-300 mb-2" />
+          <h4 className="text-sm font-bold text-slate-700">No reviews found for this product</h4>
+          <p className="text-xs text-slate-400 mt-1">Add a new verified review to boost social proof.</p>
+          <button
+            onClick={() => handleOpenAddModal(productMeta?.slug || 'natural-black-beard-colour')}
+            className="mt-3 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold inline-flex items-center gap-1.5"
+          >
+            <Plus size={14} /> Add Review
+          </button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-xs border-collapse">
+          <thead>
+            <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
+              <th className="py-3.5 px-4">Reviewer</th>
+              <th className="py-3.5 px-4">Product / Shade</th>
+              <th className="py-3.5 px-4">Rating & Testimonial</th>
+              <th className="py-3.5 px-4">Status</th>
+              <th className="py-3.5 px-4">Date</th>
+              <th className="py-3.5 px-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100">
+            {reviewList.map((rev) => {
+              const revId = rev._id || rev.id;
+              const shadeObj = PRODUCT_SHADES.find((p) => p.slug === rev.productSlug) || PRODUCT_SHADES[0];
+
+              return (
+                <tr key={revId} className="hover:bg-slate-50/70 transition-colors">
+                  {/* Reviewer Info */}
+                  <td className="py-4 px-4 align-top">
+                    <div className="font-extrabold text-slate-900 text-sm">{rev.author}</div>
+                    {rev.email && <div className="text-[11px] text-slate-400">{rev.email}</div>}
+                    {rev.location && <div className="text-[11px] text-slate-500 font-medium">{rev.location}</div>}
+                    {rev.verified && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60 mt-1">
+                        <CheckCircle2 size={10} />
+                        Verified Buyer
+                      </span>
+                    )}
+                  </td>
+
+                  {/* Product / Shade Badge */}
+                  <td className="py-4 px-4 align-top">
+                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 font-bold">
+                      <span
+                        className="w-2.5 h-2.5 rounded-full border border-white shadow-xs"
+                        style={{ backgroundColor: shadeObj.colorHex }}
+                      />
+                      <span>{rev.shade || shadeObj.name}</span>
+                    </div>
+                  </td>
+
+                  {/* Rating & Content */}
+                  <td className="py-4 px-4 align-top max-w-md">
+                    <div className="flex items-center gap-2 mb-1">
+                      <StarRating rating={rev.rating || 5} size={14} />
+                      <span className="font-extrabold text-slate-900">{rev.rating || 5}.0</span>
+                      {rev.isFeatured && (
+                        <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold uppercase">
+                          ★ Featured
+                        </span>
+                      )}
+                    </div>
+                    <p className="font-bold text-slate-900 text-xs mb-1 line-clamp-1">{rev.headline}</p>
+                    <p className="text-slate-600 text-xs line-clamp-2 leading-relaxed">{rev.content}</p>
+                  </td>
+
+                  {/* Status Toggle */}
+                  <td className="py-4 px-4 align-top">
+                    <select
+                      value={rev.status || 'Approved'}
+                      onChange={(e) => handleStatusChange(revId, e.target.value)}
+                      className={`px-2.5 py-1 rounded-xl text-xs font-bold border focus:outline-none cursor-pointer ${
+                        rev.status === 'Approved'
+                          ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                          : rev.status === 'Pending'
+                          ? 'bg-amber-50 text-amber-800 border-amber-300'
+                          : 'bg-red-50 text-red-800 border-red-300'
+                      }`}
+                    >
+                      <option value="Approved">Approved</option>
+                      <option value="Pending">Pending</option>
+                      <option value="Rejected">Rejected</option>
+                    </select>
+                  </td>
+
+                  {/* Date */}
+                  <td className="py-4 px-4 align-top text-slate-500 whitespace-nowrap">
+                    {rev.createdAt
+                      ? new Date(rev.createdAt).toLocaleDateString('en-IN', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        })
+                      : rev.date || 'Recent'}
+                  </td>
+
+                  {/* Actions (Feature, View, Delete) */}
+                  <td className="py-4 px-4 align-top text-right whitespace-nowrap">
+                    <div className="inline-flex items-center gap-1.5">
+                      <button
+                        onClick={() => handleToggleFeature(revId)}
+                        className={`p-2 rounded-xl border transition-colors cursor-pointer ${
+                          rev.isFeatured
+                            ? 'bg-amber-50 text-amber-600 border-amber-300'
+                            : 'bg-slate-50 hover:bg-amber-50 text-slate-400 hover:text-amber-600 border-slate-200'
+                        }`}
+                        title={rev.isFeatured ? 'Unfeature' : 'Feature on Product Page'}
+                      >
+                        <Star size={14} className={rev.isFeatured ? 'fill-amber-500 text-amber-500' : ''} />
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setSelectedReview(rev);
+                          setIsDetailModalOpen(true);
+                        }}
+                        className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 transition-colors cursor-pointer"
+                        title="View Full Review"
+                      >
+                        <Eye size={14} />
+                      </button>
+
+                      <button
+                        onClick={() => handleDeleteReview(revId)}
+                        className="p-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 transition-colors cursor-pointer"
+                        title="Delete Review Permanently"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    );
   };
 
   return (
@@ -237,7 +458,7 @@ const AdminReviews = () => {
             <h1 className="text-2xl font-extrabold text-slate-900">Product Reviews Management</h1>
           </div>
           <p className="text-xs sm:text-sm text-slate-500">
-            Manage customer feedback, moderate reviews, and showcase authentic positive social proof.
+            Moderate, organize, and delete customer reviews separated by product shade.
           </p>
         </div>
 
@@ -245,15 +466,15 @@ const AdminReviews = () => {
           <button
             onClick={handleSeedDummy}
             disabled={isSeeding}
-            className="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-2 transition-colors disabled:opacity-50"
+            className="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-2 transition-colors disabled:opacity-50 cursor-pointer"
           >
             <Sparkles size={15} className="text-amber-500" />
             {isSeeding ? 'Seeding...' : 'Seed Positive Reviews'}
           </button>
 
           <button
-            onClick={() => setIsAddModalOpen(true)}
-            className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-emerald-600/20 transition-all"
+            onClick={() => handleOpenAddModal(activeProductTab !== 'All' ? activeProductTab : 'natural-black-beard-colour')}
+            className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
           >
             <Plus size={16} />
             Add Review
@@ -284,9 +505,64 @@ const AdminReviews = () => {
         })}
       </div>
 
-      {/* Controls Bar: Filters & Search */}
+      {/* ===================== SEPARATE PRODUCT TABS ===================== */}
+      <div className="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center gap-2">
+        {/* All Products Tab */}
+        <button
+          onClick={() => {
+            setActiveProductTab('All');
+            setSearchParams({});
+          }}
+          className={`px-4 py-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 cursor-pointer ${
+            activeProductTab === 'All'
+              ? 'bg-slate-900 text-white shadow-md'
+              : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+          }`}
+        >
+          <Layers size={15} />
+          <span>All Products Separated</span>
+          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+            activeProductTab === 'All' ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'
+          }`}>
+            {productCounts['All']}
+          </span>
+        </button>
+
+        {/* Product Shade Tabs */}
+        {PRODUCT_SHADES.map((prod) => {
+          const isSelected = activeProductTab === prod.slug;
+          const count = productCounts[prod.slug] || 0;
+
+          return (
+            <button
+              key={prod.slug}
+              onClick={() => {
+                setActiveProductTab(prod.slug);
+                setSearchParams({ productSlug: prod.slug });
+              }}
+              className={`px-4 py-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center gap-2 border cursor-pointer ${
+                isSelected
+                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/20'
+                  : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200'
+              }`}
+            >
+              <span
+                className="w-3 h-3 rounded-full border border-white/50 shadow-xs flex-shrink-0"
+                style={{ backgroundColor: prod.colorHex }}
+              />
+              <span>{prod.name}</span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                isSelected ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
+              }`}>
+                {count}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Search & Status Controls */}
       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-        {/* Left: Dropdown Filters */}
         <div className="flex flex-wrap items-center gap-3">
           {/* Status Filter */}
           <div className="flex items-center gap-1.5 text-xs">
@@ -294,27 +570,12 @@ const AdminReviews = () => {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
             >
               <option value="All">All Statuses</option>
               <option value="Approved">Approved Only</option>
               <option value="Pending">Pending Moderation</option>
               <option value="Rejected">Rejected</option>
-            </select>
-          </div>
-
-          {/* Product / Shade Filter */}
-          <div className="flex items-center gap-1.5 text-xs">
-            <span className="font-bold text-slate-600">Product:</span>
-            <select
-              value={shadeFilter}
-              onChange={(e) => setShadeFilter(e.target.value)}
-              className="px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            >
-              <option value="All">All Shades</option>
-              <option value="natural-black-beard-colour">Natural Black</option>
-              <option value="black-brown-beard-colour">Black Brown</option>
-              <option value="dark-brown-beard-colour">Dark Brown</option>
             </select>
           </div>
 
@@ -324,7 +585,7 @@ const AdminReviews = () => {
             <select
               value={ratingFilter}
               onChange={(e) => setRatingFilter(e.target.value)}
-              className="px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
             >
               <option value="All">All Ratings</option>
               <option value="5">5 Stars</option>
@@ -336,7 +597,7 @@ const AdminReviews = () => {
           </div>
         </div>
 
-        {/* Right: Search & Refresh */}
+        {/* Search */}
         <div className="flex items-center gap-3">
           <div className="relative flex-1 md:w-64">
             <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -350,7 +611,7 @@ const AdminReviews = () => {
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
               >
                 <X size={12} />
               </button>
@@ -359,7 +620,7 @@ const AdminReviews = () => {
 
           <button
             onClick={fetchAdminReviews}
-            className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors"
+            className="p-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 transition-colors cursor-pointer"
             title="Refresh"
           >
             <RefreshCw size={15} />
@@ -367,155 +628,105 @@ const AdminReviews = () => {
         </div>
       </div>
 
-      {/* Reviews Table / Cards */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-        {loading ? (
-          <div className="text-center py-20">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-emerald-600 mb-3" />
-            <p className="text-xs text-slate-500">Loading reviews...</p>
-          </div>
-        ) : reviews.length === 0 ? (
-          <div className="text-center py-20">
-            <MessageSquare size={36} className="mx-auto text-slate-300 mb-2" />
-            <h4 className="text-base font-bold text-slate-700">No reviews found</h4>
-            <p className="text-xs text-slate-400 mt-1">Try changing your filters or add a new review.</p>
-          </div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="bg-slate-50/80 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
-                  <th className="py-3.5 px-4">Reviewer</th>
-                  <th className="py-3.5 px-4">Product / Shade</th>
-                  <th className="py-3.5 px-4">Rating & Review</th>
-                  <th className="py-3.5 px-4">Status</th>
-                  <th className="py-3.5 px-4">Helpful</th>
-                  <th className="py-3.5 px-4">Date</th>
-                  <th className="py-3.5 px-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {reviews.map((rev) => {
-                  const revId = rev._id || rev.id;
-                  return (
-                    <tr key={revId} className="hover:bg-slate-50/70 transition-colors">
-                      {/* Reviewer */}
-                      <td className="py-4 px-4 align-top">
-                        <div className="font-extrabold text-slate-900 text-sm">{rev.author}</div>
-                        {rev.email && <div className="text-[11px] text-slate-400">{rev.email}</div>}
-                        {rev.location && <div className="text-[11px] text-slate-500 font-medium">{rev.location}</div>}
-                        {rev.verified && (
-                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60 mt-1">
-                            <CheckCircle2 size={10} />
-                            Verified Buyer
-                          </span>
-                        )}
-                      </td>
+      {/* ===================== REVIEWS LISTING (GROUPED OR FILTERED) ===================== */}
+      {loading ? (
+        <div className="text-center py-20 bg-white rounded-3xl border border-slate-200 shadow-sm">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-emerald-600 mb-3" />
+          <p className="text-xs text-slate-500">Loading reviews...</p>
+        </div>
+      ) : activeProductTab === 'All' ? (
+        /* GROUPED PRODUCT VIEW (Distinct card per product) */
+        <div className="space-y-6">
+          {PRODUCT_SHADES.map((prod) => {
+            const group = groupedByProduct[prod.slug];
+            const items = group?.items || [];
 
-                      {/* Product */}
-                      <td className="py-4 px-4 align-top">
-                        <span className="font-bold text-slate-800">{rev.shade || 'Natural Black'}</span>
-                        <div className="text-[11px] text-slate-400 truncate max-w-[150px]">
-                          {rev.productSlug}
-                        </div>
-                      </td>
+            return (
+              <div key={prod.slug} className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+                {/* Product Section Header */}
+                <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-7 h-7 rounded-lg border border-white/60 shadow-xs flex items-center justify-center text-white"
+                      style={{ backgroundColor: prod.colorHex }}
+                    >
+                      <Star size={13} className="fill-white text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm sm:text-base font-extrabold text-slate-900">
+                        {prod.fullName}
+                      </h3>
+                      <p className="text-[11px] text-slate-500 font-medium">
+                        {items.length} total reviews • {items.filter(i => i.status === 'Approved').length} live on store
+                      </p>
+                    </div>
+                  </div>
 
-                      {/* Rating & Content */}
-                      <td className="py-4 px-4 align-top max-w-sm">
-                        <div className="flex items-center gap-2 mb-1">
-                          <StarRating rating={rev.rating || 5} size={14} />
-                          <span className="font-extrabold text-slate-900">{rev.rating || 5}.0</span>
-                          {rev.isFeatured && (
-                            <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[10px] font-bold uppercase">
-                              ★ Featured
-                            </span>
-                          )}
-                        </div>
-                        <p className="font-bold text-slate-900 text-xs mb-1 line-clamp-1">{rev.headline}</p>
-                        <p className="text-slate-600 text-xs line-clamp-2 leading-relaxed">{rev.content}</p>
-                      </td>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        setActiveProductTab(prod.slug);
+                        setSearchParams({ productSlug: prod.slug });
+                      }}
+                      className="px-3 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold transition cursor-pointer"
+                    >
+                      View Only This Shade
+                    </button>
 
-                      {/* Status */}
-                      <td className="py-4 px-4 align-top">
-                        <select
-                          value={rev.status || 'Approved'}
-                          onChange={(e) => handleStatusChange(revId, e.target.value)}
-                          className={`px-2.5 py-1 rounded-xl text-xs font-bold border focus:outline-none ${
-                            rev.status === 'Approved'
-                              ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
-                              : rev.status === 'Pending'
-                              ? 'bg-amber-50 text-amber-800 border-amber-300'
-                              : 'bg-red-50 text-red-800 border-red-300'
-                          }`}
-                        >
-                          <option value="Approved">Approved</option>
-                          <option value="Pending">Pending</option>
-                          <option value="Rejected">Rejected</option>
-                        </select>
-                      </td>
+                    <button
+                      onClick={() => handleOpenAddModal(prod.slug)}
+                      className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1 transition cursor-pointer"
+                    >
+                      <Plus size={13} /> Add Review
+                    </button>
+                  </div>
+                </div>
 
-                      {/* Helpful votes */}
-                      <td className="py-4 px-4 align-top text-slate-600 font-semibold">
-                        <div className="flex items-center gap-1">
-                          <ThumbsUp size={13} className="text-slate-400" />
-                          <span>{rev.helpfulCount || 0}</span>
-                        </div>
-                      </td>
+                {/* Table for this product */}
+                {renderReviewTable(items, prod)}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        /* SINGLE SELECTED PRODUCT VIEW */
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+          {(() => {
+            const currentProd = PRODUCT_SHADES.find((p) => p.slug === activeProductTab) || PRODUCT_SHADES[0];
+            return (
+              <>
+                <div className="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-7 h-7 rounded-lg border border-white/60 shadow-xs flex items-center justify-center text-white"
+                      style={{ backgroundColor: currentProd.colorHex }}
+                    >
+                      <Star size={13} className="fill-white text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm sm:text-base font-extrabold text-slate-900">
+                        {currentProd.fullName}
+                      </h3>
+                      <p className="text-[11px] text-slate-500 font-medium">
+                        Showing {displayedReviews.length} reviews for this product
+                      </p>
+                    </div>
+                  </div>
 
-                      {/* Date */}
-                      <td className="py-4 px-4 align-top text-slate-500 whitespace-nowrap">
-                        {rev.createdAt
-                          ? new Date(rev.createdAt).toLocaleDateString('en-IN', {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric'
-                            })
-                          : rev.date || 'Recent'}
-                      </td>
+                  <button
+                    onClick={() => handleOpenAddModal(currentProd.slug)}
+                    className="px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
+                  >
+                    <Plus size={14} /> Add Review for {currentProd.name}
+                  </button>
+                </div>
 
-                      {/* Actions */}
-                      <td className="py-4 px-4 align-top text-right whitespace-nowrap">
-                        <div className="inline-flex items-center gap-1.5">
-                          <button
-                            onClick={() => handleToggleFeature(revId)}
-                            className={`p-1.5 rounded-lg border transition-colors ${
-                              rev.isFeatured
-                                ? 'bg-amber-50 text-amber-600 border-amber-300'
-                                : 'bg-slate-50 hover:bg-amber-50 text-slate-400 hover:text-amber-600 border-slate-200'
-                            }`}
-                            title={rev.isFeatured ? 'Unfeature' : 'Feature on Product Page'}
-                          >
-                            <Star size={14} className={rev.isFeatured ? 'fill-amber-500 text-amber-500' : ''} />
-                          </button>
-
-                          <button
-                            onClick={() => {
-                              setSelectedReview(rev);
-                              setIsDetailModalOpen(true);
-                            }}
-                            className="p-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-600 border border-slate-200 transition-colors"
-                            title="View Details"
-                          >
-                            <Eye size={14} />
-                          </button>
-
-                          <button
-                            onClick={() => handleDeleteReview(revId)}
-                            className="p-1.5 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 transition-colors"
-                            title="Delete Review"
-                          >
-                            <Trash2 size={14} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+                {renderReviewTable(displayedReviews, currentProd)}
+              </>
+            );
+          })()}
+        </div>
+      )}
 
       {/* ===================== ADD REVIEW MODAL ===================== */}
       <AnimatePresence>
@@ -529,13 +740,13 @@ const AdminReviews = () => {
             >
               <button
                 onClick={() => setIsAddModalOpen(false)}
-                className="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500"
+                className="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer"
               >
                 <X size={16} />
               </button>
 
               <h3 className="text-xl font-extrabold text-slate-900 mb-1">Add Product Review</h3>
-              <p className="text-xs text-slate-500 mb-6">Create a verified positive customer testimonial</p>
+              <p className="text-xs text-slate-500 mb-6">Create a verified customer review for this product</p>
 
               <form onSubmit={handleAddReviewSubmit} className="space-y-4">
                 {/* Product / Shade */}
@@ -546,28 +757,21 @@ const AdminReviews = () => {
                       value={formData.productSlug}
                       onChange={(e) => {
                         const val = e.target.value;
-                        const nameMap = {
-                          'natural-black-beard-colour': "Dailyfix Men's Beard Colour – Natural Black",
-                          'black-brown-beard-colour': "Dailyfix Men's Beard Colour – Black Brown",
-                          'dark-brown-beard-colour': "Dailyfix Men's Beard Colour – Dark Brown"
-                        };
-                        const shadeMap = {
-                          'natural-black-beard-colour': 'Natural Black',
-                          'black-brown-beard-colour': 'Black Brown',
-                          'dark-brown-beard-colour': 'Dark Brown'
-                        };
+                        const prod = PRODUCT_SHADES.find((p) => p.slug === val) || PRODUCT_SHADES[0];
                         setFormData({
                           ...formData,
-                          productSlug: val,
-                          productName: nameMap[val] || "Dailyfix Men's Beard Colour",
-                          shade: shadeMap[val] || 'Natural Black'
+                          productSlug: prod.slug,
+                          productName: prod.fullName,
+                          shade: prod.name
                         });
                       }}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white"
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white cursor-pointer"
                     >
-                      <option value="natural-black-beard-colour">Natural Black</option>
-                      <option value="black-brown-beard-colour">Black Brown</option>
-                      <option value="dark-brown-beard-colour">Dark Brown</option>
+                      {PRODUCT_SHADES.map((p) => (
+                        <option key={p.slug} value={p.slug}>
+                          {p.name} ({p.fullName})
+                        </option>
+                      ))}
                     </select>
                   </div>
 
@@ -576,7 +780,7 @@ const AdminReviews = () => {
                     <select
                       value={formData.rating}
                       onChange={(e) => setFormData({ ...formData, rating: Number(e.target.value) })}
-                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white"
+                      className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-semibold bg-white cursor-pointer"
                     >
                       <option value={5}>★★★★★ 5.0 (Excellent)</option>
                       <option value={4}>★★★★☆ 4.0 (Very Good)</option>
@@ -585,14 +789,14 @@ const AdminReviews = () => {
                   </div>
                 </div>
 
-                {/* Author Name & Email */}
+                {/* Author Name & Location */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1">Reviewer Name *</label>
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Dr. Sameer Kulkarni"
+                      placeholder="e.g. Vikram Singhania"
                       value={formData.author}
                       onChange={(e) => setFormData({ ...formData, author: e.target.value })}
                       className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs"
@@ -617,7 +821,7 @@ const AdminReviews = () => {
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Zero irritation, looks 100% natural"
+                    placeholder="e.g. 100% Grey Coverage with Zero Skin Staining"
                     value={formData.headline}
                     onChange={(e) => setFormData({ ...formData, headline: e.target.value })}
                     className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold"
@@ -654,7 +858,7 @@ const AdminReviews = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition-colors"
+                    className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md transition-colors cursor-pointer"
                   >
                     {isSubmitting ? 'Creating...' : 'Save & Publish Review'}
                   </button>
@@ -677,7 +881,7 @@ const AdminReviews = () => {
             >
               <button
                 onClick={() => setIsDetailModalOpen(false)}
-                className="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500"
+                className="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 cursor-pointer"
               >
                 <X size={16} />
               </button>
@@ -719,13 +923,23 @@ const AdminReviews = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                <button
+                  onClick={() => {
+                    handleDeleteReview(selectedReview._id || selectedReview.id);
+                    setIsDetailModalOpen(false);
+                  }}
+                  className="px-4 py-2 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Trash2 size={13} /> Delete Review
+                </button>
+
                 <button
                   onClick={() => {
                     handleStatusChange(selectedReview._id || selectedReview.id, 'Approved');
                     setIsDetailModalOpen(false);
                   }}
-                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs"
+                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs cursor-pointer"
                 >
                   Approve Review
                 </button>

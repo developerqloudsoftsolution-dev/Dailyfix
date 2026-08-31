@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Search,
   Plus,
@@ -17,6 +18,8 @@ import {
   Layers,
   Sparkles,
   Upload,
+  Star,
+  MessageSquare
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { productAPI } from "../../services/api";
@@ -41,6 +44,7 @@ const initialProductForm = {
 };
 
 export default function Products() {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -509,6 +513,14 @@ export default function Products() {
                           className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
                         >
                           <Eye size={15} />
+                        </button>
+
+                        <button
+                          onClick={() => navigate('/admin/reviews')}
+                          title="Manage Customer Reviews"
+                          className="p-2 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-600 transition"
+                        >
+                          <Star size={15} className="fill-amber-400 text-amber-500" />
                         </button>
 
                         <button
