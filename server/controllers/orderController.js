@@ -256,7 +256,71 @@ export const createOrder = async (req, res) => {
 
     /*
     ==========================================
-    SEND EMAILS FIRST (CRITICAL!)
+    EKART INTEGRATION (DIRECT AUTO-SHIPMENT)
+    ==========================================
+    */
+
+    try {
+      order.carrier = "Ekart";
+      const shipmentPayload = await ekartService.buildShipmentPayload(order);
+      console.log(`📦 [Auto-Ship] Booking Ekart shipment for order ${order.orderId}...`);
+
+      const shipmentResponse = await ekartService.createShipment(shipmentPayload);
+      console.log("Shipment Response (Ekart):", JSON.stringify(shipmentResponse, null, 2));
+
+      const trackingId =
+        shipmentResponse?.tracking_id ||
+        shipmentResponse?.waybill ||
+        shipmentResponse?.data?.tracking_id ||
+        ekartService.extractTrackingId(shipmentResponse);
+
+      console.log("Ekart AWB / Tracking ID:", trackingId);
+
+      if (trackingId) {
+        order.ekart = {
+          trackingId: String(trackingId),
+          waybill: String(trackingId),
+          shipmentId: ekartService.getShipmentId(shipmentResponse) || String(trackingId),
+          pickupRequestId: ekartService.getPickupRequestId(shipmentResponse) || "",
+          currentStatus: "Manifested",
+          labelUrl: ekartService.getLabelURL(shipmentResponse) || "",
+          invoiceUrl: ekartService.getInvoiceURL(shipmentResponse) || "",
+          expectedDelivery: ekartService.getEstimatedDelivery(shipmentResponse) || null,
+          shipmentResponse,
+          trackingHistory: [],
+          lastSynced: new Date(),
+        };
+
+        try {
+          const label = await ekartService.generateShippingLabel(trackingId);
+          order.ekart.label = label;
+        } catch (labelErr) {
+          console.log("⚠ Ekart Shipping Label Generation Notice:", labelErr.message);
+        }
+
+        await order.save();
+        console.log(`✅ [Auto-Ship] Ekart Details & AWB (${trackingId}) Saved to MongoDB`);
+      }
+    } catch (ekartErr) {
+      console.error("❌ [Auto-Ship] EKART AUTO-SHIPMENT FAILED:", ekartErr.message);
+
+      // Record failure notice in order so admin sees the reason (e.g. wallet recharge needed)
+      try {
+        order.ekart = {
+          ...(order.ekart || {}),
+          currentStatus: "Booking Failed",
+          shipmentResponse: { error: ekartErr.message },
+          lastSynced: new Date(),
+        };
+        await order.save();
+      } catch (saveErr) {
+        console.error("Failed to save Ekart error notice to order:", saveErr.message);
+      }
+    }
+
+    /*
+    ==========================================
+    SEND EMAILS (WITH LIVE TRACKING IF GENERATED)
     ==========================================
     */
 
@@ -307,7 +371,7 @@ export const createOrder = async (req, res) => {
 
     /*
     ==========================================
-    SUCCESS RESPONSE (SEND BEFORE DELHIVERY!)
+    SUCCESS RESPONSE (INCLUDES WAYBILL)
     ==========================================
     */
 
@@ -321,6 +385,8 @@ export const createOrder = async (req, res) => {
         orderId: order.orderId,
         _id: order._id,
         status: order.status,
+        carrier: order.carrier,
+        waybill: order.ekart?.waybill || order.delhivery?.waybill || null,
         paymentMethod: order.paymentMethod,
         paymentStatus: order.paymentStatus,
         total: order.total,
@@ -328,7 +394,7 @@ export const createOrder = async (req, res) => {
         shipping: order.shipping,
         subtotal: order.total - order.tax - order.shipping,
         createdAt: order.createdAt,
-        estimatedDelivery: order.delhivery?.expectedDelivery || null,
+        estimatedDelivery: order.ekart?.expectedDelivery || order.delhivery?.expectedDelivery || null,
         customer: {
           firstName: order.customer.firstName,
           lastName: order.customer.lastName,
@@ -355,73 +421,6 @@ export const createOrder = async (req, res) => {
             },
       },
     });
-
-    /*
-    ==========================================
-    EKART INTEGRATION (AUTO-SHIP IN BACKGROUND, NON-BLOCKING)
-    ==========================================
-    */
-
-    try {
-      order.carrier = "Ekart";
-      const shipmentPayload = await ekartService.buildShipmentPayload(order);
-      console.log("📦 Ekart Payload:", JSON.stringify(shipmentPayload, null, 2));
-
-      const shipmentResponse = await ekartService.createShipment(shipmentPayload);
-      console.log("Shipment Response (Ekart):", JSON.stringify(shipmentResponse, null, 2));
-
-      const trackingId =
-        shipmentResponse?.tracking_id ||
-        shipmentResponse?.waybill ||
-        shipmentResponse?.data?.tracking_id ||
-        ekartService.extractTrackingId(shipmentResponse);
-
-      console.log("Ekart AWB / Tracking ID:", trackingId);
-
-      if (trackingId) {
-        order.ekart = {
-          trackingId: String(trackingId),
-          waybill: String(trackingId),
-          shipmentId: ekartService.getShipmentId(shipmentResponse) || String(trackingId),
-          pickupRequestId: ekartService.getPickupRequestId(shipmentResponse) || "",
-          currentStatus: "Manifested",
-          labelUrl: ekartService.getLabelURL(shipmentResponse) || "",
-          invoiceUrl: ekartService.getInvoiceURL(shipmentResponse) || "",
-          expectedDelivery: ekartService.getEstimatedDelivery(shipmentResponse) || null,
-          shipmentResponse,
-          trackingHistory: [],
-          lastSynced: new Date(),
-        };
-
-        try {
-          const label = await ekartService.generateShippingLabel(trackingId);
-          console.log("✅ Ekart Shipping Label Generated");
-          order.ekart.label = label;
-          console.log("✅ Ekart Shipping Label Saved");
-        } catch (labelErr) {
-          console.log("⚠ Ekart Shipping Label Generation Notice:", labelErr.message);
-        }
-
-        await order.save();
-        console.log("✅ Ekart Details Saved to MongoDB");
-      }
-    } catch (ekartErr) {
-      console.error("❌ EKART AUTO-SHIPMENT FAILED:");
-      console.error(ekartErr.message);
-
-      // Record failure notice in order so admin sees the reason (e.g. wallet recharge needed)
-      try {
-        order.ekart = {
-          ...(order.ekart || {}),
-          currentStatus: "Booking Failed",
-          shipmentResponse: { error: ekartErr.message },
-          lastSynced: new Date(),
-        };
-        await order.save();
-      } catch (saveErr) {
-        console.error("Failed to save Ekart error notice to order:", saveErr.message);
-      }
-    }
   }catch (error) {
     console.error("❌ Order creation failed:", error.message);
 
@@ -2596,6 +2595,49 @@ export const notifyOrderCustomer = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: error.message || "Failed to notify customer",
+    });
+  }
+};
+
+/*
+=================================================
+DELETE ORDER (MANUAL ADMIN ACTION)
+=================================================
+*/
+
+export const deleteOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const order = await Order.findOne({
+      $or: [
+        { _id: isValidObjectId(id) ? id : null },
+        { orderId: id }
+      ]
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    const orderId = order.orderId;
+    await Order.findByIdAndDelete(order._id);
+
+    console.log(`🗑️ [Order Deleted] Order ${orderId} deleted by admin.`);
+
+    return res.status(200).json({
+      success: true,
+      message: `Order #${orderId} deleted successfully.`,
+      orderId,
+    });
+  } catch (error) {
+    console.error("DELETE ORDER ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to delete order",
     });
   }
 };

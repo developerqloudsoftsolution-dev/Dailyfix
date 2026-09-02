@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Instagram,
@@ -11,69 +11,136 @@ import {
   ExternalLink,
   Sparkles,
   Film,
-  ArrowUpRight
+  ArrowUpRight,
+  ChevronLeft,
+  ChevronRight,
+  Music2,
+  Flame,
+  Pause
 } from "lucide-react";
 import api from "../services/api";
+
+// High quality media assets
 import beardVideo from "../assets/Untitled design (3).mp4";
 import posterImg from "../assets/images/poster.png";
 import howToUseImg from "../assets/images/How to use1.jpg.jpeg";
 import naturalBlackImg from "../assets/images/001 Natural black1.png";
 import brownBlackImg from "../assets/images/002 Brown black2.png";
+import darkBrownImg from "../assets/images/003 Drak brown3.png";
+import perfectBeardImg from "../assets/images/Perfect beard color.jpg.jpeg";
+import dImg from "../assets/images/d.jpg.jpeg";
 
 const INSTAGRAM_PROFILE_URL = "https://www.instagram.com/dailyfix_care/";
 
-// 3 High-Impact Curated Showcase Reels/Posts (3 in a row)
-const SHOWCASE_ITEMS = [
+// 6 Curated High-Impact Reels with Masonry Heights & Varied Aspects
+const SHOWCASE_REELS = [
   {
-    id: "ig-reel-1",
+    id: "reel-1",
     type: "VIDEO",
     videoSrc: beardVideo,
     poster: posterImg,
-    caption: "10-minute transformation before shower! 100% natural grey coverage with zero skin burning. Ammonia-Free formula. 🧔⚡",
-    likes: 3840,
-    comments: 214,
-    tag: "Reel • Transformation",
-    badgeColor: "from-pink-500 to-rose-600",
+    caption: "10-minute transformation before shower! 100% natural grey coverage with zero skin burning. Ammonia-Free formula. 🧔⚡ #DailyfixGrooming",
+    likes: 4820,
+    comments: 284,
+    tag: "Transformation Reel",
+    badgeGradient: "from-pink-500 via-rose-500 to-amber-500",
     shade: "Natural Black",
+    soundTitle: "Dailyfix Original Audio • Beard Magic",
+    masonryHeight: "h-[470px]", // Tall full reel
+    masonryOffset: "md:mt-0",
     permalink: INSTAGRAM_PROFILE_URL
   },
   {
-    id: "ig-post-2",
-    type: "IMAGE",
+    id: "reel-2",
+    type: "IMAGE_REEL",
     imageSrc: naturalBlackImg,
-    caption: "Natural Black shade in natural daylight. Soft, multi-tonal richness — no fake ink or painted shoe-polish look. 🌿✨",
-    likes: 2450,
-    comments: 156,
-    tag: "Post • Results",
-    badgeColor: "from-emerald-500 to-teal-600",
+    caption: "Natural Black in direct sunlight. Soft, rich texture with no artificial shoe-polish look. 🌿✨ #RealResults",
+    likes: 3450,
+    comments: 192,
+    tag: "Shade Spotlight",
+    badgeGradient: "from-emerald-500 via-teal-500 to-cyan-600",
     shade: "Natural Black",
+    soundTitle: "Grooming Beats • Men's Care",
+    masonryHeight: "h-[400px]", // Mid height
+    masonryOffset: "md:mt-8",
     permalink: INSTAGRAM_PROFILE_URL
   },
   {
-    id: "ig-reel-3",
+    id: "reel-3",
     type: "VIDEO",
     videoSrc: beardVideo,
     poster: howToUseImg,
-    caption: "How to use at home: Mix 1:1, comb through dry beard, wait 5–10 mins, rinse. Effortless salon finish every time! 🚿🧼",
-    likes: 4920,
-    comments: 320,
-    tag: "Reel • Tutorial",
-    badgeColor: "from-purple-500 to-indigo-600",
+    caption: "How to apply at home: Mix 1:1, comb through dry beard, wait 5–10 mins, rinse. Effortless salon finish! 🚿🧼 #Tutorial",
+    likes: 5910,
+    comments: 340,
+    tag: "Step-By-Step Reel",
+    badgeGradient: "from-purple-500 via-pink-500 to-rose-500",
     shade: "Black Brown",
+    soundTitle: "Original Sound • Dailyfix Academy",
+    masonryHeight: "h-[445px]", // Long reel
+    masonryOffset: "md:mt-3",
+    permalink: INSTAGRAM_PROFILE_URL
+  },
+  {
+    id: "reel-4",
+    type: "IMAGE_REEL",
+    imageSrc: brownBlackImg,
+    caption: "002 Black Brown — our #1 best-seller for Indian beards. Warm, sharp, and distinguished. 🔥 #TrendingShade",
+    likes: 4120,
+    comments: 215,
+    tag: "Customer Favourite",
+    badgeGradient: "from-amber-500 via-orange-500 to-rose-600",
+    shade: "Black Brown",
+    soundTitle: "Confidence Starts Here • Dailyfix",
+    masonryHeight: "h-[470px]", // Tall full reel
+    masonryOffset: "md:mt-0",
+    permalink: INSTAGRAM_PROFILE_URL
+  },
+  {
+    id: "reel-5",
+    type: "VIDEO",
+    videoSrc: beardVideo,
+    poster: dImg,
+    caption: "No ammonia. No staining. No eye burning. The gentlest beard colour in India tested on sensitive skin. 🛡️ #SkinFirst",
+    likes: 3890,
+    comments: 180,
+    tag: "Ammonia Free",
+    badgeGradient: "from-cyan-500 via-blue-500 to-indigo-600",
+    shade: "Dark Brown",
+    soundTitle: "Gentle Formula • Dermat Tested",
+    masonryHeight: "h-[400px]", // Mid height
+    masonryOffset: "md:mt-7",
+    permalink: INSTAGRAM_PROFILE_URL
+  },
+  {
+    id: "reel-6",
+    type: "IMAGE_REEL",
+    imageSrc: perfectBeardImg,
+    caption: "Before vs After — watch 10 years vanish from your face in just 10 minutes. Clean, youthful, sharp. ⚡ #Transformation",
+    likes: 6430,
+    comments: 412,
+    tag: "Before & After",
+    badgeGradient: "from-rose-500 via-purple-500 to-indigo-600",
+    shade: "Natural Black",
+    soundTitle: "Dailyfix Viral Sound • 100K+ Uses",
+    masonryHeight: "h-[445px]", // Long reel
+    masonryOffset: "md:mt-2",
     permalink: INSTAGRAM_PROFILE_URL
   }
 ];
 
-const ReelCard = ({ item, index }) => {
+// Single Masonry Reel Card
+const MasonryReelCard = ({ item, isAutoPlaying }) => {
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
   const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(item.likes || 2400);
+  const [likeCount, setLikeCount] = useState(item.likes || 3200);
 
   const isVideo = item.type === "VIDEO";
   const postUrl = item.permalink || INSTAGRAM_PROFILE_URL;
 
+  // Auto-play videos in muted state
   useEffect(() => {
     if (videoRef.current && isVideo) {
       videoRef.current.muted = true;
@@ -117,15 +184,11 @@ const ReelCard = ({ item, index }) => {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 25 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.45, delay: index * 0.1 }}
-      className="group relative rounded-3xl overflow-hidden bg-stone-950 shadow-xl hover:shadow-2xl transition-all duration-500 border border-stone-200/90 hover:border-pink-500/50 flex flex-col justify-between"
+    <div
+      className={`relative flex-shrink-0 w-[275px] sm:w-[305px] lg:w-[325px] ${item.masonryHeight} ${item.masonryOffset} rounded-[28px] overflow-hidden bg-stone-950 shadow-xl hover:shadow-2xl transition-all duration-500 border border-stone-800/80 hover:border-pink-500/60 group select-none flex flex-col justify-between`}
     >
-      {/* Media Viewport */}
-      <div className="relative aspect-[4/5] sm:aspect-[9/13] w-full overflow-hidden bg-stone-950">
+      {/* Background Media Container */}
+      <div className="absolute inset-0 w-full h-full overflow-hidden bg-stone-950">
         {isVideo ? (
           <>
             <video
@@ -136,115 +199,138 @@ const ReelCard = ({ item, index }) => {
               loop
               muted={isMuted}
               playsInline
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
             />
 
-            {/* Play/Pause state indicator */}
+            {/* Play/Pause icon overlay on manual pause */}
             {!isPlaying && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px] pointer-events-none">
-                <div className="w-14 h-14 rounded-full bg-white/30 backdrop-blur-md flex items-center justify-center text-white">
-                  <Play size={26} className="ml-1 fill-white" />
+              <div className="absolute inset-0 flex items-center justify-center bg-black/45 backdrop-blur-[2px] pointer-events-none transition-all">
+                <div className="w-14 h-14 rounded-full bg-white/25 backdrop-blur-md flex items-center justify-center text-white shadow-xl">
+                  <Play size={26} className="ml-1 fill-white text-white" />
                 </div>
               </div>
             )}
 
-            {/* Audio Mute/Unmute Button */}
+            {/* Audio Mute/Unmute toggle */}
             <button
               onClick={toggleMute}
-              className="absolute top-4 right-4 z-30 w-9 h-9 rounded-full bg-black/60 backdrop-blur-md text-white flex items-center justify-center hover:bg-black/80 hover:scale-110 transition-all border border-white/20 shadow-md"
+              className="absolute top-4 right-4 z-30 w-8 h-8 rounded-full bg-black/60 backdrop-blur-md text-white flex items-center justify-center hover:bg-black/80 hover:scale-110 transition-all border border-white/20 shadow-lg cursor-pointer"
               aria-label={isMuted ? "Unmute reel" : "Mute reel"}
             >
-              {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} className="text-emerald-400" />}
+              {isMuted ? (
+                <VolumeX size={14} className="text-white/80" />
+              ) : (
+                <Volume2 size={14} className="text-emerald-400" />
+              )}
             </button>
 
-            {/* Tap to Play/Pause controller */}
+            {/* Interactive Tap Zone to play/pause */}
             <button
               onClick={togglePlay}
               className="absolute inset-0 w-full h-full z-10 cursor-pointer focus:outline-none"
-              aria-label="Toggle play/pause"
+              aria-label="Toggle reel play"
             />
           </>
         ) : (
           <img
             src={item.imageSrc || item.media_url || naturalBlackImg}
-            alt={item.caption || "Dailyfix Instagram Post"}
+            alt={item.caption || "Dailyfix Instagram Reel"}
             loading="lazy"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 bg-stone-900"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out bg-stone-900"
           />
         )}
+      </div>
 
-        {/* Top Header Scrim & User Badge */}
-        <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/80 via-black/30 to-transparent z-20 pointer-events-none flex items-center justify-between">
-          <a
-            href={INSTAGRAM_PROFILE_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="pointer-events-auto flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/15 hover:bg-black/70 transition-colors"
-          >
-            <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-amber-400 via-rose-500 to-purple-600 p-[1px] flex-shrink-0">
-              <div className="w-full h-full bg-black rounded-full flex items-center justify-center">
-                <Instagram size={11} className="text-white" />
-              </div>
+      {/* Top Scrim & Reels Header */}
+      <div className="relative z-20 p-4 bg-gradient-to-b from-black/85 via-black/40 to-transparent pointer-events-none flex items-center justify-between">
+        <a
+          href={INSTAGRAM_PROFILE_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="pointer-events-auto flex items-center gap-2 bg-black/50 backdrop-blur-md px-2.5 py-1.5 rounded-full border border-white/15 hover:bg-black/80 transition-colors"
+        >
+          <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-amber-400 via-rose-500 to-purple-600 p-[1px] flex-shrink-0">
+            <div className="w-full h-full bg-black rounded-full flex items-center justify-center">
+              <Instagram size={10} className="text-white" />
             </div>
-            <span className="text-xs font-bold text-white tracking-tight">dailyfix_care</span>
-            <CheckCircle2 size={12} className="text-blue-400 fill-blue-400" />
-          </a>
+          </div>
+          <span className="text-[11px] font-bold text-white tracking-tight">dailyfix_care</span>
+          <CheckCircle2 size={11} className="text-blue-400 fill-blue-400" />
+        </a>
 
-          <span className={`px-2.5 py-1 rounded-full text-white text-[11px] font-extrabold uppercase tracking-wider flex items-center gap-1.5 backdrop-blur-md bg-gradient-to-r ${item.badgeColor || 'from-pink-500 to-rose-600'} shadow-md`}>
-            {isVideo ? <Film size={12} /> : <Instagram size={12} />}
+        <div className="flex items-center gap-1.5 pointer-events-none">
+          <span
+            className={`px-2.5 py-1 rounded-full text-white text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1 backdrop-blur-md bg-gradient-to-r ${item.badgeGradient || "from-pink-500 to-rose-600"} shadow-md`}
+          >
+            {isVideo ? <Film size={11} /> : <Flame size={11} className="fill-white" />}
             {isVideo ? "Reel" : "Post"}
           </span>
         </div>
+      </div>
 
-        {/* Bottom Content Scrim */}
-        <div className="absolute bottom-0 left-0 right-0 p-5 pt-16 bg-gradient-to-t from-black/95 via-black/65 to-transparent z-20 pointer-events-none">
-          {/* Action Row */}
-          <div className="flex items-center justify-between mb-2.5 pointer-events-auto">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={handleLike}
-                className="flex items-center gap-1.5 text-white hover:scale-110 transition-transform"
-              >
-                <Heart
-                  size={20}
-                  className={`transition-colors ${
-                    isLiked ? "fill-rose-500 text-rose-500" : "text-white hover:text-rose-400"
-                  }`}
-                />
-                <span className="text-xs font-bold">{likeCount.toLocaleString()}</span>
-              </button>
-
-              <div className="flex items-center gap-1.5 text-white/90">
-                <MessageCircle size={19} />
-                <span className="text-xs font-bold">{item.comments}</span>
-              </div>
-            </div>
-
-            {/* Direct Redirect to Instagram Reel/Post */}
-            <a
-              href={postUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="text-xs font-bold text-white bg-gradient-to-r from-purple-600 via-pink-600 to-rose-600 hover:from-purple-500 hover:via-pink-500 hover:to-rose-500 px-4 py-1.5 rounded-full shadow-lg shadow-pink-600/30 flex items-center gap-1.5 pointer-events-auto transition-all hover:scale-105"
+      {/* Bottom Scrim & Content Controls */}
+      <div className="relative z-20 p-4 sm:p-5 pt-12 bg-gradient-to-t from-black via-black/75 to-transparent pointer-events-none flex flex-col justify-end">
+        {/* Actions Row */}
+        <div className="flex items-center justify-between mb-2.5 pointer-events-auto">
+          <div className="flex items-center gap-3">
+            {/* Heart / Like Button */}
+            <button
+              onClick={handleLike}
+              className="flex items-center gap-1 text-white hover:scale-110 active:scale-95 transition-transform cursor-pointer"
             >
-              <span>Watch on Instagram</span>
-              <ExternalLink size={12} />
-            </a>
+              <Heart
+                size={18}
+                className={`transition-colors ${
+                  isLiked ? "fill-rose-500 text-rose-500" : "text-white hover:text-rose-400"
+                }`}
+              />
+              <span className="text-xs font-bold">{likeCount.toLocaleString()}</span>
+            </button>
+
+            {/* Comments Counter */}
+            <div className="flex items-center gap-1 text-white/90 text-xs font-bold">
+              <MessageCircle size={17} />
+              <span>{item.comments}</span>
+            </div>
           </div>
 
-          {/* Caption */}
-          <p className="text-white text-xs sm:text-sm font-medium leading-relaxed line-clamp-2 drop-shadow-md">
-            {item.caption}
-          </p>
+          {/* Direct CTA Button */}
+          <a
+            href={postUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="text-[11px] font-extrabold text-white bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:from-purple-500 hover:via-pink-500 hover:to-amber-400 px-3 py-1 rounded-full shadow-lg shadow-pink-600/30 flex items-center gap-1 pointer-events-auto transition-all hover:scale-105"
+          >
+            <span>Watch</span>
+            <ExternalLink size={10} />
+          </a>
         </div>
+
+        {/* Audio Track Marquee */}
+        <div className="flex items-center gap-1.5 text-[11px] font-medium text-white/70 mb-2 truncate">
+          <Music2 size={11} className="text-pink-400 flex-shrink-0 animate-pulse" />
+          <span className="truncate">{item.soundTitle || "Dailyfix Original Audio"}</span>
+        </div>
+
+        {/* Caption */}
+        <p className="text-white text-xs font-medium leading-snug line-clamp-2 drop-shadow-md">
+          {item.caption}
+        </p>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
 const InstagramFeed = () => {
-  const [items, setItems] = useState(SHOWCASE_ITEMS);
+  const [reels, setReels] = useState(SHOWCASE_REELS);
+  const [autoPlayEnabled, setAutoPlayEnabled] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+  const sliderRef = useRef(null);
+  const isDraggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const scrollLeftRef = useRef(0);
 
+  // Fetch dynamic posts from backend API if available, fallback to 6 curated reels
   useEffect(() => {
     let isMounted = true;
     const fetchInstagramPosts = async () => {
@@ -253,26 +339,30 @@ const InstagramFeed = () => {
         if (
           res.data?.success &&
           Array.isArray(res.data.posts) &&
-          res.data.posts.length > 0 &&
+          res.data.posts.length >= 3 &&
           res.data.source === "api"
         ) {
-          const formatted = res.data.posts.slice(0, 3).map((p, i) => ({
-            id: p.id || `api-${i}`,
-            type: p.media_type === "VIDEO" ? "VIDEO" : "IMAGE",
+          const apiReels = res.data.posts.slice(0, 6).map((p, i) => ({
+            id: p.id || `api-reel-${i}`,
+            type: p.media_type === "VIDEO" ? "VIDEO" : "IMAGE_REEL",
             videoSrc: p.media_type === "VIDEO" ? p.media_url : null,
             imageSrc: p.media_type !== "VIDEO" ? p.media_url : null,
             poster: p.thumbnail_url || posterImg,
-            caption: p.caption || "Dailyfix Ammonia-Free Beard Colour 🧔✨",
-            likes: 2100 + i * 550,
-            comments: 110 + i * 35,
-            tag: p.media_type === "VIDEO" ? "Reel" : "Post",
-            badgeColor: p.media_type === "VIDEO" ? "from-pink-500 to-rose-600" : "from-emerald-500 to-teal-600",
+            caption: p.caption || "Dailyfix 100% Ammonia-Free Beard Colour 🧔✨",
+            likes: 3100 + i * 480,
+            comments: 180 + i * 42,
+            tag: p.media_type === "VIDEO" ? "Instagram Reel" : "Customer Post",
+            badgeGradient: p.media_type === "VIDEO" ? "from-pink-500 to-rose-600" : "from-emerald-500 to-teal-600",
+            shade: "Natural Black",
+            soundTitle: "Original Audio • dailyfix_care",
+            masonryHeight: i % 3 === 0 ? "h-[470px]" : i % 3 === 1 ? "h-[400px]" : "h-[445px]",
+            masonryOffset: i % 3 === 0 ? "md:mt-0" : i % 3 === 1 ? "md:mt-8" : "md:mt-3",
             permalink: p.permalink || INSTAGRAM_PROFILE_URL
           }));
-          if (isMounted) setItems(formatted);
+          if (isMounted) setReels(apiReels);
         }
       } catch (err) {
-        // Retain curated 3 showcase items
+        // Fallback to 6 curated showcase reels
       }
     };
 
@@ -282,71 +372,221 @@ const InstagramFeed = () => {
     };
   }, []);
 
-  return (
-    <section className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-stone-50 via-white to-stone-50 border-t border-stone-200/80">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div>
-            <a
-              href={INSTAGRAM_PROFILE_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-orange-500/10 border border-pink-500/20 text-pink-700 text-xs font-extrabold uppercase tracking-wider mb-3 hover:scale-105 transition-transform"
-            >
-              <Instagram size={14} className="text-pink-600" />
-              <span>Follow @dailyfix_care</span>
-            </a>
+  // Smooth Auto-Slider Effect (Gentle continuous horizontal motion)
+  useEffect(() => {
+    const slider = sliderRef.current;
+    if (!slider) return;
 
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-stone-900 tracking-tight leading-tight">
-              Real Transformations on{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500">
+    let animationFrameId;
+    const scrollSpeed = 0.65; // pixels per frame for silky continuous drift
+
+    const step = () => {
+      // Only drift if autoPlay is enabled, not hovered, and not dragging
+      if (autoPlayEnabled && !isHovered && !isDraggingRef.current && slider) {
+        slider.scrollLeft += scrollSpeed;
+
+        // Infinite loop wrap: if scrolled to the end, wrap smoothly to start
+        const maxScroll = slider.scrollWidth - slider.clientWidth;
+        if (slider.scrollLeft >= maxScroll - 2) {
+          slider.scrollLeft = 0;
+        }
+      }
+      animationFrameId = requestAnimationFrame(step);
+    };
+
+    animationFrameId = requestAnimationFrame(step);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [autoPlayEnabled, isHovered]);
+
+  // Robust Manual Arrow Scroll Controls that turn off auto-play completely once clicked
+  const scrollByAmount = (direction) => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+
+    // Once user clicks on arrow, turn off auto-play completely as requested
+    setAutoPlayEnabled(false);
+
+    // Measure actual card step width
+    const firstCard = slider.querySelector("div");
+    const cardStep = firstCard ? firstCard.offsetWidth + 24 : 330;
+    const currentScroll = slider.scrollLeft;
+    const maxScroll = slider.scrollWidth - slider.clientWidth;
+
+    let target = direction === "next" ? currentScroll + cardStep : currentScroll - cardStep;
+
+    // Smooth boundary handling
+    if (target < 0) {
+      target = 0;
+    } else if (target > maxScroll) {
+      target = maxScroll;
+    }
+
+    slider.scrollTo({
+      left: target,
+      behavior: "smooth"
+    });
+  };
+
+  // Mouse Drag to Scroll handlers
+  const handleMouseDown = (e) => {
+    const slider = sliderRef.current;
+    if (!slider) return;
+    isDraggingRef.current = true;
+    startXRef.current = e.pageX - slider.offsetLeft;
+    scrollLeftRef.current = slider.scrollLeft;
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDraggingRef.current || !sliderRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - sliderRef.current.offsetLeft;
+    const walk = (x - startXRef.current) * 1.5;
+    sliderRef.current.scrollLeft = scrollLeftRef.current - walk;
+  };
+
+  const handleMouseUpOrLeave = () => {
+    if (isDraggingRef.current) {
+      isDraggingRef.current = false;
+      temporarilyPause(2500);
+    }
+  };
+
+  // Duplicate reels array for endless seamless scrolling
+  const displayReels = [...reels, ...reels];
+
+  return (
+    <section className="py-16 sm:py-20 lg:py-24 bg-gradient-to-b from-stone-950 via-[#0c080d] to-stone-950 border-y border-stone-800/80 overflow-hidden relative">
+      {/* Ambient background glow */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-r from-purple-900/20 via-pink-600/15 to-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Header Bar */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-purple-500/15 via-pink-500/15 to-orange-500/15 border border-pink-500/30 text-pink-400 text-xs font-extrabold uppercase tracking-wider mb-3">
+              <Instagram size={14} className="text-pink-400 animate-pulse" />
+              <span>@dailyfix_care • Reels Showcase</span>
+            </div>
+
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
+              Real Transformations in{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-amber-400">
                 Instagram Reels
               </span>
             </h2>
 
-            <p className="text-stone-600 text-sm sm:text-base mt-2 max-w-xl">
+            <p className="text-stone-400 text-sm sm:text-base mt-2 max-w-xl leading-relaxed">
               Watch real customer results, 10-minute application tutorials, and shade guides from men across India.
             </p>
           </div>
 
-          {/* Follow Button */}
-          <div className="flex-shrink-0">
+          {/* Controls & CTA Group */}
+          <div className="flex items-center gap-3">
+            {/* Auto-play status button */}
+            <button
+              type="button"
+              onClick={() => setAutoPlayEnabled((prev) => !prev)}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 border border-white/10 text-xs font-semibold transition cursor-pointer"
+              title={autoPlayEnabled ? "Click to turn off auto-slide" : "Click to resume auto-slide"}
+            >
+              {autoPlayEnabled ? (
+                <>
+                  <Pause size={12} className="text-amber-400" />
+                  <span>Auto-Sliding</span>
+                </>
+              ) : (
+                <>
+                  <Play size={12} className="text-emerald-400 fill-emerald-400" />
+                  <span>Auto-Play Off</span>
+                </>
+              )}
+            </button>
+
+            {/* Prev Arrow */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                scrollByAmount("prev");
+              }}
+              className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/30 text-white flex items-center justify-center border border-white/15 transition hover:scale-105 active:scale-95 cursor-pointer shadow-lg z-20"
+              aria-label="Previous reel"
+            >
+              <ChevronLeft size={20} />
+            </button>
+
+            {/* Next Arrow */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                scrollByAmount("next");
+              }}
+              className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/30 text-white flex items-center justify-center border border-white/15 transition hover:scale-105 active:scale-95 cursor-pointer shadow-lg z-20"
+              aria-label="Next reel"
+            >
+              <ChevronRight size={20} />
+            </button>
+
+            {/* Follow Button */}
             <a
               href={INSTAGRAM_PROFILE_URL}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:from-purple-500 hover:via-pink-500 hover:to-amber-400 text-white font-extrabold text-xs sm:text-sm shadow-md shadow-pink-500/20 hover:shadow-xl hover:scale-105 transition-all duration-300 group"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:from-purple-500 hover:via-pink-500 hover:to-amber-400 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-pink-600/30 hover:scale-105 transition-all duration-300"
             >
-              <Instagram size={17} />
-              <span>Follow on Instagram</span>
-              <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <Instagram size={15} />
+              <span>Follow</span>
+              <ArrowUpRight size={14} />
             </a>
           </div>
         </div>
+      </div>
 
-        {/* Exact 3-in-a-Row Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {items.slice(0, 3).map((item, index) => (
-            <ReelCard key={item.id || index} item={item} index={index} />
-          ))}
-        </div>
+      {/* Masonry Auto-Slider Track */}
+      <div
+        ref={sliderRef}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => {
+          setIsHovered(false);
+          handleMouseUpOrLeave();
+        }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUpOrLeave}
+        onTouchStart={() => setIsHovered(true)}
+        onTouchEnd={() => setIsHovered(false)}
+        className="flex items-start gap-5 sm:gap-6 px-4 sm:px-8 overflow-x-auto scroll-smooth cursor-grab active:cursor-grabbing pb-8 pt-2 select-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+        style={{ WebkitOverflowScrolling: "touch" }}
+      >
+        {displayReels.map((item, idx) => (
+          <MasonryReelCard key={`${item.id}-${idx}`} item={item} isAutoPlaying={autoPlayEnabled && !isHovered} />
+        ))}
+      </div>
 
-        {/* Bottom Social Proof Bar */}
-        <div className="mt-12 pt-6 border-t border-stone-200/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-stone-500 font-medium text-center sm:text-left">
+      {/* Bottom Floating Stats & Social Proof */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+        <div className="pt-6 border-t border-stone-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-400 font-medium text-center sm:text-left">
           <div className="flex items-center gap-2">
-            <Sparkles size={16} className="text-amber-500" />
-            <span>Join <strong>12,800+</strong> men leveling up their grooming game</span>
+            <Sparkles size={15} className="text-amber-400" />
+            <span>
+              Join <strong className="text-white">12,800+</strong> men leveling up their grooming game with Dailyfix
+            </span>
           </div>
 
           <a
             href={INSTAGRAM_PROFILE_URL}
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-2 text-stone-700 hover:text-pink-600 font-semibold transition-colors"
+            className="flex items-center gap-1.5 text-stone-300 hover:text-pink-400 font-semibold transition-colors"
           >
-            <span>Tag <strong>#DailyfixGrooming</strong> in your reels to get featured</span>
-            <ArrowUpRight size={14} />
+            <span>Tag <strong className="text-white">#DailyfixGrooming</strong> in your reels to get featured</span>
+            <ArrowUpRight size={13} />
           </a>
         </div>
       </div>

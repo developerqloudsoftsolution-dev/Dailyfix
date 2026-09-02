@@ -35,6 +35,7 @@ import {
   approveReturnRequest,
   rejectReturnRequest,
   notifyOrderCustomer,
+  deleteOrder,
 } from "../controllers/orderController.js";
 
 /*
@@ -88,6 +89,8 @@ router.get("/", authMiddleware, getAllOrders);
 router.get("/:id", getOrderById);
 // Update Order Status
 router.put("/:id/status", authMiddleware, updateOrderStatus);
+// Delete Order (Admin)
+router.delete("/:id", authMiddleware, deleteOrder);
 
 /*
 =================================================

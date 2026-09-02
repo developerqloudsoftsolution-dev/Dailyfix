@@ -29,6 +29,7 @@ import {
   RotateCcw,
   AlertTriangle,
   MessageSquare,
+  Trash2,
 } from "lucide-react";
 
 export default function Orders() {
@@ -105,6 +106,34 @@ export default function Orders() {
       });
     } finally {
       setSendingNotify(null);
+    }
+  };
+
+  // Delete Order State & Handler
+  const [deletingOrder, setDeletingOrder] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDeleteOrder = async (order) => {
+    if (!order) return;
+    try {
+      setIsDeleting(true);
+      toast.loading(`Deleting order #${order.orderId}...`, { id: `del-${order._id}` });
+      const res = await orderAPI.deleteOrder(order.orderId || order._id);
+      if (res.ok && res.data?.success) {
+        toast.success(res.data.message || `Order #${order.orderId} deleted successfully!`, { id: `del-${order._id}` });
+        setOrders((prev) => prev.filter((o) => o._id !== order._id && o.orderId !== order.orderId));
+        setFilteredOrders((prev) => prev.filter((o) => o._id !== order._id && o.orderId !== order.orderId));
+        if (selectedOrder?._id === order._id || selectedOrder?.orderId === order.orderId) {
+          setSelectedOrder(null);
+        }
+        setDeletingOrder(null);
+      } else {
+        toast.error(res.data?.message || "Failed to delete order", { id: `del-${order._id}` });
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || err.message || "Error deleting order", { id: `del-${order._id}` });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -885,6 +914,16 @@ export default function Orders() {
                         >
                           <Eye size={13} /> View
                         </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setDeletingOrder(order)}
+                          className="inline-flex items-center gap-1 bg-rose-50 hover:bg-rose-100 text-rose-600 hover:text-rose-700 border border-rose-200 px-2 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer"
+                          title="Delete Order"
+                        >
+                          <Trash2 size={13} />
+                          <span className="hidden xl:inline">Delete</span>
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -1312,7 +1351,14 @@ export default function Orders() {
             </div>
 
             {/* Modal Footer */}
-            <div className="px-6 py-4 bg-slate-50 border-t flex justify-end gap-3">
+            <div className="px-6 py-4 bg-slate-50 border-t flex justify-between items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setDeletingOrder(selectedOrder)}
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 hover:text-rose-700 border border-rose-200 rounded-xl text-xs font-semibold transition cursor-pointer"
+              >
+                <Trash2 size={13} /> Delete Order
+              </button>
               <button
                 onClick={() => setSelectedOrder(null)}
                 className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-semibold transition cursor-pointer"
@@ -1810,6 +1856,91 @@ export default function Orders() {
             </div>
           );
         })()}
+      </Modal>
+
+      {/* ========================================= */}
+      {/* DELETE ORDER CONFIRMATION MODAL           */}
+      {/* ========================================= */}
+      <Modal
+        isOpen={Boolean(deletingOrder)}
+        onClose={() => !isDeleting && setDeletingOrder(null)}
+        maxWidth="max-w-md"
+      >
+        {deletingOrder && (
+          <div>
+            <div className="flex justify-between items-center px-6 py-4 border-b bg-rose-50/50">
+              <div className="flex items-center gap-2 text-rose-600">
+                <AlertTriangle size={20} />
+                <h2 className="text-base font-bold text-slate-900">Confirm Order Deletion</h2>
+              </div>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={() => setDeletingOrder(null)}
+                className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded-lg transition"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              <p className="text-sm text-slate-600 leading-relaxed">
+                Are you sure you want to permanently delete order{" "}
+                <strong className="text-slate-900 font-mono">#{deletingOrder.orderId}</strong>?
+              </p>
+
+              <div className="p-3.5 bg-slate-50 border border-slate-200/80 rounded-xl text-xs space-y-1.5 text-slate-600">
+                <div>
+                  <span className="text-slate-400">Customer:</span>{" "}
+                  <strong className="text-slate-800">
+                    {deletingOrder.customer?.firstName} {deletingOrder.customer?.lastName}
+                  </strong>{" "}
+                  ({deletingOrder.customer?.phone})
+                </div>
+                <div>
+                  <span className="text-slate-400">Total:</span>{" "}
+                  <strong className="text-slate-800">₹{deletingOrder.total || deletingOrder.totalAmount || 0}</strong> ({deletingOrder.paymentMethod})
+                </div>
+                <div>
+                  <span className="text-slate-400">Current Status:</span>{" "}
+                  <span className={`inline-block font-semibold px-2 py-0.5 rounded-full text-[10px] ${
+                    deletingOrder.status === "Cancelled"
+                      ? "bg-rose-100 text-rose-700"
+                      : deletingOrder.status === "Confirmed"
+                      ? "bg-emerald-100 text-emerald-700"
+                      : "bg-slate-200 text-slate-700"
+                  }`}>
+                    {deletingOrder.status}
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-xs text-rose-600 bg-rose-50 border border-rose-100 p-2.5 rounded-lg">
+                ⚠️ This action cannot be undone. This order will be completely deleted from the database.
+              </p>
+
+              <div className="flex justify-end gap-2.5 pt-2">
+                <button
+                  type="button"
+                  disabled={isDeleting}
+                  onClick={() => setDeletingOrder(null)}
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={isDeleting}
+                  onClick={() => handleDeleteOrder(deletingOrder)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white rounded-xl text-xs font-bold transition shadow-sm disabled:opacity-50 cursor-pointer"
+                >
+                  <Trash2 size={13} />
+                  {isDeleting ? "Deleting..." : "Yes, Delete Order"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </Modal>
     </div>
   );

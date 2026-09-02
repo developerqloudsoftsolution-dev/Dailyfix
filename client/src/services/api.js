@@ -259,6 +259,15 @@ export const orderAPI = {
     } catch (err) {
       return { ok: false, data: err.response?.data || { message: 'Failed to send notification to customer' } }
     }
+  },
+
+  deleteOrder: async (orderId) => {
+    try {
+      const res = await api.delete(`/orders/${orderId}`)
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: 'Failed to delete order' } }
+    }
   }
 }
 
