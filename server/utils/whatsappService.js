@@ -122,6 +122,15 @@ class WhatsAppService {
     return await this.request('/status');
   }
 
+  async isConnected() {
+    try {
+      const res = await this.getStatus();
+      return !!(res.ok && (res.data?.status === 'connected' || res.data?.connected === true));
+    } catch (err) {
+      return false;
+    }
+  }
+
   async getQrCode() {
     for (let attempt = 1; attempt <= 4; attempt++) {
       const res = await this.request('/qr', 'GET', null, 15000);
@@ -223,6 +232,13 @@ class WhatsAppService {
       const customerPhone = order.customer?.phone;
       if (!customerPhone) return;
 
+      // Verify WhatsApp is actively connected before attempting to send
+      const connected = await this.isConnected();
+      if (!connected) {
+        console.log(`[WhatsApp] Service is not connected. Skipping customer order confirmation for ${order.orderId}.`);
+        return { ok: false, message: 'WhatsApp not connected' };
+      }
+
       const customerName = `${order.customer?.firstName || 'Customer'} ${order.customer?.lastName || ''}`.trim();
       const itemsList = order.items && order.items.length > 0
         ? order.items.map((i) => `• ${i.name} (Qty: ${i.quantity}) - ₹${i.price * i.quantity}`).join('\n')
@@ -263,6 +279,13 @@ We are preparing your package and will send you live tracking details as soon as
       const config = await this.getConfig();
       if (!config.enabled || !config.settings.notifyAdminOnOrder) return;
 
+      // Verify WhatsApp is actively connected before attempting to send
+      const connected = await this.isConnected();
+      if (!connected) {
+        console.log(`[WhatsApp] Service is not connected. Skipping admin order alert for ${order.orderId}.`);
+        return { ok: false, message: 'WhatsApp not connected' };
+      }
+
       const customerName = `${order.customer?.firstName || ''} ${order.customer?.lastName || ''}`.trim();
       const itemsList = order.items && order.items.length > 0
         ? order.items.map((i) => `• ${i.name} (x${i.quantity})`).join('\n')
@@ -294,6 +317,13 @@ ${itemsList}
 
       const customerPhone = order.customer?.phone;
       if (!customerPhone) return;
+
+      // Verify WhatsApp is actively connected before attempting to send
+      const connected = await this.isConnected();
+      if (!connected) {
+        console.log(`[WhatsApp] Service is not connected. Skipping shipment tracking notification for ${order.orderId}.`);
+        return { ok: false, message: 'WhatsApp not connected' };
+      }
 
       const isEkart = order.carrier === 'Ekart' || (!order.delhivery?.waybill && (order.ekart?.waybill || order.ekart?.trackingId));
       const courierName = isEkart ? 'Ekart Logistics' : 'Delhivery Express';
@@ -380,6 +410,13 @@ Thank you for shopping with DailyFix!`;
 
       const customerPhone = order.customer?.phone || order.customerPhone;
       if (!customerPhone) return;
+
+      // Verify WhatsApp is actively connected before attempting to send
+      const connected = await this.isConnected();
+      if (!connected) {
+        console.log(`[WhatsApp] Service is not connected. Skipping status update notification for ${order.orderId}.`);
+        return { ok: false, message: 'WhatsApp not connected' };
+      }
 
       const customerName = `${order.customer?.firstName || order.customerName || 'Customer'}`.trim();
       const orderId = order.orderId;

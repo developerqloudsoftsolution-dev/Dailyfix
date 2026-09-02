@@ -34,6 +34,7 @@ import {
   getReturnRequests,
   approveReturnRequest,
   rejectReturnRequest,
+  notifyOrderCustomer,
 } from "../controllers/orderController.js";
 
 /*
@@ -114,6 +115,9 @@ router.post("/return-request", initiateReturnRequest);
 router.get("/returns/list", authMiddleware, getReturnRequests);
 router.post("/:orderId/approve-return", authMiddleware, approveReturnRequest);
 router.post("/:orderId/reject-return", authMiddleware, rejectReturnRequest);
+
+// Send Customer Live Update Notification (WhatsApp & Email)
+router.post("/:orderId/notify-customer", authMiddleware, notifyOrderCustomer);
 
 // Update AWB Manually (Supports carrier specification)
 router.put("/:orderId/waybill", authMiddleware, updateOrderWaybill);

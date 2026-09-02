@@ -28,6 +28,7 @@ import {
   Zap,
   RotateCcw,
   AlertTriangle,
+  MessageSquare,
 } from "lucide-react";
 
 export default function Orders() {
@@ -67,6 +68,45 @@ export default function Orders() {
   const [rejectingReturn, setRejectingReturn] = useState(false);
   const [rejectionReasonInput, setRejectionReasonInput] = useState("");
   const [showRejectForm, setShowRejectForm] = useState(false);
+
+  // Customer Live Notification State
+  const [sendingNotify, setSendingNotify] = useState(null);
+
+  const handleNotifyCustomer = async (order, channel = "both") => {
+    if (!order) return;
+    const notifyKey = `${order._id}-${channel}`;
+    try {
+      setSendingNotify(notifyKey);
+      const channelLabel =
+        channel === "whatsapp"
+          ? "WhatsApp"
+          : channel === "email"
+          ? "Email"
+          : "WhatsApp & Email";
+
+      toast.loading(`Sending ${channelLabel} update to ${order.customer?.firstName || "customer"}...`, {
+        id: `notify-${order._id}`,
+      });
+
+      const res = await orderAPI.notifyCustomer(order.orderId || order._id, channel);
+
+      if (res.ok && res.data?.success) {
+        toast.success(res.data.message || `${channelLabel} update sent successfully!`, {
+          id: `notify-${order._id}`,
+          duration: 4500,
+        });
+      } else {
+        const errorMsg = res.data?.message || `Failed to send ${channelLabel} update`;
+        toast.error(errorMsg, { id: `notify-${order._id}`, duration: 5500 });
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || err.message || "Failed to dispatch notification", {
+        id: `notify-${order._id}`,
+      });
+    } finally {
+      setSendingNotify(null);
+    }
+  };
 
   const handleApproveReturn = async (actionType = "ekart_pickup") => {
     if (!returnModalOrder) return;
@@ -606,6 +646,31 @@ export default function Orders() {
                           <p className="text-xs text-slate-400 truncate max-w-[150px]">
                             {order.customer?.email}
                           </p>
+
+                          {/* Quick Notification Buttons */}
+                          <div className="flex items-center gap-1.5 mt-1.5">
+                            <button
+                              type="button"
+                              onClick={() => handleNotifyCustomer(order, "whatsapp")}
+                              disabled={sendingNotify === `${order._id}-whatsapp`}
+                              title={`Send current WhatsApp update to ${order.customer?.phone || "customer"}`}
+                              className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-1.5 py-0.5 rounded transition cursor-pointer disabled:opacity-50"
+                            >
+                              <MessageSquare size={10} className="text-emerald-600" />
+                              {sendingNotify === `${order._id}-whatsapp` ? "..." : "WhatsApp"}
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => handleNotifyCustomer(order, "email")}
+                              disabled={sendingNotify === `${order._id}-email`}
+                              title={`Send current Email update to ${order.customer?.email || "customer"}`}
+                              className="inline-flex items-center gap-1 text-[10px] font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-1.5 py-0.5 rounded transition cursor-pointer disabled:opacity-50"
+                            >
+                              <Mail size={10} className="text-blue-600" />
+                              {sendingNotify === `${order._id}-email` ? "..." : "Email"}
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </td>
@@ -789,6 +854,30 @@ export default function Orders() {
                             <Truck size={13} /> Shipment
                           </button>
                         )}
+
+                        {/* Quick Notify Buttons */}
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => handleNotifyCustomer(order, "whatsapp")}
+                            disabled={sendingNotify === `${order._id}-whatsapp`}
+                            className="inline-flex items-center gap-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer disabled:opacity-50"
+                            title="Send current order update to customer on WhatsApp"
+                          >
+                            <MessageSquare size={12} className="text-emerald-600" />
+                            <span className="hidden xl:inline">WA</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleNotifyCustomer(order, "email")}
+                            disabled={sendingNotify === `${order._id}-email`}
+                            className="inline-flex items-center gap-1 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-2 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer disabled:opacity-50"
+                            title="Send current order update to customer via Email"
+                          >
+                            <Mail size={12} className="text-blue-600" />
+                            <span className="hidden xl:inline">Email</span>
+                          </button>
+                        </div>
 
                         <button
                           onClick={() => setSelectedOrder(order)}
@@ -1023,6 +1112,52 @@ export default function Orders() {
                     <option value="Delivered">Delivered</option>
                     <option value="Cancelled">Cancelled</option>
                   </select>
+                </div>
+              </div>
+
+              {/* Send Live Customer Update Banner */}
+              <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50/60 space-y-3">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-2 text-emerald-950 font-semibold text-xs uppercase tracking-wider">
+                    <Send size={13} className="text-emerald-700" /> Send Current Update to Customer
+                  </div>
+                  <span className="text-[11px] font-medium text-emerald-800 bg-emerald-100/90 px-2 py-0.5 rounded-full">
+                    Current Status: <strong>{selectedOrder.status}</strong>
+                  </span>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Dispatch the current order status ({selectedOrder.status}) and live courier tracking information directly to <strong>{selectedOrder.customer?.firstName} {selectedOrder.customer?.lastName}</strong> ({selectedOrder.customer?.phone} • {selectedOrder.customer?.email}):
+                </p>
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => handleNotifyCustomer(selectedOrder, "whatsapp")}
+                    disabled={sendingNotify === `${selectedOrder._id}-whatsapp`}
+                    className="inline-flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs font-semibold transition cursor-pointer disabled:opacity-50 shadow-sm"
+                  >
+                    <MessageSquare size={13} />
+                    {sendingNotify === `${selectedOrder._id}-whatsapp` ? "Sending WhatsApp..." : "Send WhatsApp Update"}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleNotifyCustomer(selectedOrder, "email")}
+                    disabled={sendingNotify === `${selectedOrder._id}-email`}
+                    className="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl text-xs font-semibold transition cursor-pointer disabled:opacity-50 shadow-sm"
+                  >
+                    <Mail size={13} />
+                    {sendingNotify === `${selectedOrder._id}-email` ? "Sending Email..." : "Send Email Update"}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleNotifyCustomer(selectedOrder, "both")}
+                    disabled={sendingNotify === `${selectedOrder._id}-both`}
+                    className="inline-flex items-center gap-1.5 bg-slate-900 hover:bg-black text-white px-3.5 py-2 rounded-xl text-xs font-semibold transition cursor-pointer disabled:opacity-50 shadow-sm"
+                  >
+                    <Send size={12} />
+                    {sendingNotify === `${selectedOrder._id}-both` ? "Sending Both..." : "Send Both (WhatsApp + Email)"}
+                  </button>
                 </div>
               </div>
 

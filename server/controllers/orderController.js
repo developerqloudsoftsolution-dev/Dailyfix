@@ -7,6 +7,7 @@ import Coupon from "../models/Coupon.js";
 import sendEmail, { getAdminNotifyEmails } from "../utils/sendEmail.js";
 import customerOrderTemplate from "../templates/customerOrderTemplate.js";
 import adminOrderTemplate from "../templates/adminOrderTemplate.js";
+import customerStatusEmailTemplate from "../templates/customerStatusEmailTemplate.js";
 import delhiveryService, { mapDelhiveryStatus } from "../utils/delhivery.js";
 import ekartService, { mapEkartStatus } from "../utils/ekart.js";
 import razorpay, { isRazorpayConfigured } from "../utils/razorpay.js";
@@ -260,12 +261,16 @@ export const createOrder = async (req, res) => {
     */
 
     try {
-      await sendEmail({
+      const customerEmailRes = await sendEmail({
         to: order.customer.email,
         subject: `Order Confirmation - ${order.orderId}`,
         html: customerOrderTemplate(order),
       });
-      console.log("✅ Customer email sent");
+      if (customerEmailRes) {
+        console.log(`✅ Customer confirmation email sent successfully to: ${order.customer.email}`);
+      } else {
+        console.warn(`⚠️ Customer confirmation email could not be sent to: ${order.customer.email} (Check SMTP configuration in .env)`);
+      }
     } catch (error) {
       console.error("❌ Customer email failed:", error.message);
     }
@@ -273,12 +278,16 @@ export const createOrder = async (req, res) => {
     try {
       const adminRecipients = getAdminNotifyEmails();
       if (adminRecipients.length > 0) {
-        await sendEmail({
+        const adminEmailRes = await sendEmail({
           to: adminRecipients,
           subject: `New Order Received - ${order.orderId}`,
           html: adminOrderTemplate(order),
         });
-        console.log("✅ Admin notification emails dispatched to:", adminRecipients.join(", "));
+        if (adminEmailRes) {
+          console.log("✅ Admin notification emails dispatched to:", adminRecipients.join(", "));
+        } else {
+          console.warn("⚠️ Admin notification emails could not be sent (Check SMTP configuration in .env)");
+        }
       }
     } catch (error) {
       console.error("❌ Admin email failed:", error.message);
@@ -2455,6 +2464,125 @@ export const rejectReturnRequest = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: error.message || "Failed to reject return request",
+    });
+  }
+};
+
+/*
+=================================================
+NOTIFY CUSTOMER (MANUAL DISPATCH TO WHATSAPP & EMAIL)
+=================================================
+*/
+
+export const notifyOrderCustomer = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { channel = "both" } = req.body;
+
+    const order = await Order.findOne({
+      $or: [
+        { _id: isValidObjectId(orderId) ? orderId : null },
+        { orderId: orderId }
+      ]
+    });
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    const whatsappResult = { attempted: false, success: false, message: "" };
+    const emailResult = { attempted: false, success: false, message: "" };
+
+    // 1. WhatsApp Dispatch
+    if (channel === "whatsapp" || channel === "both") {
+      whatsappResult.attempted = true;
+      const phone = order.customer?.phone;
+      if (!phone) {
+        whatsappResult.message = "Customer phone number not available";
+      } else {
+        const isConnected = await whatsappService.isConnected();
+        if (!isConnected) {
+          whatsappResult.message = "WhatsApp is not connected. Please scan the QR code in WhatsApp settings.";
+        } else {
+          try {
+            const wRes = await whatsappService.notifyOrderStatusCustomer(order, order.status);
+            if (wRes?.ok) {
+              whatsappResult.success = true;
+              whatsappResult.message = `WhatsApp message sent to +${phone}`;
+            } else {
+              whatsappResult.message = wRes?.message || "Failed to send WhatsApp message";
+            }
+          } catch (wErr) {
+            whatsappResult.message = wErr.message || "Error sending WhatsApp notification";
+          }
+        }
+      }
+    }
+
+    // 2. Email Dispatch
+    if (channel === "email" || channel === "both") {
+      emailResult.attempted = true;
+      const email = order.customer?.email;
+      if (!email) {
+        emailResult.message = "Customer email address not available";
+      } else {
+        try {
+          const emailHtml = customerStatusEmailTemplate(order);
+          const eRes = await sendEmail({
+            to: email,
+            subject: `Order Update #${order.orderId} - ${order.status} | DailyFix`,
+            html: emailHtml,
+          });
+
+          if (eRes) {
+            emailResult.success = true;
+            emailResult.message = `Email update sent to ${email}`;
+          } else {
+            emailResult.message = "Email sending failed. Please check SMTP configuration in .env";
+          }
+        } catch (eErr) {
+          emailResult.message = eErr.message || "Error dispatching email";
+        }
+      }
+    }
+
+    const anySuccess =
+      (whatsappResult.attempted && whatsappResult.success) ||
+      (emailResult.attempted && emailResult.success);
+
+    let summaryMsg = "";
+    if (channel === "both") {
+      if (whatsappResult.success && emailResult.success) {
+        summaryMsg = "Both WhatsApp and Email updates sent successfully to customer!";
+      } else if (whatsappResult.success && !emailResult.success) {
+        summaryMsg = `WhatsApp update sent! Email notice: ${emailResult.message}`;
+      } else if (!whatsappResult.success && emailResult.success) {
+        summaryMsg = `Email update sent! WhatsApp notice: ${whatsappResult.message}`;
+      } else {
+        summaryMsg = `Failed to send updates. WhatsApp: ${whatsappResult.message} | Email: ${emailResult.message}`;
+      }
+    } else if (channel === "whatsapp") {
+      summaryMsg = whatsappResult.success ? whatsappResult.message : `WhatsApp notice: ${whatsappResult.message}`;
+    } else {
+      summaryMsg = emailResult.success ? emailResult.message : `Email notice: ${emailResult.message}`;
+    }
+
+    return res.json({
+      success: anySuccess,
+      message: summaryMsg,
+      results: {
+        whatsapp: whatsappResult,
+        email: emailResult,
+      },
+    });
+  } catch (error) {
+    console.error("NOTIFY CUSTOMER ERROR:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to notify customer",
     });
   }
 };

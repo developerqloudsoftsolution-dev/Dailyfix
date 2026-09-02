@@ -250,6 +250,15 @@ export const orderAPI = {
     } catch (err) {
       return { ok: false, data: err.response?.data || { message: 'Failed to reject return request' } }
     }
+  },
+
+  notifyCustomer: async (orderId, channel = 'both') => {
+    try {
+      const res = await api.post(`/orders/${orderId}/notify-customer`, { channel })
+      return { ok: true, data: res.data }
+    } catch (err) {
+      return { ok: false, data: err.response?.data || { message: 'Failed to send notification to customer' } }
+    }
   }
 }
 

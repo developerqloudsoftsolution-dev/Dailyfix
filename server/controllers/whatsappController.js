@@ -11,7 +11,7 @@ export const getStatus = async (req, res) => {
       serviceOnline: result.ok,
       status: result.data?.status || 'disconnected',
       user: result.data?.user || null,
-      phone: result.data?.user?.id ? result.data.user.id.split(':')[0] : null,
+      phone: result.data?.phone || (result.data?.user?.id ? result.data.user.id.split(':')[0] : null),
       apiUrl: config.apiUrl,
       adminPhone: config.adminPhone,
       enabled: config.enabled,
