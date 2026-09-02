@@ -404,6 +404,7 @@ export const createOrder = async (req, res) => {
 
         await order.save();
         console.log("✅ Ekart Details Saved to MongoDB");
+      }
     } catch (ekartErr) {
       console.error("❌ EKART AUTO-SHIPMENT FAILED:");
       console.error(ekartErr.message);
