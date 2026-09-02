@@ -404,12 +404,22 @@ export const createOrder = async (req, res) => {
 
         await order.save();
         console.log("✅ Ekart Details Saved to MongoDB");
-      } else {
-        console.warn("⚠️ Ekart shipment created but tracking ID was not returned:", shipmentResponse);
-      }
     } catch (ekartErr) {
       console.error("❌ EKART AUTO-SHIPMENT FAILED:");
       console.error(ekartErr.message);
+
+      // Record failure notice in order so admin sees the reason (e.g. wallet recharge needed)
+      try {
+        order.ekart = {
+          ...(order.ekart || {}),
+          currentStatus: "Booking Failed",
+          shipmentResponse: { error: ekartErr.message },
+          lastSynced: new Date(),
+        };
+        await order.save();
+      } catch (saveErr) {
+        console.error("Failed to save Ekart error notice to order:", saveErr.message);
+      }
     }
   }catch (error) {
     console.error("❌ Order creation failed:", error.message);
@@ -663,14 +673,16 @@ export const createEkartShipment = async (req, res) => {
     });
   } catch (error) {
     console.error("CREATE EKART SHIPMENT ERROR:", error);
-    let userMessage = error.message || "Ekart shipment creation failed";
+    let userMessage =
+      error.response?.data?.description ||
+      error.response?.data?.message ||
+      error.message ||
+      "Ekart shipment creation failed";
 
-    if (error.response?.status === 401 || String(error.message).includes("401")) {
+    if (error.response?.status === 401 || String(userMessage).includes("401")) {
       userMessage = "Ekart API authentication failed (401: Invalid Client ID / Secret). Please verify EKART_CLIENT_ID in .env or enter the AWB manually.";
-    } else if (error.response?.status === 404 || String(error.message).includes("404")) {
+    } else if (error.response?.status === 404 || String(userMessage).includes("404")) {
       userMessage = "Ekart API endpoint returned 404. Please check if your Ekart merchant portal provides a specific API URL or assign the AWB manually.";
-    } else if (error.response?.data?.message) {
-      userMessage = error.response.data.message;
     }
 
     return res.status(400).json({
