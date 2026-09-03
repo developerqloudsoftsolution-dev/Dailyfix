@@ -54,7 +54,7 @@ const Blog = () => {
       {/* ========================================================
           HERO SECTION: EDITORIAL JOURNAL HEADER
       ========================================================= */}
-      <section className="relative pt-32 pb-16 sm:pt-40 sm:pb-20 px-4 sm:px-8 max-w-7xl mx-auto z-10">
+      <section className="relative pt-40 pb-16 sm:pt-48 lg:pt-52 sm:pb-20 px-4 sm:px-8 max-w-7xl mx-auto z-10">
         <div className="max-w-3xl mx-auto text-center space-y-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

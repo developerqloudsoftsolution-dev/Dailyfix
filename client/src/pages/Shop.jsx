@@ -1,23 +1,29 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Leaf, ShieldCheck, Truck } from 'lucide-react';
+import {
+  Leaf,
+  ShieldCheck,
+  Truck,
+  Sparkles,
+  Clock,
+  RefreshCw,
+  ArrowRight,
+  MessageSquare
+} from 'lucide-react';
 import ProductCard from '../components/ProductCard';
 import api from '../services/api';
 import { getListingImage } from '../utils/productImages';
 import { getShadeSortRank } from '../data/productDetailData';
 import toast from 'react-hot-toast';
 
-const TRUST_POINTS = [
-  { icon: Leaf, label: 'Ammonia-Free Formula' },
-  { icon: ShieldCheck, label: 'Dermatologically Tested' },
-  { icon: Truck, label: 'Fast, Discreet Shipping' },
-];
-
 const Shop = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    document.title = 'Beard Colour | DailyFix 100% Ammonia-Free Signature Shades';
+
     const fetchProducts = async () => {
       try {
         const res = await api.get('/products');
@@ -62,98 +68,140 @@ const Shop = () => {
   }, []);
 
   return (
-    <div className="min-h-screen -mt-20 bg-stone-50">
-      {/* Hero */}
-      <div className="relative overflow-hidden border-b border-stone-200 bg-white">
-        <div
-          aria-hidden="true"
-          className="absolute -top-40 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full bg-emerald-200/30 blur-3xl pointer-events-none"
-        />
+    <div className="bg-[#F7F5EE] min-h-screen relative overflow-hidden">
+      {/* Decorative ambient subtle green glows */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-r from-[#2D7D52]/8 via-[#4EA874]/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-[40%] right-0 w-[500px] h-[500px] bg-[#2D7D52]/4 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative max-w-9xl mx-auto px-6 md:px-12 pt-24 pb-8 sm:pt-28 sm:pb-9 text-center">
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="text-[11px] sm:text-xs font-bold tracking-[0.2em] text-emerald-600 uppercase mb-2"
-          >
-            Dailyfix Grooming
-          </motion.p>
+      {/* ========================================================
+          MINIMAL HEADER SECTION: COMPACT & ELEGANT
+      ========================================================= */}
+      <section className="relative pt-34 sm:pt-38 lg:pt-40 pb-6 px-4 sm:px-8 max-w-7xl mx-auto z-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-[#1B4D31]/10">
+          {/* Left Minimal Title & Tag */}
+          <div className="space-y-2">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EAF5EE] border border-[#2D7D52]/25 text-[#1B4D31] text-[11px] font-extrabold uppercase tracking-widest shadow-xs">
+              <Sparkles size={13} className="text-[#2D7D52]" />
+              <span>Pure Botanical Collection</span>
+            </div>
 
-          <motion.h1
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.05 }}
-            className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-stone-900 tracking-tight mb-2.5"
-          >
-            Beard Colour, Done Right
-          </motion.h1>
+            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#143D28] tracking-tight">
+              Signature Beard Colour
+            </h1>
 
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-            className="text-sm sm:text-base text-stone-600 max-w-xl mx-auto leading-relaxed mb-4"
-          >
-            Three natural shades. Zero ammonia. A grey-free beard that still feels like yours.
-          </motion.p>
+            <p className="font-sans text-xs sm:text-sm text-[#4A6352]">
+              100% Ammonia-free botanical formula. Undetectable gray coverage in 10 minutes.
+            </p>
+          </div>
 
-          {/* Compact Trust strip */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.15 }}
-            className="flex flex-wrap items-center justify-center gap-x-6 sm:gap-x-8 gap-y-2 pt-1"
-          >
-            {TRUST_POINTS.map(({ icon: Icon, label }, i) => (
-              <React.Fragment key={label}>
-                {i > 0 && <span className="hidden sm:block w-px h-4 bg-stone-300" aria-hidden="true" />}
-                <div className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-stone-700">
-                  <Icon size={16} className="text-emerald-600 flex-shrink-0" />
-                  {label}
-                </div>
-              </React.Fragment>
-            ))}
-          </motion.div>
+          {/* Right Trust Badges (Compact Minimal Row) */}
+          <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#1B4D31]/10 text-[11px] font-bold text-[#143D28] shadow-xs">
+              <Leaf size={13} className="text-[#2D7D52]" />
+              <span>0% Ammonia</span>
+            </span>
+
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#1B4D31]/10 text-[11px] font-bold text-[#143D28] shadow-xs">
+              <Clock size={13} className="text-[#2D7D52]" />
+              <span>10-Min Action</span>
+            </span>
+
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-[#1B4D31]/10 text-[11px] font-bold text-[#143D28] shadow-xs">
+              <Truck size={13} className="text-[#2D7D52]" />
+              <span>Free Delivery</span>
+            </span>
+
+            <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#EAF5EE] text-[11px] font-bold text-[#2D7D52] border border-[#2D7D52]/20">
+              <span>3 Shades</span>
+            </span>
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* Products */}
-      <div className="max-w-9xl mx-auto px-6 md:px-12 pt-8 pb-16">
-        <div className="flex items-baseline justify-between mb-8">
-          <h2 className="text-2xl sm:text-3xl font-bold text-stone-900">All Shades</h2>
-          <span className="text-stone-500 text-sm sm:text-base font-medium">
-            {products.length} {products.length === 1 ? 'product' : 'products'}
-          </span>
-        </div>
-
-
+      {/* ========================================================
+          PRODUCTS GRID: SEEN IMMEDIATELY ABOVE THE FOLD
+      ========================================================= */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-8 pb-16 relative z-10">
         {loading ? (
-          <div className="text-center py-32 text-stone-500">
-            <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-stone-200 border-t-emerald-500 mb-4"></div>
-            <p className="text-lg">Loading products...</p>
+          <div className="text-center py-24 text-[#4A6352]">
+            <div className="inline-block h-9 w-9 animate-spin rounded-full border-3 border-[#2D7D52]/20 border-t-[#2D7D52] mb-3"></div>
+            <p className="font-sans text-xs font-semibold">Loading signature shades...</p>
           </div>
         ) : products.length === 0 ? (
-          <div className="text-center py-32 text-stone-500">
-            <p className="text-lg">No products available right now — check back soon.</p>
+          <div className="text-center py-20 text-[#4A6352] bg-white rounded-[24px] border border-[#1B4D31]/10 p-8 max-w-lg mx-auto">
+            <p className="font-serif text-xl font-bold text-[#143D28] mb-2">No Products Available</p>
+            <p className="font-sans text-xs">Please refresh or check back shortly.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
             {products.map((product, index) => (
               <motion.div
                 key={product.id}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                whileHover={{ y: -8, transition: { duration: 0.3 } }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.08 }}
+                whileHover={{ y: -6, transition: { duration: 0.25 } }}
               >
                 <ProductCard product={product} />
               </motion.div>
             ))}
           </div>
         )}
-      </div>
+
+        {/* ========================================================
+            TRUST INDICATORS BANNER (Below Products)
+        ========================================================= */}
+        <div className="mt-14 bg-white rounded-[24px] p-6 sm:p-8 border border-[#1B4D31]/10 shadow-xs grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-[#EAF5EE] text-[#2D7D52] flex items-center justify-center flex-shrink-0">
+              <Truck size={22} />
+            </div>
+            <div>
+              <p className="font-serif text-base font-bold text-[#143D28]">Free Pan-India Delivery</p>
+              <p className="font-sans text-xs text-[#637D6C] mt-0.5">Dispatched within 24 hours in discreet packaging</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-[#EAF5EE] text-[#2D7D52] flex items-center justify-center flex-shrink-0">
+              <ShieldCheck size={22} />
+            </div>
+            <div>
+              <p className="font-serif text-base font-bold text-[#143D28]">100% Genuine Formula</p>
+              <p className="font-sans text-xs text-[#637D6C] mt-0.5">Direct botanical blend with zero harsh odors</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-[#EAF5EE] text-[#2D7D52] flex items-center justify-center flex-shrink-0">
+              <RefreshCw size={22} />
+            </div>
+            <div>
+              <p className="font-serif text-base font-bold text-[#143D28]">Shade Match Guarantee</p>
+              <p className="font-sans text-xs text-[#637D6C] mt-0.5">Need help choosing? Our advisors assist free</p>
+            </div>
+          </div>
+        </div>
+
+        {/* ========================================================
+            SHADE CONCIERGE CTA
+        ========================================================= */}
+        <div className="mt-8 bg-gradient-to-br from-[#1B4D31] to-[#143D28] rounded-[24px] p-6 sm:p-8 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-sm">
+          <div className="space-y-1 text-center sm:text-left">
+            <p className="font-serif text-xl font-bold">Unsure Which Shade Fits You?</p>
+            <p className="font-sans text-xs sm:text-sm text-white/80">
+              Send a photo of your beard in natural daylight to our grooming concierge for custom recommendation.
+            </p>
+          </div>
+          <Link
+            to="/contact"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white hover:bg-[#EAF5EE] text-[#143D28] font-bold text-xs uppercase tracking-wider transition-all whitespace-nowrap shadow-xs hover:scale-105"
+          >
+            <span>Ask a Grooming Specialist</span>
+            <ArrowRight size={14} />
+          </Link>
+        </div>
+      </section>
     </div>
   );
 };

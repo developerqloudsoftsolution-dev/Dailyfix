@@ -120,7 +120,7 @@ const BlogDetail = () => {
       {/* ========================================================
           ARTICLE HEADER & BREADCRUMB
       ========================================================= */}
-      <header className="relative pt-32 pb-10 sm:pt-40 sm:pb-14 px-4 sm:px-8 max-w-4xl mx-auto z-10">
+      <header className="relative pt-40 pb-10 sm:pt-48 lg:pt-52 sm:pb-14 px-4 sm:px-8 max-w-4xl mx-auto z-10">
         <div className="space-y-5">
           <Link
             to="/blog"

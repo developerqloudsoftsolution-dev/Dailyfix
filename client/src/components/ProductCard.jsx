@@ -50,7 +50,7 @@ const ProductCard = ({ product }) => {
               alt={product.name}
               onError={handleImageError}
               loading="lazy"
-              className="max-h-full max-w-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.08)] group-hover:scale-108 transition-transform duration-500"
+              className="max-h-full max-w-full object-contain mix-blend-multiply group-hover:scale-108 transition-transform duration-500"
             />
           </div>
           
