@@ -15,6 +15,7 @@ import logo from '../assets/images/dailyfix new logo.png';
 
 const Navbar = () => {
   const location = useLocation();
+  const isSample1 = location.pathname === '/sample1';
 
   const {
     getItemCount,
@@ -87,7 +88,11 @@ const Navbar = () => {
       <header className="fixed top-0 left-0 right-0 z-[9999] ">
 
         {/* Background */}
-        <div className="bg-black/90 backdrop-blur-2xl border-b border-white/10">
+        <div className={`backdrop-blur-2xl border-b transition-colors duration-300 ${
+          isSample1
+            ? 'bg-[#0B2510]/85 border-[#A8E6A1]/20 shadow-lg'
+            : 'bg-black/90 border-white/10'
+        }`}>
 
           <div className="max-w-[1500px] mx-auto px-5  sm:px-8 lg:px-12">
 
@@ -247,8 +252,10 @@ const Navbar = () => {
 
                 <Link
                   to="/contact"
-                  className="
-                    group
+                  className={
+                    isSample1
+                      ? 'group flex items-center gap-3 px-5 py-3 rounded-full bg-gradient-to-r from-[#66BB6A] to-[#1B5E20] hover:brightness-110 text-white text-sm font-semibold transition-all duration-300 hover:scale-105 shadow-[0_0_20px_rgba(102,187,106,0.3)] min-h-[44px]'
+                      : `group
                     flex
                     items-center
                     gap-3
@@ -262,8 +269,8 @@ const Navbar = () => {
                     font-semibold
                     transition-all
                     duration-300
-                    hover:shadow-[0_0_25px_rgba(52,211,153,0.25)]
-                  "
+                    hover:shadow-[0_0_25px_rgba(52,211,153,0.25)]`
+                  }
                 >
 
                   Contact Us
@@ -405,15 +412,14 @@ const Navbar = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.25 }}
-                className="
+                className={`
                   relative
                   z-10
                   lg:hidden
-                  bg-[#07110D]
+                  ${isSample1 ? 'bg-[#0B2510]/95 border-[#A8E6A1]/20' : 'bg-[#07110D] border-white/10'}
                   border-b
-                  border-white/10
                   shadow-2xl
-                "
+                `}
               >
 
                 <nav className="max-w-[1500px] mx-auto px-5 py-6">
@@ -508,7 +514,7 @@ const Navbar = () => {
 
                     <Link
                       to="/contact"
-                      className="
+                      className={`
                         mt-4
                         flex
                         items-center
@@ -517,12 +523,11 @@ const Navbar = () => {
                         px-6
                         py-4
                         rounded-xl
-                        bg-emerald-400
-                        text-black
+                        ${isSample1 ? 'bg-gradient-to-r from-[#66BB6A] to-[#1B5E20] text-white' : 'bg-emerald-400 text-black hover:bg-emerald-300'}
                         font-semibold
-                        hover:bg-emerald-300
                         transition-colors
-                      "
+                        min-h-[44px]
+                      `}
                     >
 
                       Contact Us

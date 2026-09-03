@@ -11,6 +11,7 @@ const ScrollToTop = () => {
   return null
 }
 import Home from './pages/Home'
+import Sample1 from './pages/Sample1'
 import About from './pages/About'
 import Shop from './pages/Shop'
 import Blog from './pages/Blog'
@@ -51,6 +52,9 @@ function App() {
         <Router>
           <ScrollToTop />
           <Routes>
+            {/* Standalone Client Demo Route (Cream & Green Luxury Theme) */}
+            <Route path="/sample1" element={<Sample1 />} />
+
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />

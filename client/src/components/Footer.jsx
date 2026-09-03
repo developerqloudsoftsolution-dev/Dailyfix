@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MapPin, Mail, Youtube, Facebook, Instagram, Linkedin, Search } from 'lucide-react';
 import logo from '../assets/images/dailyfix new logo.png';
@@ -7,6 +7,8 @@ import logo from '../assets/images/dailyfix new logo.png';
 const Footer = () => {
   const [orderId, setOrderId] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+  const isSample1 = location.pathname === '/sample1';
 
   const handleTrackOrder = (e) => {
     e.preventDefault();
@@ -17,7 +19,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-slate-900 text-white py-10 px-8 md:px-10">
+    <footer className={`${isSample1 ? 'bg-[#0B230E] border-t border-[#A8E6A1]/20' : 'bg-slate-900'} text-white py-10 px-8 md:px-10`}>
       <div className="max-w-9xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-8">
           {/* Company Info */}
