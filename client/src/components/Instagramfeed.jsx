@@ -185,10 +185,10 @@ const MasonryReelCard = ({ item, isAutoPlaying }) => {
 
   return (
     <div
-      className={`relative flex-shrink-0 w-[275px] sm:w-[305px] lg:w-[325px] ${item.masonryHeight} ${item.masonryOffset} rounded-[28px] overflow-hidden bg-stone-950 shadow-xl hover:shadow-2xl transition-all duration-500 border border-stone-800/80 hover:border-pink-500/60 group select-none flex flex-col justify-between`}
+      className={`relative flex-shrink-0 w-[275px] sm:w-[305px] lg:w-[325px] ${item.masonryHeight} ${item.masonryOffset} rounded-[28px] overflow-hidden bg-white shadow-[0_12px_36px_rgba(27,77,49,0.08)] hover:shadow-[0_20px_50px_rgba(27,77,49,0.16)] transition-all duration-500 border border-[#1B4D31]/12 hover:border-[#2D7D52]/60 group select-none flex flex-col justify-between`}
     >
       {/* Background Media Container */}
-      <div className="absolute inset-0 w-full h-full overflow-hidden bg-stone-950">
+      <div className="absolute inset-0 w-full h-full overflow-hidden bg-[#F7F5EE]">
         {isVideo ? (
           <>
             <video
@@ -220,7 +220,7 @@ const MasonryReelCard = ({ item, isAutoPlaying }) => {
               {isMuted ? (
                 <VolumeX size={14} className="text-white/80" />
               ) : (
-                <Volume2 size={14} className="text-emerald-400" />
+                <Volume2 size={14} className="text-[#A8E6A1]" />
               )}
             </button>
 
@@ -236,31 +236,31 @@ const MasonryReelCard = ({ item, isAutoPlaying }) => {
             src={item.imageSrc || item.media_url || naturalBlackImg}
             alt={item.caption || "Dailyfix Instagram Reel"}
             loading="lazy"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out bg-stone-900"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out bg-[#F7F5EE]"
           />
         )}
       </div>
 
       {/* Top Scrim & Reels Header */}
-      <div className="relative z-20 p-4 bg-gradient-to-b from-black/85 via-black/40 to-transparent pointer-events-none flex items-center justify-between">
+      <div className="relative z-20 p-4 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none flex items-center justify-between">
         <a
           href={INSTAGRAM_PROFILE_URL}
           target="_blank"
           rel="noreferrer"
-          className="pointer-events-auto flex items-center gap-2 bg-black/50 backdrop-blur-md px-2.5 py-1.5 rounded-full border border-white/15 hover:bg-black/80 transition-colors"
+          className="pointer-events-auto flex items-center gap-2 bg-white/90 backdrop-blur-md px-2.5 py-1.5 rounded-full border border-white/40 hover:bg-white transition-colors shadow-sm"
         >
-          <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-amber-400 via-rose-500 to-purple-600 p-[1px] flex-shrink-0">
-            <div className="w-full h-full bg-black rounded-full flex items-center justify-center">
+          <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-[#2D7D52] to-[#1B4D31] p-[1px] flex-shrink-0">
+            <div className="w-full h-full bg-[#143D28] rounded-full flex items-center justify-center">
               <Instagram size={10} className="text-white" />
             </div>
           </div>
-          <span className="text-[11px] font-bold text-white tracking-tight">dailyfix_care</span>
-          <CheckCircle2 size={11} className="text-blue-400 fill-blue-400" />
+          <span className="text-[11px] font-bold text-[#143D28] tracking-tight">dailyfix_care</span>
+          <CheckCircle2 size={11} className="text-[#2D7D52] fill-[#2D7D52]" />
         </a>
 
         <div className="flex items-center gap-1.5 pointer-events-none">
           <span
-            className={`px-2.5 py-1 rounded-full text-white text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1 backdrop-blur-md bg-gradient-to-r ${item.badgeGradient || "from-pink-500 to-rose-600"} shadow-md`}
+            className="px-2.5 py-1 rounded-full text-white text-[10px] font-extrabold uppercase tracking-wider flex items-center gap-1 backdrop-blur-md bg-[#143D28]/85 border border-white/10 shadow-sm"
           >
             {isVideo ? <Film size={11} /> : <Flame size={11} className="fill-white" />}
             {isVideo ? "Reel" : "Post"}
@@ -299,7 +299,7 @@ const MasonryReelCard = ({ item, isAutoPlaying }) => {
             href={postUrl}
             target="_blank"
             rel="noreferrer"
-            className="text-[11px] font-extrabold text-white bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:from-purple-500 hover:via-pink-500 hover:to-amber-400 px-3 py-1 rounded-full shadow-lg shadow-pink-600/30 flex items-center gap-1 pointer-events-auto transition-all hover:scale-105"
+            className="text-[11px] font-bold text-white bg-gradient-to-r from-[#2D7D52] to-[#1B4D31] hover:brightness-110 px-3 py-1 rounded-full shadow-md flex items-center gap-1 pointer-events-auto transition-all hover:scale-105"
           >
             <span>Watch</span>
             <ExternalLink size={10} />
@@ -458,27 +458,27 @@ const InstagramFeed = () => {
   const displayReels = [...reels, ...reels];
 
   return (
-    <section className="py-16 sm:py-20 lg:py-24 bg-gradient-to-b from-stone-950 via-[#0c080d] to-stone-950 border-y border-stone-800/80 overflow-hidden relative">
+    <section className="py-16 sm:py-20 lg:py-24 bg-[#F7F5EE] border-t border-[#1B4D31]/10 overflow-hidden relative">
       {/* Ambient background glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-r from-purple-900/20 via-pink-600/15 to-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-r from-[#2D7D52]/10 via-[#4EA874]/8 to-transparent rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header Bar */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
           <div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-purple-500/15 via-pink-500/15 to-orange-500/15 border border-pink-500/30 text-pink-400 text-xs font-extrabold uppercase tracking-wider mb-3">
-              <Instagram size={14} className="text-pink-400 animate-pulse" />
-              <span>@dailyfix_care • Reels Showcase</span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EAF5EE] border border-[#2D7D52]/30 text-[#1B4D31] text-xs font-extrabold uppercase tracking-wider mb-3">
+              <Instagram size={14} className="text-[#2D7D52]" />
+              <span>@dailyfix_care • Real Community</span>
             </div>
 
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#143D28] tracking-tight leading-tight">
               Real Transformations in{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-amber-400">
+              <span className="italic bg-clip-text text-transparent bg-gradient-to-r from-[#1B4D31] via-[#2D7D52] to-[#4EA874]">
                 Instagram Reels
               </span>
             </h2>
 
-            <p className="text-stone-400 text-sm sm:text-base mt-2 max-w-xl leading-relaxed">
+            <p className="text-[#4A6352] text-sm sm:text-base mt-2 max-w-xl leading-relaxed font-sans">
               Watch real customer results, 10-minute application tutorials, and shade guides from men across India.
             </p>
           </div>
@@ -489,17 +489,17 @@ const InstagramFeed = () => {
             <button
               type="button"
               onClick={() => setAutoPlayEnabled((prev) => !prev)}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/5 hover:bg-white/10 text-stone-300 border border-white/10 text-xs font-semibold transition cursor-pointer"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-[#EAF5EE] text-[#143D28] border border-[#1B4D31]/15 text-xs font-semibold transition cursor-pointer shadow-xs"
               title={autoPlayEnabled ? "Click to turn off auto-slide" : "Click to resume auto-slide"}
             >
               {autoPlayEnabled ? (
                 <>
-                  <Pause size={12} className="text-amber-400" />
+                  <Pause size={12} className="text-[#2D7D52]" />
                   <span>Auto-Sliding</span>
                 </>
               ) : (
                 <>
-                  <Play size={12} className="text-emerald-400 fill-emerald-400" />
+                  <Play size={12} className="text-[#2D7D52] fill-[#2D7D52]" />
                   <span>Auto-Play Off</span>
                 </>
               )}
@@ -513,7 +513,7 @@ const InstagramFeed = () => {
                 e.stopPropagation();
                 scrollByAmount("prev");
               }}
-              className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/30 text-white flex items-center justify-center border border-white/15 transition hover:scale-105 active:scale-95 cursor-pointer shadow-lg z-20"
+              className="w-10 h-10 rounded-xl bg-white hover:bg-[#EAF5EE] active:bg-[#EAF5EE] text-[#143D28] hover:text-[#2D7D52] flex items-center justify-center border border-[#1B4D31]/15 transition hover:scale-105 active:scale-95 cursor-pointer shadow-sm z-20"
               aria-label="Previous reel"
             >
               <ChevronLeft size={20} />
@@ -527,7 +527,7 @@ const InstagramFeed = () => {
                 e.stopPropagation();
                 scrollByAmount("next");
               }}
-              className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/30 text-white flex items-center justify-center border border-white/15 transition hover:scale-105 active:scale-95 cursor-pointer shadow-lg z-20"
+              className="w-10 h-10 rounded-xl bg-white hover:bg-[#EAF5EE] active:bg-[#EAF5EE] text-[#143D28] hover:text-[#2D7D52] flex items-center justify-center border border-[#1B4D31]/15 transition hover:scale-105 active:scale-95 cursor-pointer shadow-sm z-20"
               aria-label="Next reel"
             >
               <ChevronRight size={20} />
@@ -538,7 +538,7 @@ const InstagramFeed = () => {
               href={INSTAGRAM_PROFILE_URL}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:from-purple-500 hover:via-pink-500 hover:to-amber-400 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-pink-600/30 hover:scale-105 transition-all duration-300"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#2D7D52] to-[#1B4D31] hover:brightness-105 text-white font-bold text-xs sm:text-sm shadow-md hover:scale-105 transition-all duration-300"
             >
               <Instagram size={15} />
               <span>Follow</span>
@@ -570,12 +570,14 @@ const InstagramFeed = () => {
       </div>
 
       {/* Bottom Floating Stats & Social Proof */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-        <div className="pt-6 border-t border-stone-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-stone-400 font-medium text-center sm:text-left">
-          <div className="flex items-center gap-2">
-            <Sparkles size={15} className="text-amber-400" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        <div className="bg-white rounded-2xl py-4 px-6 sm:px-8 border border-[#1B4D31]/10 shadow-[0_6px_24px_rgba(27,77,49,0.04)] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-semibold text-[#4A6352] text-center sm:text-left">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-[#EAF5EE] text-[#2D7D52] flex items-center justify-center flex-shrink-0">
+              <Sparkles size={15} />
+            </div>
             <span>
-              Join <strong className="text-white">12,800+</strong> men leveling up their grooming game with Dailyfix
+              Join <strong className="text-[#143D28] font-bold">12,800+</strong> gentlemen elevating their daily grooming with DailyFix
             </span>
           </div>
 
@@ -583,10 +585,10 @@ const InstagramFeed = () => {
             href={INSTAGRAM_PROFILE_URL}
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-1.5 text-stone-300 hover:text-pink-400 font-semibold transition-colors"
+            className="inline-flex items-center gap-1.5 text-[#2D7D52] hover:text-[#143D28] font-bold transition-colors"
           >
-            <span>Tag <strong className="text-white">#DailyfixGrooming</strong> in your reels to get featured</span>
-            <ArrowUpRight size={13} />
+            <span>Tag <span className="underline decoration-[#2D7D52]/40">#DailyfixGrooming</span> in your reels to get featured</span>
+            <ArrowUpRight size={14} />
           </a>
         </div>
       </div>

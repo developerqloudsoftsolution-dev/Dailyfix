@@ -283,13 +283,13 @@ const Sample1 = () => {
                   className={styles.heroProductImg}
                 />
               </AnimatePresence>
-            </div>
 
-            {/* Rating Tag */}
-            <div className={styles.floatingRatingBadge}>
-              <Star size={14} className="fill-amber-400 text-amber-400" />
-              <span className="text-xs font-black text-[#143D28]">4.9</span>
-              <span className="text-[11px] text-[#637D6C]">({activeShade.reviews})</span>
+              {/* Rating Tag */}
+              <div className={styles.floatingRatingBadge}>
+                <Star size={14} className="fill-amber-400 text-amber-400" />
+                <span className="text-xs font-black text-[#143D28]">4.9</span>
+                <span className="text-[11px] text-[#637D6C]">({activeShade.reviews})</span>
+              </div>
             </div>
 
             {/* Interactive Shade Selector */}

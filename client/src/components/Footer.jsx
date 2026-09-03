@@ -19,66 +19,71 @@ const Footer = () => {
   };
 
   return (
-    <footer className={`${isSample1 ? 'bg-[#0B230E] border-t border-[#A8E6A1]/20' : 'bg-slate-900'} text-white py-10 px-8 md:px-10`}>
-      <div className="max-w-9xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-8">
+    <footer className="bg-white border-t border-[#1B4D31]/10 text-[#143D28] py-14 px-6 sm:px-8 md:px-12 relative z-10">
+      <div className="max-w-[1400px] mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
           {/* Company Info */}
           <div className="space-y-4 lg:col-span-1">
-            <img
-              src={logo}
-              alt="Dailyfix"
-              className="h-12 w-auto"
-            />
-            <p className="text-slate-400 text-sm leading-relaxed">
-              Premium grooming products for the modern man. Enhance your look with our high-quality beard colour and grooming essentials.
+            <Link to="/" className="inline-block">
+              <img
+                src={logo}
+                alt="Dailyfix"
+                className="h-10 sm:h-11 w-auto object-contain"
+              />
+            </Link>
+            <p className="text-[#4A6352] text-sm leading-relaxed">
+              Elevating men's daily grooming rituals with clean, skin-friendly botanical formulations and timeless confidence.
             </p>
-            <div className="flex gap-4">
+            <div className="flex gap-2.5 pt-1">
               <motion.a 
-                whileHover={{ y: -3 }}
+                whileHover={{ y: -2 }}
                 href="https://www.youtube.com/channel/UC2OE1pPDCj9cWVJ0k9m_ttQ" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-emerald-600 transition-all duration-300"
+                className="w-9 h-9 bg-[#EAF5EE] text-[#2D7D52] rounded-full flex items-center justify-center hover:bg-[#2D7D52] hover:text-white transition-all duration-300"
+                aria-label="YouTube"
               >
-                <Youtube size={20} />
+                <Youtube size={17} />
               </motion.a>
               <motion.a 
-                whileHover={{ y: -3 }}
+                whileHover={{ y: -2 }}
                 href="https://www.facebook.com/share/1JShp38pJT/" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-emerald-600 transition-all duration-300"
+                className="w-9 h-9 bg-[#EAF5EE] text-[#2D7D52] rounded-full flex items-center justify-center hover:bg-[#2D7D52] hover:text-white transition-all duration-300"
+                aria-label="Facebook"
               >
-                <Facebook size={20} />
+                <Facebook size={17} />
               </motion.a>
               <motion.a
-                whileHover={{ y: -3 }}
+                whileHover={{ y: -2 }}
                 href="https://www.instagram.com/dailyfix_care/"
-                target="_blank"
+                target="_blank" 
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-emerald-600 transition-all duration-300"
+                className="w-9 h-9 bg-[#EAF5EE] text-[#2D7D52] rounded-full flex items-center justify-center hover:bg-[#2D7D52] hover:text-white transition-all duration-300"
+                aria-label="Instagram"
               >
-                <Instagram size={20} />
+                <Instagram size={17} />
               </motion.a>
               <motion.a
-                whileHover={{ y: -3 }}
+                whileHover={{ y: -2 }}
                 href="https://www.linkedin.com/company/daily-fix-care/"
-                target="_blank"
+                target="_blank" 
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-emerald-600 transition-all duration-300"
+                className="w-9 h-9 bg-[#EAF5EE] text-[#2D7D52] rounded-full flex items-center justify-center hover:bg-[#2D7D52] hover:text-white transition-all duration-300"
+                aria-label="LinkedIn"
               >
-                <Linkedin size={20} />
+                <Linkedin size={17} />
               </motion.a>
             </div>
           </div>
           
           {/* Quick Links */}
           <div className="space-y-4">
-            <h4 className="text-xl font-bold text-white mb-4 relative inline-block group">
+            <h4 className="font-serif text-lg font-bold text-[#143D28] tracking-tight">
               Quick Links
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-emerald-500 group-hover:w-full transition-all duration-300"></span>
             </h4>
-            <ul className="space-y-3">
+            <ul className="space-y-2.5">
               {[
                 { label: 'Home', path: '/' },
                 { label: 'About Us', path: '/about' },
@@ -92,9 +97,9 @@ const Footer = () => {
                 <li key={index}>
                   <Link 
                     to={link.path} 
-                    className="text-slate-400 hover:text-emerald-400 hover:pl-2 transition-all duration-300 text-sm flex items-center gap-2 group"
+                    className="text-[#4A6352] hover:text-[#1B4D31] hover:translate-x-1 transition-all duration-200 text-sm flex items-center gap-2 group"
                   >
-                    <span className="w-1 h-1 bg-emerald-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#2D7D52] opacity-0 group-hover:opacity-100 transition-opacity" />
                     {link.label}
                   </Link>
                 </li>
@@ -104,36 +109,35 @@ const Footer = () => {
           
           {/* Our Products */}
           <div className="space-y-4">
-            <h4 className="text-xl font-bold text-white mb-4 relative inline-block group">
-              Our Products
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-emerald-500 group-hover:w-full transition-all duration-300"></span>
+            <h4 className="font-serif text-lg font-bold text-[#143D28] tracking-tight">
+              Shade Portfolio
             </h4>
             <ul className="space-y-2.5">
               <li>
                 <Link 
                   to="/product/natural-black-beard-colour" 
-                  className="text-slate-400 hover:text-emerald-400 hover:pl-2 transition-all duration-300 text-sm flex items-center gap-2 group"
+                  className="text-[#4A6352] hover:text-[#1B4D31] hover:translate-x-1 transition-all duration-200 text-sm flex items-center gap-2 group"
                 >
-                  <span className="w-1 h-1 bg-emerald-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                  Natural Black Beard Colour
-                </Link>
-              </li>
-              <li>
-                <Link 
-                  to="/product/black-brown-beard-colour" 
-                  className="text-slate-400 hover:text-emerald-400 hover:pl-2 transition-all duration-300 text-sm flex items-center gap-2 group"
-                >
-                  <span className="w-1 h-1 bg-emerald-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                  Black Brown Beard Colour
+                  <span className="w-2 h-2 rounded-full bg-[#18181B] border border-white shadow-xs" />
+                  01 Natural Black
                 </Link>
               </li>
               <li>
                 <Link 
                   to="/product/dark-brown-beard-colour" 
-                  className="text-slate-400 hover:text-emerald-400 hover:pl-2 transition-all duration-300 text-sm flex items-center gap-2 group"
+                  className="text-[#4A6352] hover:text-[#1B4D31] hover:translate-x-1 transition-all duration-200 text-sm flex items-center gap-2 group"
                 >
-                  <span className="w-1 h-1 bg-emerald-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                  Dark Brown Beard Colour
+                  <span className="w-2 h-2 rounded-full bg-[#3E2723] border border-white shadow-xs" />
+                  02 Dark Brown
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/product/black-brown-beard-colour" 
+                  className="text-[#4A6352] hover:text-[#1B4D31] hover:translate-x-1 transition-all duration-200 text-sm flex items-center gap-2 group"
+                >
+                  <span className="w-2 h-2 rounded-full bg-[#271D18] border border-white shadow-xs" />
+                  03 Brown Black
                 </Link>
               </li>
             </ul>
@@ -141,27 +145,29 @@ const Footer = () => {
           
           {/* Track Order */}
           <div className="space-y-4">
-            <h4 className="text-xl font-bold text-white mb-4 relative inline-block group">
+            <h4 className="font-serif text-lg font-bold text-[#143D28] tracking-tight">
               Track Your Order
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-emerald-500 group-hover:w-full transition-all duration-300"></span>
             </h4>
-            <form onSubmit={handleTrackOrder} className="space-y-4">
+            <p className="text-xs text-[#637D6C]">
+              Enter your tracking or order ID to get live delivery updates.
+            </p>
+            <form onSubmit={handleTrackOrder} className="space-y-3">
               <div>
                 <input
                   type="text"
                   value={orderId}
                   onChange={(e) => setOrderId(e.target.value)}
                   placeholder="Enter Waybill / Order ID" 
-                  className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-2.5 bg-[#F7F5EE] border border-[#1B4D31]/15 rounded-xl text-[#143D28] placeholder-[#637D6C]/60 text-sm focus:outline-none focus:ring-2 focus:ring-[#2D7D52]/30 focus:border-[#2D7D52] transition-all"
                 />
               </div>
               <motion.button 
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
                 type="submit" 
-                className="w-full bg-gradient-to-r from-emerald-500 to-emerald-700 text-white font-bold py-3 rounded-xl hover:from-emerald-600 hover:to-emerald-800 transition-all flex items-center justify-center gap-2"
+                className="w-full bg-gradient-to-r from-[#2D7D52] to-[#1B4D31] text-white font-bold py-2.5 rounded-xl shadow-sm hover:brightness-105 transition-all text-sm flex items-center justify-center gap-2"
               >
-                <Search size={18} />
+                <Search size={16} />
                 Track Order
               </motion.button>
             </form>
@@ -169,32 +175,25 @@ const Footer = () => {
           
           {/* Contact Info */}
           <div className="space-y-4">
-            <h4 className="text-xl font-bold text-white mb-4 relative inline-block group">
-              Contact Us
-              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-emerald-500 group-hover:w-full transition-all duration-300"></span>
+            <h4 className="font-serif text-lg font-bold text-[#143D28] tracking-tight">
+              Contact & HQ
             </h4>
-            <ul className="space-y-5">
-              <li className="flex items-start gap-3 text-slate-400 text-sm group">
-                <motion.div 
-                  whileHover={{ scale: 1.1 }}
-                  className="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center flex-shrink-0 group-hover:bg-emerald-500/30 transition-all duration-300"
-                >
-                  <MapPin size={20} className="text-emerald-500" />
-                </motion.div>
-                <span className="leading-relaxed">
-                  Lightbridge, 6th Floor, Hiranandani Business Park, Saki Vihar Road, Tunga Village, Chandivali, Powai, Mumbai, Maharashtra 400072
+            <ul className="space-y-4">
+              <li className="flex items-start gap-3 text-[#4A6352] text-sm">
+                <div className="w-8 h-8 bg-[#EAF5EE] text-[#2D7D52] rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <MapPin size={16} />
+                </div>
+                <span className="leading-relaxed text-xs">
+                  Lightbridge, 6th Floor, Hiranandani Business Park, Powai, Mumbai, Maharashtra 400072
                 </span>
               </li>
-              <li className="flex items-center gap-3 text-slate-400 text-sm group">
-                <motion.div 
-                  whileHover={{ scale: 1.1 }}
-                  className="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center flex-shrink-0 group-hover:bg-emerald-500/30 transition-all duration-300"
-                >
-                  <Mail size={20} className="text-emerald-500" />
-                </motion.div>
+              <li className="flex items-center gap-3 text-[#4A6352] text-sm">
+                <div className="w-8 h-8 bg-[#EAF5EE] text-[#2D7D52] rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Mail size={16} />
+                </div>
                 <a 
                   href="mailto:marketing@dailyfixcare.com" 
-                  className="hover:text-emerald-400 transition-colors"
+                  className="hover:text-[#1B4D31] text-xs font-semibold transition-colors"
                 >
                   marketing@dailyfixcare.com
                 </a>
@@ -203,19 +202,29 @@ const Footer = () => {
           </div>
         </div>
         
-        <div className="border-t border-slate-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-slate-400 text-sm">
-            © 2024 Dailyfix. All rights reserved.
+        {/* Bottom Trust Watermark & Copyright */}
+        <div className="border-t border-[#1B4D31]/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-[#637D6C] text-xs">
+            © {new Date().getFullYear()} DailyFix Grooming Essentials. All rights reserved.
           </p>
-          <div className="flex gap-8">
-            <Link to="/admin/login" className="text-slate-400 hover:text-emerald-400 transition-all duration-300 text-sm">
-              Admin
-            </Link>
-            <Link to="/privacy-policy" className="text-slate-400 hover:text-emerald-400 transition-all duration-300 text-sm">
+          
+          <div className="flex items-center gap-3 text-xs text-[#637D6C] font-semibold">
+            <span>Ammonia-Free</span>
+            <span>•</span>
+            <span>Cruelty-Free</span>
+            <span>•</span>
+            <span>Dermatologist Approved</span>
+          </div>
+
+          <div className="flex gap-6 text-xs text-[#637D6C]">
+            <Link to="/privacy-policy" className="hover:text-[#143D28] transition-colors">
               Privacy Policy
             </Link>
-            <Link to="/terms-of-service" className="text-slate-400 hover:text-emerald-400 transition-all duration-300 text-sm">
+            <Link to="/terms-of-service" className="hover:text-[#143D28] transition-colors">
               Terms of Service
+            </Link>
+            <Link to="/admin/login" className="hover:text-[#143D28] transition-colors">
+              Admin Portal
             </Link>
           </div>
         </div>

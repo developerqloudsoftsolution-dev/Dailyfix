@@ -64,7 +64,7 @@ const SLIDER_ITEMS = [...MARKETPLACES, ...MARKETPLACES, ...MARKETPLACES, ...MARK
 
 const Marketplaces = () => {
   return (
-    <section className="py-16 sm:py-20 lg:py-24 px-0 bg-gradient-to-b from-white via-stone-50/80 to-white border-t border-stone-200/70 overflow-hidden">
+    <section className="py-16 sm:py-20 lg:py-24 px-0 bg-[#F7F5EE] border-t border-[#1B4D31]/10 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
@@ -72,9 +72,9 @@ const Marketplaces = () => {
             initial={{ opacity: 0, y: 15 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-extrabold uppercase tracking-widest mb-4 shadow-sm"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#EAF5EE] border border-[#2D7D52]/30 text-[#1B4D31] text-xs font-extrabold uppercase tracking-widest mb-4 shadow-xs"
           >
-            <ShieldCheck size={15} className="text-emerald-600" />
+            <ShieldCheck size={15} className="text-[#2D7D52]" />
             <span>Available on Leading Marketplaces</span>
           </motion.div>
 
@@ -83,10 +83,10 @@ const Marketplaces = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.05 }}
-            className="text-3xl sm:text-4xl lg:text-5xl font-black text-stone-900 tracking-tight leading-tight"
+            className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#143D28] tracking-tight leading-tight"
           >
-            Find Dailyfix On Your{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-500">
+            Find DailyFix On Your{" "}
+            <span className="italic bg-clip-text text-transparent bg-gradient-to-r from-[#1B4D31] via-[#2D7D52] to-[#4EA874]">
               Favorite Apps
             </span>
           </motion.h2>
@@ -96,9 +96,9 @@ const Marketplaces = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="mt-3 text-stone-600 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed"
+            className="mt-3 text-[#4A6352] text-sm sm:text-base max-w-2xl mx-auto leading-relaxed font-sans"
           >
-            Prefer shopping on your trusted platform? Order genuine Dailyfix Ammonia-Free Beard Colour with fast doorstep shipping across India.
+            Prefer shopping on your trusted platform? Order genuine DailyFix Ammonia-Free Beard Colour with fast doorstep shipping across India.
           </motion.p>
         </div>
       </div>

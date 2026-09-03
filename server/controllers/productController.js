@@ -85,7 +85,23 @@ const getProductById = async (req, res) => {
     } else {
       query.slug = req.params.id;
     }
-    const product = await Product.findOne(query);
+    let product = await Product.findOne(query);
+
+    if (!product && !mongoose.isValidObjectId(req.params.id)) {
+      // Normalize slug to handle aliases like -beard-colour, -beard-color, or brown-black
+      const rawId = req.params.id.toLowerCase();
+      const cleanSlug = rawId.replace(/-beard-colour$/, '').replace(/-beard-color$/, '');
+      const mappedSlug = cleanSlug === 'brown-black' ? 'black-brown' : cleanSlug;
+
+      product = await Product.findOne({
+        $or: [
+          { slug: mappedSlug },
+          { slug: cleanSlug },
+          { slug: new RegExp(cleanSlug.replace(/-/g, '.*'), 'i') }
+        ]
+      });
+    }
+
     if (!product) {
       return res.status(404).json({ success: false, message: 'Product not found' });
     }

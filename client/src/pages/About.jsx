@@ -1,403 +1,484 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   Leaf,
-  Zap,
   ShieldCheck,
   Star,
   CheckCircle2,
   Award,
   Heart,
   TrendingUp,
-  Users
+  Users,
+  Sparkles,
+  Clock,
+  Droplets,
+  ArrowRight,
+  ArrowUpRight,
+  Check
 } from 'lucide-react';
-import banner from '../assets/images/dailyfixbannerforwebside.png';
-import productBox from '../assets/images/mobile banner.png';
-import naturalBlack from '../assets/images/NATURAL BLACK/01.png';
-import blackBrown from '../assets/images/02 BLACK BROWN/01.png';
-import darkBrown from '../assets/images/DARK BROWN/01.png';
-import productOnly from '../assets/images/Dailyfix Beard Colour Product Only.png';
-import threeProducts from '../assets/images/three.png';
+
 import poster from '../assets/images/poster.png';
+import threeProducts from '../assets/images/three.png';
+import productOnly from '../assets/images/Dailyfix Beard Colour Product Only.png';
+import shadeBlackImg from '../assets/images/001 Natural black1.png';
+import shadeDarkBrownImg from '../assets/images/003 Drak brown3.png';
+import shadeBrownBlackImg from '../assets/images/002 Brown black2.png';
 
 const About = () => {
+  useEffect(() => {
+    document.title = 'About DailyFix | Botanical Men’s Grooming & Ammonia-Free Beard Colour';
+  }, []);
+
   const stats = [
-    { number: '3+', label: 'Premium Shades', icon: TrendingUp },
-    { number: '100%', label: 'Ammonia-Free', icon: Leaf },
-    { number: '10K+', label: 'Happy Customers', icon: Users }
+    { number: '3', suffix: 'Calibrated Shades', label: 'Engineered specifically for Indian beard hair textures' },
+    { number: '100%', suffix: 'Ammonia-Free', label: 'Gentle on sensitive facial skin with zero harsh odors' },
+    { number: '12.8K+', suffix: 'Gentlemen Served', label: 'Trusted across India for undetectable gray coverage' }
   ];
 
-  const features = [
+  const pillars = [
     {
+      title: 'Botanical Defense & Nourishment',
+      badge: 'Formula Safety',
+      desc: 'Infused with natural olive oil and taurine to condition facial hair while preventing dryness, itching, and redness.',
       icon: Leaf,
-      title: 'Natural Ingredients',
-      description: 'Enriched with olive oil, taurine, and natural extracts to nourish your beard.'
+      span: 'lg:col-span-7'
     },
     {
-      icon: ShieldCheck,
-      title: '100% Ammonia-Free',
-      description: 'Gentle formula that won\'t irritate your skin or damage your beard.'
+      title: '10-Minute Rapid Gray Fusion',
+      badge: 'Fast Routine',
+      desc: 'Formulated for busy professionals. A simple 1:1 cream mix delivers salon-grade gray coverage in just 10 minutes flat.',
+      icon: Clock,
+      span: 'lg:col-span-5'
     },
     {
-      icon: Zap,
-      title: 'Long-Lasting',
-      description: 'Vibrant color that lasts for weeks without fading.'
+      title: 'Zero Skin-Stain Barrier',
+      badge: 'Clean Lines',
+      desc: 'Non-drip consistency adheres strictly to facial hair keratin fibers without staining cheeks, jawlines, or hands.',
+      icon: Droplets,
+      span: 'lg:col-span-5'
     },
     {
-      icon: Award,
-      title: 'Easy Application',
-      description: 'Simple step-by-step process that anyone can do at home.'
+      title: 'Undetectable Natural Finish',
+      badge: 'True Tone',
+      desc: 'Eliminates the artificial, bluish-purple shoe-polish sheen of traditional boxed dyes for a soft, authentic look under sunlight.',
+      icon: Sparkles,
+      span: 'lg:col-span-7'
     }
-  ];
-
-  const galleryItems = [
-    { image: naturalBlack, title: 'Natural Black' },
-    { image: blackBrown, title: 'Black Brown' },
-    { image: darkBrown, title: 'Dark Brown' },
-    { image: productOnly, title: 'Product Only' },
-    { image: threeProducts, title: 'All Shades' },
-    { image: poster, title: 'Poster' }
   ];
 
   const values = [
     {
       icon: Award,
-      title: 'Quality First',
-      description:
-        'We never compromise on quality. Every product is tested rigorously to ensure it meets our high standards before it reaches you.'
+      num: '01',
+      title: 'Uncompromised Purity',
+      desc: 'We formulate strictly without ammonia, parabens, resorcinol, or harsh oxidants. Your skin’s long-term health is never sacrificed for quick results.'
     },
     {
       icon: Heart,
-      title: 'Safety & Transparency',
-      description:
-        'We believe in full transparency. All Our ingredients are clearly listed, and our formulas are designed to be safe and gentle.'
+      num: '02',
+      title: 'Precision for Men',
+      desc: 'Men’s facial hair is thicker and coarser than scalp hair. We calibrate each shade specifically for beard textures to ensure deep, even, and natural pigment fusion.'
     },
     {
       icon: Users,
-      title: 'Customer First',
-      description:
-        'Our customers are at the heart of everything we do. We\'re always listening and improving based on your feedback.'
+      num: '03',
+      title: 'The Gentleman’s Respect',
+      desc: 'From discreet luxury packaging to prompt personal grooming advice, we treat our customers with the utmost sophistication, dignity, and care.'
+    }
+  ];
+
+  const shadeShowcase = [
+    {
+      num: '01',
+      name: 'Natural Black',
+      tag: 'Best Seller',
+      desc: 'Deep, authentic charcoal-black coverage without artificial blue tones.',
+      colorHex: '#18181B',
+      img: shadeBlackImg,
+      link: '/product/natural-black'
+    },
+    {
+      num: '02',
+      name: 'Dark Brown',
+      tag: "Gentleman's Choice",
+      desc: 'Rich espresso tone with warm depth, perfect for contemporary styling.',
+      colorHex: '#3E2723',
+      img: shadeDarkBrownImg,
+      link: '/product/dark-brown'
+    },
+    {
+      num: '03',
+      name: 'Brown Black',
+      tag: 'Natural Blend',
+      desc: 'Subtle transitional shade for naturally textured, multidimensional beards.',
+      colorHex: '#271D18',
+      img: shadeBrownBlackImg,
+      link: '/product/black-brown'
     }
   ];
 
   return (
-    <div className="min-h-screen bg-stone-50">
-      {/* Page Header */}
-      <section className="relative pt-40 pb-24 md:pt-48 md:pb-32 px-6 md:px-12 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-stone-900 via-emerald-900 to-stone-900" />
-        <div className="absolute inset-0 opacity-10">
-          <img
-            src={banner}
-            alt="DailyFix Banner"
-            loading="eager"
-            className="w-full h-full object-cover"
-          />
-        </div>
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl" />
+    <div className="bg-[#F7F5EE] min-h-screen relative overflow-hidden">
+      {/* Decorative ambient subtle green glows matching /sample1 */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-r from-[#2D7D52]/10 via-[#4EA874]/6 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-[40%] right-0 w-[500px] h-[500px] bg-[#2D7D52]/5 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative max-w-6xl mx-auto text-center">
+      {/* ========================================================
+          HERO SECTION: EDITORIAL BANNER
+      ========================================================= */}
+      <section className="relative pt-32 pb-20 sm:pt-40 sm:pb-28 px-4 sm:px-8 max-w-7xl mx-auto z-10">
+        <div className="max-w-3xl mx-auto text-center space-y-6">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#EAF5EE] border border-[#2D7D52]/30 text-[#1B4D31] text-xs font-extrabold uppercase tracking-widest shadow-xs"
           >
-            <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 px-6 py-3 rounded-full backdrop-blur-md mb-8">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-emerald-400 font-bold text-xs md:text-sm tracking-widest uppercase">About Us</span>
-            </div>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight leading-tight mb-6">
-              Premium Grooming for the Modern Man
-            </h1>
-            <p className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed">
-              Redefining men's grooming with natural, effective products that enhance your natural look.
-            </p>
+            <Sparkles size={14} className="text-[#2D7D52]" />
+            <span>Our Heritage & Purpose</span>
           </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.05 }}
+            className="font-serif text-3xl sm:text-5xl lg:text-6xl font-bold text-[#143D28] tracking-tight leading-tight"
+          >
+            Pure Grooming, <br />
+            <span className="italic bg-clip-text text-transparent bg-gradient-to-r from-[#1B4D31] via-[#2D7D52] to-[#4EA874]">
+              Naturally Defined.
+            </span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, delay: 0.1 }}
+            className="font-sans text-base sm:text-lg lg:text-xl text-[#4A6352] leading-relaxed max-w-2xl mx-auto"
+          >
+            DailyFix was created with a singular focus: to redefine modern men’s grooming with botanical formulas that deliver undetectable gray coverage in 10 minutes without burning or staining skin.
+          </motion.p>
         </div>
       </section>
 
-      {/* Our Story Section */}
-      <section className="py-24 md:py-32 px-6 md:px-12">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-center">
-            {/* Left - Image */}
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="lg:col-span-5 relative hidden sm:flex justify-center lg:justify-start"
-            >
-              {/* Decorative background shape */}
-              <div className="absolute -left-10 -top-10 w-full h-full bg-emerald-100 rounded-3xl blur-3xl opacity-60" />
-
-              <div className="relative group">
-                <div className="absolute inset-0 bg-emerald-900/10 rounded-3xl blur-2xl transform translate-x-6 translate-y-6 transition-transform duration-500 group-hover:translate-x-4 group-hover:translate-y-4" />
-                <div className="relative w-72 sm:w-80 md:w-[450px] h-[380px] sm:h-[480px] md:h-[520px] bg-gradient-to-br from-stone-100 to-white rounded-3xl shadow-hard overflow-hidden transition-transform duration-500 group-hover:scale-[1.02] z-10">
-                  <img
-                    src={productBox}
-                    alt="DailyFix Product"
-                    loading="lazy"
-                    className="w-full h-full object-contain sm:object-cover p-3 sm:p-0"
-                  />
-                </div>
-                <div className="absolute -bottom-16 -right-8 md:right-[-40px] bg-white p-8 rounded-2xl shadow-hard border border-stone-100 max-w-[260px] z-20">
-                  <p className="text-4xl font-black text-emerald-500">100%</p>
-                  <p className="text-sm font-bold uppercase tracking-wider text-stone-800 mt-2">Ammonia-Free</p>
-                  <p className="text-sm text-stone-600 mt-2">Formulated with premium natural ingredients.</p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Right - Content */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
-              className="lg:col-span-7 space-y-8"
-            >
-              <div className="space-y-4">
-                <span className="text-emerald-600 font-bold text-xs tracking-widest uppercase bg-emerald-50 px-6 py-3 rounded-full inline-flex items-center gap-2">
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full" />
-                  Our Story
-                </span>
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-stone-900 tracking-tight leading-tight">
-                  Born from a Passion for Perfect Grooming
-                </h2>
-              </div>
-
-              <div className="space-y-6">
-                <p className="text-stone-600 text-xl leading-relaxed">
-                  DailyFix was founded with a simple mission: to give men the tools they need to look and feel their absolute best. We believe that great grooming shouldn't be complicated - it should be simple, effective, and enjoyable.
-                </p>
-                <p className="text-stone-600 text-xl leading-relaxed">
-                  After years of research and development, we created our signature beard colour - a product that combines the best of science and nature. Our formula is designed to give you natural-looking colour while nourishing your beard and skin.
-                </p>
-                <p className="text-stone-600 text-xl leading-relaxed">
-                  Today, DailyFix is proud to serve thousands of men who trust us with their grooming needs. We're committed to continuous improvement and innovation to bring you the best products possible.
-                </p>
-              </div>
-
-              {/* Stats Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 pt-8 border-t border-stone-200">
-                {stats.map((stat, index) => {
-                  const IconComponent = stat.icon;
-                  return (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      className="space-y-3"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-                          <IconComponent className="w-6 h-6 text-emerald-600" />
-                        </div>
-                        <p className="text-5xl font-extrabold text-stone-900">{stat.number}</p>
-                      </div>
-                      <p className="text-stone-600 text-sm font-medium">{stat.label}</p>
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-24 md:py-32 px-6 md:px-12 bg-white">
-        <div className="max-w-7xl mx-auto">
+      {/* ========================================================
+          OUR STORY SECTION: CRAFT & PURPOSE
+      ========================================================= */}
+      <section className="py-14 sm:py-20 px-4 sm:px-8 max-w-7xl mx-auto relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+          {/* Left Poster Presentation */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-20"
+            transition={{ duration: 0.5 }}
+            className="lg:col-span-5 flex justify-center"
           >
-            <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 px-6 py-3 rounded-full border border-emerald-100 mb-6">
-              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-              <span className="text-xs font-bold tracking-widest uppercase">What Makes Us Different</span>
+            <div className="relative group w-full max-w-[340px] sm:max-w-[400px]">
+              <div className="absolute inset-0 bg-[#2D7D52]/15 rounded-[24px] blur-2xl transform translate-x-2 translate-y-2 transition-transform duration-500 group-hover:translate-x-1 group-hover:translate-y-1" />
+              <div className="relative w-full rounded-[20px] shadow-[0_20px_50px_rgba(27,77,49,0.12)] border border-[#1B4D31]/20 overflow-hidden bg-black">
+                <img
+                  src={poster}
+                  alt="DailyFix Craft Poster"
+                  loading="lazy"
+                  className="w-full h-auto block group-hover:scale-[1.02] transition-transform duration-500"
+                />
+              </div>
+
+              {/* Floating Badge */}
+              <div className="absolute -bottom-4 right-2 sm:-bottom-5 sm:right-[-10px] bg-white/95 backdrop-blur-md p-3.5 sm:p-4 rounded-[16px] shadow-xl border border-[#1B4D31]/12 max-w-[180px] sm:max-w-[210px] z-20">
+                <p className="font-serif text-2xl sm:text-3xl font-bold text-[#2D7D52]">100%</p>
+                <p className="font-sans text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-[#143D28] mt-0.5">
+                  Ammonia-Free
+                </p>
+                <p className="font-sans text-[10px] sm:text-[11px] text-[#4A6352] mt-0.5 leading-snug">
+                  Gentle olive extract formula with zero harsh odors.
+                </p>
+              </div>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-stone-900">Why Choose DailyFix</h2>
           </motion.div>
 
-          {/* Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {features.map((feature, index) => {
-              const IconComponent = feature.icon;
-              return (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="bg-stone-50 p-8 md:p-10 rounded-3xl shadow-soft hover:shadow-hard transition-all duration-500 border border-stone-100 hover:border-emerald-100 group"
-                >
-                  <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-emerald-200 transition-colors duration-300">
-                    <IconComponent className="w-8 h-8 text-emerald-600" />
-                  </div>
-                  <h3 className="text-xl md:text-2xl font-bold text-stone-900 mb-4">{feature.title}</h3>
-                  <p className="text-stone-600 text-sm md:text-base leading-relaxed">{feature.description}</p>
-                </motion.div>
-              );
-            })}
-          </div>
+          {/* Right Content */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="lg:col-span-7 space-y-6 mt-6 lg:mt-0"
+          >
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EAF5EE] border border-[#2D7D52]/30 text-[#1B4D31] text-xs font-extrabold uppercase tracking-widest shadow-xs">
+              <Leaf size={14} className="text-[#2D7D52]" />
+              <span>The Genesis</span>
+            </div>
+
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#143D28] tracking-tight leading-tight">
+              Born to Replace Harsh Boxed Dyes
+            </h2>
+
+            <div className="space-y-4 font-sans text-sm sm:text-base text-[#4A6352] leading-relaxed">
+              <p>
+                For decades, Indian men looking to maintain their beard encountered an unacceptable trade-off: harsh boxed hair dyes full of ammonia and abrasive oxidants. These products left a stiff, artificial purple sheen on hair, caused burning sensations on delicate facial skin, and stained cheeks with messy patches.
+              </p>
+              <p>
+                DailyFix was founded to solve this problem from the ground up. We dedicated our research to formulating a beard colour specifically calibrated for coarser facial hair textures, powered by natural botanical extracts that nourish skin and hair fibers simultaneously.
+              </p>
+              <p>
+                The result is a clean, 10-minute ritual that looks 100% natural in daylight, feels completely undetectable to the touch, and gives gentlemen the confidence of looking sharp every single day.
+              </p>
+            </div>
+
+            {/* Stats Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-[#1B4D31]/10">
+              {stats.map((s, idx) => (
+                <div key={idx} className="bg-white p-4 sm:p-5 rounded-2xl border border-[#1B4D31]/10 shadow-xs">
+                  <p className="font-serif text-2xl sm:text-3xl font-bold text-[#143D28]">
+                    {s.number}
+                  </p>
+                  <p className="font-sans text-xs font-bold text-[#2D7D52] uppercase tracking-wider mt-0.5">
+                    {s.suffix}
+                  </p>
+                  <p className="font-sans text-[11px] text-[#637D6C] mt-1 leading-snug">
+                    {s.label}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Product Gallery Section */}
-      <section className="py-24 md:py-32 px-6 md:px-12 bg-stone-50">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-20"
-          >
-            <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 px-6 py-3 rounded-full border border-emerald-100 mb-6">
-              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-              <span className="text-xs font-bold tracking-widest uppercase">Our Products</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-stone-900">Gallery</h2>
-          </motion.div>
+      {/* ========================================================
+          BENTO GRID: FORMULATION HIGHLIGHTS & SCIENCE
+      ========================================================= */}
+      <section className="py-16 sm:py-24 px-4 sm:px-8 max-w-7xl mx-auto relative z-10">
+        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#EAF5EE] border border-[#2D7D52]/30 text-[#1B4D31] text-xs font-extrabold uppercase tracking-widest mb-4 shadow-xs">
+            <Award size={14} className="text-[#2D7D52]" />
+            <span>Formulation Highlights</span>
+          </div>
 
-          {/* Gallery Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {galleryItems.map((item, index) => (
+          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#143D28] tracking-tight leading-tight">
+            Engineered for Precision, <br />
+            <span className="italic bg-clip-text text-transparent bg-gradient-to-r from-[#1B4D31] via-[#2D7D52] to-[#4EA874]">
+              Kind to Your Skin.
+            </span>
+          </h2>
+
+          <p className="font-sans text-sm sm:text-base text-[#4A6352] mt-3 max-w-xl mx-auto">
+            Every ingredient in DailyFix serves a functional purpose: achieving optimal color depth while preserving your natural skin barrier.
+          </p>
+        </div>
+
+        {/* Bento Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+          {pillars.map((pillar, idx) => {
+            const Icon = pillar.icon;
+            return (
               <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 40 }}
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ y: -8 }}
-                className="group"
+                transition={{ duration: 0.4, delay: idx * 0.08 }}
+                className={`${pillar.span} bg-white rounded-[28px] p-7 sm:p-9 border border-[#1B4D31]/10 shadow-[0_10px_35px_rgba(27,77,49,0.05)] hover:shadow-[0_18px_45px_rgba(27,77,49,0.1)] hover:border-[#2D7D52]/30 transition-all duration-300 flex flex-col justify-between`}
               >
-                <div className="bg-white p-6 md:p-8 rounded-3xl shadow-soft hover:shadow-hard transition-all duration-500 border border-stone-100 overflow-hidden">
-                  <div className="aspect-square bg-stone-50 rounded-2xl overflow-hidden mb-6 flex items-center justify-center group-hover:bg-emerald-50 transition-colors duration-300">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      loading="lazy"
-                      className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-700"
-                    />
+                <div>
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="w-12 h-12 rounded-2xl bg-[#EAF5EE] text-[#2D7D52] flex items-center justify-center">
+                      <Icon size={22} />
+                    </div>
+                    <span className="px-3.5 py-1 rounded-full bg-[#F7F5EE] text-[#1B4D31] text-[11px] font-extrabold uppercase tracking-wider border border-[#1B4D31]/10">
+                      {pillar.badge}
+                    </span>
                   </div>
-                  <h3 className="text-lg md:text-xl font-bold text-stone-900 text-center group-hover:text-emerald-600 transition-colors duration-300">
-                    {item.title}
+
+                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#143D28] mb-3 leading-snug">
+                    {pillar.title}
                   </h3>
+
+                  <p className="font-sans text-sm sm:text-base text-[#4A6352] leading-relaxed">
+                    {pillar.desc}
+                  </p>
+                </div>
+
+                <div className="mt-6 pt-5 border-t border-[#1B4D31]/8 flex items-center gap-2 text-xs font-bold text-[#143D28]">
+                  <CheckCircle2 size={16} className="text-[#2D7D52]" />
+                  <span>Dermatologically tested for regular facial grooming</span>
                 </div>
               </motion.div>
-            ))}
-          </div>
+            );
+          })}
         </div>
       </section>
 
-      {/* Values Section */}
-      <section className="py-24 md:py-32 px-6 md:px-12 bg-white">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-20"
-          >
-            <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 px-6 py-3 rounded-full border border-emerald-100 mb-6">
-              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-              <span className="text-xs font-bold tracking-widest uppercase">Our Values</span>
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-stone-900">What We Stand For</h2>
-          </motion.div>
+      {/* ========================================================
+          VALUES SECTION: WHAT WE STAND FOR
+      ========================================================= */}
+      <section className="py-16 sm:py-24 px-4 sm:px-8 max-w-7xl mx-auto relative z-10 border-t border-[#1B4D31]/10">
+        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#EAF5EE] border border-[#2D7D52]/30 text-[#1B4D31] text-xs font-extrabold uppercase tracking-widest mb-4 shadow-xs">
+            <Heart size={14} className="text-[#2D7D52]" />
+            <span>Our Core Values</span>
+          </div>
 
-          {/* Values Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-            {values.map((value, index) => {
-              const IconComponent = value.icon;
-              return (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: index * 0.15 }}
-                  className="bg-gradient-to-br from-stone-50 to-white p-10 md:p-12 rounded-3xl shadow-soft hover:shadow-hard transition-all duration-500 border border-stone-100 group"
-                >
-                  <div className="w-16 h-16 bg-emerald-100 rounded-2xl flex items-center justify-center mb-8 group-hover:bg-emerald-200 transition-colors duration-300">
-                    <IconComponent className="w-8 h-8 text-emerald-600" />
+          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#143D28] tracking-tight">
+            What We Stand For
+          </h2>
+
+          <p className="font-sans text-sm sm:text-base text-[#4A6352] mt-3 max-w-xl mx-auto">
+            Three non-negotiable principles that guide every batch, bottle, and customer interaction.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+          {values.map((v, i) => {
+            const Icon = v.icon;
+            return (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 25 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: i * 0.1 }}
+                className="bg-white rounded-[28px] p-7 sm:p-9 border border-[#1B4D31]/10 shadow-[0_10px_35px_rgba(27,77,49,0.05)] hover:shadow-[0_18px_45px_rgba(27,77,49,0.1)] transition-all duration-300 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="w-12 h-12 rounded-2xl bg-[#EAF5EE] text-[#2D7D52] flex items-center justify-center">
+                      <Icon size={22} />
+                    </div>
+                    <span className="font-serif text-2xl font-bold text-[#143D28]/30">
+                      {v.num}
+                    </span>
                   </div>
-                  <h3 className="text-2xl font-bold text-stone-900 mb-4">{value.title}</h3>
-                  <p className="text-stone-600 text-sm md:text-base leading-relaxed">{value.description}</p>
-                </motion.div>
-              );
-            })}
-          </div>
+
+                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#143D28] mb-3">
+                    {v.title}
+                  </h3>
+
+                  <p className="font-sans text-sm sm:text-base text-[#4A6352] leading-relaxed">
+                    {v.desc}
+                  </p>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 md:py-32 px-6 md:px-12 bg-stone-900 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-900/30 via-transparent to-transparent" />
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl" />
+      {/* ========================================================
+          SHADE TRIO SHOWCASE
+      ========================================================= */}
+      <section className="py-16 sm:py-24 px-4 sm:px-8 max-w-7xl mx-auto relative z-10 border-t border-[#1B4D31]/10">
+        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#EAF5EE] border border-[#2D7D52]/30 text-[#1B4D31] text-xs font-extrabold uppercase tracking-widest mb-4 shadow-xs">
+            <Sparkles size={14} className="text-[#2D7D52]" />
+            <span>The Trio Collection</span>
+          </div>
 
-        <div className="max-w-4xl mx-auto relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center"
-          >
-            <div className="inline-flex items-center gap-2 bg-white/10 border border-white/20 px-6 py-3 rounded-full backdrop-blur-md mb-8">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-emerald-400 font-bold text-xs md:text-sm tracking-widest uppercase">Ready to Transform?</span>
+          <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#143D28] tracking-tight">
+            Discover Your Signature Match
+          </h2>
+
+          <p className="font-sans text-sm sm:text-base text-[#4A6352] mt-3 max-w-xl mx-auto">
+            3 expertly calibrated shades designed for seamless blending with Indian beard tones.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+          {shadeShowcase.map((s, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, y: 25 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: idx * 0.1 }}
+              className="bg-white rounded-[28px] p-6 sm:p-7 border border-[#1B4D31]/12 shadow-[0_12px_36px_rgba(27,77,49,0.06)] hover:shadow-[0_20px_50px_rgba(27,77,49,0.12)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="px-3 py-1 rounded-full bg-[#EAF5EE] text-[#1B4D31] text-[11px] font-extrabold uppercase tracking-wider">
+                    {s.tag}
+                  </span>
+                  <div
+                    className="w-5 h-5 rounded-full border-2 border-white shadow-xs"
+                    style={{ backgroundColor: s.colorHex }}
+                    title={s.name}
+                  />
+                </div>
+
+                <div className="h-56 rounded-2xl bg-[#F7F5EE]/80 flex items-center justify-center p-4 overflow-hidden mb-5">
+                  <img
+                    src={s.img}
+                    alt={s.name}
+                    className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+
+                <h3 className="font-serif text-xl font-bold text-[#143D28] mb-1.5">
+                  {s.num} • {s.name}
+                </h3>
+
+                <p className="font-sans text-xs sm:text-sm text-[#4A6352] leading-relaxed">
+                  {s.desc}
+                </p>
+              </div>
+
+              <div className="pt-5 mt-5 border-t border-[#1B4D31]/8">
+                <Link
+                  to={s.link}
+                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#EAF5EE] hover:bg-[#2D7D52] text-[#143D28] hover:text-white font-bold text-xs sm:text-sm transition-all duration-250"
+                >
+                  <span>Explore Shade</span>
+                  <ArrowRight size={15} />
+                </Link>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ========================================================
+          CLOSING BANNER: ELEVATED LUXURY CARD
+      ========================================================= */}
+      <section className="py-14 sm:py-20 px-4 sm:px-8 max-w-7xl mx-auto relative z-10">
+        <div className="bg-white rounded-[28px] sm:rounded-[32px] p-8 sm:p-14 lg:p-16 text-center relative overflow-hidden shadow-[0_18px_50px_rgba(27,77,49,0.06)] border border-[#1B4D31]/12">
+          <div className="relative z-10 max-w-2xl mx-auto space-y-5 sm:space-y-6">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#EAF5EE] border border-[#2D7D52]/30 text-[#1B4D31] text-xs font-extrabold uppercase tracking-widest shadow-xs">
+              <Sparkles size={14} className="text-[#2D7D52]" />
+              <span>Ready for Undetectable Coverage?</span>
             </div>
-            <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight leading-tight mb-8">
+
+            <h2 className="font-serif text-2xl sm:text-4xl lg:text-5xl font-bold text-[#143D28] tracking-tight leading-tight">
               Experience the DailyFix Difference
             </h2>
-            <p className="text-xl md:text-2xl text-white/70 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Join thousands of happy customers who have transformed their look with our premium beard colour.
+
+            <p className="font-sans text-xs sm:text-base text-[#4A6352] leading-relaxed max-w-xl mx-auto">
+              Join thousands of Indian gentlemen who have upgraded their grooming ritual with our 100% ammonia-free beard colour.
             </p>
-            <div className="flex flex-wrap justify-center gap-6">
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 pt-2 w-full">
               <Link
                 to="/shop"
-                className="group inline-flex items-center gap-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-5 px-12 rounded-full shadow-soft hover:shadow-emerald-500/25 transition-all duration-300 transform hover:-translate-y-1"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-full bg-gradient-to-r from-[#2D7D52] to-[#1B4D31] hover:brightness-110 text-white font-bold text-sm shadow-md hover:scale-105 transition-all"
               >
-                Shop Now
-                <ArrowRight className="w-5 h-5 transform group-hover:translate-x-1 transition-transform" />
+                <span>Shop All Shades</span>
+                <ArrowRight size={16} />
               </Link>
+
               <Link
                 to="/contact"
-                className="group inline-flex items-center gap-3 bg-white/10 hover:bg-white/20 border border-white/30 text-white font-bold py-5 px-12 rounded-full transition-all duration-300 backdrop-blur-md"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-3.5 rounded-full bg-white hover:bg-[#EAF5EE] text-[#143D28] hover:text-[#2D7D52] font-bold text-sm border border-[#1B4D31]/20 transition-all"
               >
-                Contact Us
+                <span>Contact Grooming Advisors</span>
               </Link>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
     </div>
   );
 };
-
-const Link = ({ to, children, className, ...props }) => (
-  <a href={to} className={className} {...props}>
-    {children}
-  </a>
-);
-
-const ArrowRight = ({ className, ...props }) => (
-  <svg
-    className={className}
-    fill="none"
-    stroke="currentColor"
-    viewBox="0 0 24 24"
-    {...props}
-  >
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-  </svg>
-);
 
 export default About;
