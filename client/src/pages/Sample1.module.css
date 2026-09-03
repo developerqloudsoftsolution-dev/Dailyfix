@@ -72,42 +72,52 @@
 .brandLogoWrap {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.9rem;
   text-decoration: none;
   cursor: pointer;
+  transition: opacity 0.2s ease;
 }
 
-.brandLogoBadge {
-  width: 42px;
-  height: 42px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #1B4D31 0%, #2D7D52 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #FFFFFF;
-  box-shadow: 0 4px 14px rgba(27, 77, 49, 0.22);
+.brandLogoWrap:hover {
+  opacity: 0.88;
 }
 
-.brandName {
-  font-family: var(--font-serif);
-  font-size: 1.35rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: #143D28;
+.brandLogoImg {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  filter: contrast(1.08);
+}
+
+.brandDivider {
+  width: 1px;
+  height: 28px;
+  background: rgba(27, 77, 49, 0.16);
+}
+
+.brandTaglineCol {
   display: flex;
   flex-direction: column;
-  line-height: 1.05;
+  justify-content: center;
+  gap: 1px;
 }
 
 .brandSubtag {
   font-family: var(--font-sans);
-  font-size: 0.65rem;
-  font-weight: 750;
-  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #4EA874;
-  margin-top: 2px;
+  color: #1B4D31;
+}
+
+.brandTaglineSmall {
+  font-family: var(--font-sans);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #637D6C;
 }
 
 .navLinks {

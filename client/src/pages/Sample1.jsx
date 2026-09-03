@@ -24,6 +24,7 @@ import heroProductImg from '../assets/images/Dailyfix Beard Colour Product Only.
 import shadeBlackImg from '../assets/images/001 Natural black1.png';
 import shadeDarkBrownImg from '../assets/images/003 Drak brown3.png';
 import shadeBrownBlackImg from '../assets/images/002 Brown black2.png';
+import brandFavicon from '../assets/images/favicon logo.jpeg';
 
 import styles from './Sample1.module.css';
 
@@ -116,12 +117,11 @@ const Sample1 = () => {
       <header className={styles.headerSticky}>
         <div className={styles.headerInner}>
           <div className={styles.brandLogoWrap} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <div className={styles.brandLogoBadge}>
-              <Leaf size={22} />
-            </div>
-            <div className={styles.brandName}>
-              <span>DailyFix</span>
+            <img src={brandFavicon} alt="DailyFix" className={styles.brandLogoImg} />
+            <div className={styles.brandDivider} />
+            <div className={styles.brandTaglineCol}>
               <span className={styles.brandSubtag}>Botanical Grooming</span>
+              <span className={styles.brandTaglineSmall}>Pure Men's Care</span>
             </div>
           </div>
 
@@ -595,13 +595,12 @@ const Sample1 = () => {
       <footer className={styles.footerContainer}>
         <div className={styles.footerInner}>
           <div className={styles.footerBrandCol}>
-            <div className={styles.brandLogoWrap}>
-              <div className={styles.brandLogoBadge}>
-                <Leaf size={20} />
-              </div>
-              <div className={styles.brandName}>
-                <span>DailyFix</span>
-                <span className={styles.brandSubtag}>Modern Grooming</span>
+            <div className={styles.brandLogoWrap} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+              <img src={brandFavicon} alt="DailyFix" className={styles.brandLogoImg} />
+              <div className={styles.brandDivider} />
+              <div className={styles.brandTaglineCol}>
+                <span className={styles.brandSubtag}>Botanical Grooming</span>
+                <span className={styles.brandTaglineSmall}>Pure Men's Care</span>
               </div>
             </div>
             <p className={styles.footerText}>
