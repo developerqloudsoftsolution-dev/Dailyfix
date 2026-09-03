@@ -301,7 +301,7 @@
    SECTION 1: SPLIT EDITORIAL HERO
 ======================================================= */
 .heroSection {
-  padding: 4rem 1.5rem 5.5rem 1.5rem;
+  padding: 4.8rem 1.5rem 5.5rem 1.5rem;
   position: relative;
   z-index: 10;
 }
@@ -1124,7 +1124,7 @@
 ======================================================= */
 @media (max-width: 768px) {
   .heroSection {
-    padding: 2.5rem 1rem 3.5rem 1rem;
+    padding: 3.4rem 1rem 3.5rem 1rem;
   }
 
   .heroContainer {

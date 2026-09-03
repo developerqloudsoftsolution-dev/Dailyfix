@@ -7,11 +7,34 @@ import {
   X,
   CheckCircle,
   ArrowUpRight,
+  Leaf,
+  Truck,
+  Sparkles,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 import { useCart } from '../context/CartContext';
 import { getProductImageSrc } from '../utils/productImages';
 import logo from '../assets/images/dailyfix new logo.png';
+
+const ANNOUNCEMENTS = [
+  {
+    icon: Leaf,
+    highlight: '100% Natural Colour',
+    suffix: 'Ammonia-Free Gentle Botanical Formula'
+  },
+  {
+    icon: Truck,
+    highlight: 'Free Shipping All Over India',
+    suffix: 'Dispatched within 24 Hours'
+  },
+  {
+    icon: Sparkles,
+    highlight: 'Easy & Safe to Use',
+    suffix: '10-Minute Salon Finish at Home'
+  }
+];
 
 const Navbar = () => {
   const location = useLocation();
@@ -25,6 +48,15 @@ const Navbar = () => {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showCartPopup, setShowCartPopup] = useState(false);
+  const [activeAnnouncement, setActiveAnnouncement] = useState(0);
+
+  /* Auto-slide announcements every 3.5s */
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveAnnouncement((prev) => (prev + 1) % ANNOUNCEMENTS.length);
+    }, 3500);
+    return () => clearInterval(timer);
+  }, []);
 
   /* Close mobile menu when route changes */
   useEffect(() => {
@@ -98,6 +130,54 @@ const Navbar = () => {
       ====================================================== */}
 
       <header className="fixed top-0 left-0 right-0 z-[9999]">
+
+        {/* =====================================================
+            AUTO-SLIDING ANNOUNCEMENT TOP BAR
+        ====================================================== */}
+        <div className="relative z-40 bg-gradient-to-r from-[#0D2417] via-[#143D28] to-[#1A4D32] text-[#EAF5EE] text-xs border-b border-[#2D7D52]/25 shadow-xs overflow-hidden h-[36px] flex items-center justify-center">
+          <div className="max-w-[1500px] mx-auto w-full flex items-center justify-between px-3 sm:px-8">
+            <button
+              onClick={() => setActiveAnnouncement((prev) => (prev - 1 + ANNOUNCEMENTS.length) % ANNOUNCEMENTS.length)}
+              className="hidden sm:inline-flex p-1 hover:text-white transition-colors opacity-70 hover:opacity-100 cursor-pointer"
+              aria-label="Previous announcement"
+            >
+              <ChevronLeft size={14} />
+            </button>
+
+            <div className="flex-1 flex items-center justify-center overflow-hidden h-5 relative">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeAnnouncement}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  className="flex items-center justify-center gap-2 text-center whitespace-nowrap text-[11px] sm:text-xs tracking-wide"
+                >
+                  {React.createElement(ANNOUNCEMENTS[activeAnnouncement].icon, {
+                    size: 13,
+                    className: 'text-[#4EA874] flex-shrink-0'
+                  })}
+                  <span className="font-extrabold text-white">
+                    {ANNOUNCEMENTS[activeAnnouncement].highlight}
+                  </span>
+                  <span className="hidden md:inline text-white/40">•</span>
+                  <span className="hidden md:inline text-[#C4DEC9] font-medium">
+                    {ANNOUNCEMENTS[activeAnnouncement].suffix}
+                  </span>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            <button
+              onClick={() => setActiveAnnouncement((prev) => (prev + 1) % ANNOUNCEMENTS.length)}
+              className="hidden sm:inline-flex p-1 hover:text-white transition-colors opacity-70 hover:opacity-100 cursor-pointer"
+              aria-label="Next announcement"
+            >
+              <ChevronRight size={14} />
+            </button>
+          </div>
+        </div>
 
         {/* Background */}
         <div className="relative z-30 bg-[#F7F5EE]/95 backdrop-blur-xl border-b border-[#1B4D31]/10 shadow-[0_4px_24px_rgba(27,77,49,0.04)] transition-all duration-300">
@@ -414,7 +494,7 @@ const Navbar = () => {
 
             <>
 
-              {/* Overlay (starts below 76px header) */}
+              {/* Overlay (starts below 112px combined header: 36px topbar + 76px navbar) */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -422,7 +502,7 @@ const Navbar = () => {
                 onClick={() => setMobileMenuOpen(false)}
                 className="
                   fixed
-                  top-[76px]
+                  top-[112px]
                   left-0
                   right-0
                   bottom-0
