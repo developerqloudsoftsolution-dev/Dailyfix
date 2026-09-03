@@ -13,6 +13,7 @@ const ScrollToTop = () => {
 import Home from './pages/Home'
 import Sample1 from './pages/Sample1'
 import Sample2 from './pages/Sample2'
+import Sample3 from './pages/Sample3'
 import About from './pages/About'
 import Shop from './pages/Shop'
 import Blog from './pages/Blog'
@@ -56,6 +57,7 @@ function App() {
             {/* Standalone Client Demo Routes */}
             <Route path="/sample1" element={<Sample1 />} />
             <Route path="/sample2" element={<Sample2 />} />
+            <Route path="/sample3" element={<Sample3 />} />
 
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
