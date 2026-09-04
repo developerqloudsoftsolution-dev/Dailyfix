@@ -134,11 +134,11 @@ const Navbar = () => {
         {/* =====================================================
             AUTO-SLIDING ANNOUNCEMENT TOP BAR
         ====================================================== */}
-        <div className="relative z-40 bg-gradient-to-r from-[#0D2417] via-[#143D28] to-[#1A4D32] text-[#EAF5EE] text-xs border-b border-[#2D7D52]/25 shadow-xs overflow-hidden h-[36px] flex items-center justify-center">
+        <div className="relative z-40 bg-[#F7F5EE] text-[#143D28] text-xs border-b border-[#1B4D31]/15 shadow-xs overflow-hidden h-[36px] flex items-center justify-center">
           <div className="max-w-[1500px] mx-auto w-full flex items-center justify-between px-3 sm:px-8">
             <button
               onClick={() => setActiveAnnouncement((prev) => (prev - 1 + ANNOUNCEMENTS.length) % ANNOUNCEMENTS.length)}
-              className="hidden sm:inline-flex p-1 hover:text-white transition-colors opacity-70 hover:opacity-100 cursor-pointer"
+              className="hidden sm:inline-flex p-1 text-[#143D28] hover:text-[#2D7D52] transition-colors opacity-70 hover:opacity-100 cursor-pointer"
               aria-label="Previous announcement"
             >
               <ChevronLeft size={14} />
@@ -156,13 +156,13 @@ const Navbar = () => {
                 >
                   {React.createElement(ANNOUNCEMENTS[activeAnnouncement].icon, {
                     size: 13,
-                    className: 'text-[#4EA874] flex-shrink-0'
+                    className: 'text-[#2D7D52] flex-shrink-0'
                   })}
-                  <span className="font-extrabold text-white">
+                  <span className="font-extrabold text-[#0D2417]">
                     {ANNOUNCEMENTS[activeAnnouncement].highlight}
                   </span>
-                  <span className="hidden md:inline text-white/40">•</span>
-                  <span className="hidden md:inline text-[#C4DEC9] font-medium">
+                  <span className="hidden md:inline text-[#1B4D31]/30">•</span>
+                  <span className="hidden md:inline text-[#385E46] font-medium">
                     {ANNOUNCEMENTS[activeAnnouncement].suffix}
                   </span>
                 </motion.div>
@@ -171,7 +171,7 @@ const Navbar = () => {
 
             <button
               onClick={() => setActiveAnnouncement((prev) => (prev + 1) % ANNOUNCEMENTS.length)}
-              className="hidden sm:inline-flex p-1 hover:text-white transition-colors opacity-70 hover:opacity-100 cursor-pointer"
+              className="hidden sm:inline-flex p-1 text-[#143D28] hover:text-[#2D7D52] transition-colors opacity-70 hover:opacity-100 cursor-pointer"
               aria-label="Next announcement"
             >
               <ChevronRight size={14} />
@@ -180,7 +180,7 @@ const Navbar = () => {
         </div>
 
         {/* Background */}
-        <div className="relative z-30 bg-[#F7F5EE]/95 backdrop-blur-xl border-b border-[#1B4D31]/10 shadow-[0_4px_24px_rgba(27,77,49,0.04)] transition-all duration-300">
+        <div className="relative z-30 bg-[#0D2417]/95 backdrop-blur-xl border-b border-white/10 shadow-[0_6px_28px_rgba(0,0,0,0.35)] transition-all duration-300">
 
           <div className="max-w-[1500px] mx-auto px-5 sm:px-8 lg:px-12">
 
@@ -203,17 +203,19 @@ const Navbar = () => {
                     lg:h-11
                     w-auto
                     object-contain
+                    filter
+                    drop-shadow-[0_2px_8px_rgba(255,255,255,0.12)]
                     transition-transform
                     duration-300
                     group-hover:scale-105
                   "
                 />
-                <div className="hidden sm:block w-[1px] h-7 bg-[#1B4D31]/15" />
+                <div className="hidden sm:block w-[1px] h-7 bg-white/20" />
                 <div className="hidden sm:flex flex-col justify-center">
-                  <span className="font-extrabold text-[10px] tracking-widest uppercase text-[#1B4D31]">
+                  <span className="font-extrabold text-[10px] tracking-widest uppercase text-white/95">
                     Botanical Grooming
                   </span>
-                  <span className="font-semibold text-[9px] tracking-wider text-[#637D6C]">
+                  <span className="font-semibold text-[9px] tracking-wider text-[#A3C9B0]">
                     Pure Men's Care
                   </span>
                 </div>
@@ -245,8 +247,8 @@ const Navbar = () => {
                         duration-200
                         ${
                           active
-                            ? 'text-[#143D28]'
-                            : 'text-[#385E46] hover:text-[#143D28]'
+                            ? 'text-white'
+                            : 'text-[#C4DEC9] hover:text-white'
                         }
                       `}
                     >
@@ -265,7 +267,8 @@ const Navbar = () => {
                             -bottom-1
                             h-[2.5px]
                             rounded-full
-                            bg-[#2D7D52]
+                            bg-[#4EA874]
+                            shadow-[0_0_10px_rgba(78,168,116,0.6)]
                           "
                         />
                       )}
@@ -296,15 +299,16 @@ const Navbar = () => {
                     px-4
                     py-2.5
                     rounded-full
-                    bg-white
+                    bg-white/10
                     border
-                    border-[#1B4D31]/15
-                    text-[#143D28]
+                    border-white/20
+                    text-white
                     text-sm
                     font-bold
                     shadow-sm
-                    hover:border-[#2D7D52]
-                    hover:shadow-[0_4px_16px_rgba(45,125,82,0.18)]
+                    hover:bg-white/15
+                    hover:border-[#4EA874]
+                    hover:shadow-[0_4px_16px_rgba(78,168,116,0.25)]
                     hover:-translate-y-0.5
                     transition-all
                     duration-300
@@ -315,7 +319,7 @@ const Navbar = () => {
                     className="
                       w-[18px]
                       h-[18px]
-                      text-[#2D7D52]
+                      text-[#4EA874]
                       transition-colors
                     "
                   />
@@ -361,13 +365,16 @@ const Navbar = () => {
                     rounded-full
                     bg-gradient-to-r
                     from-[#2D7D52]
-                    to-[#1B4D31]
+                    to-[#1E5D3B]
+                    hover:from-[#35905f]
+                    hover:to-[#247047]
                     text-white
                     text-sm
                     font-bold
-                    shadow-[0_8px_20px_rgba(27,77,49,0.22)]
-                    hover:shadow-[0_12px_28px_rgba(27,77,49,0.32)]
-                    hover:brightness-105
+                    border
+                    border-[#4EA874]/30
+                    shadow-[0_4px_16px_rgba(45,125,82,0.35)]
+                    hover:shadow-[0_8px_24px_rgba(78,168,116,0.4)]
                     hover:-translate-y-0.5
                     transition-all
                     duration-300
@@ -411,14 +418,15 @@ const Navbar = () => {
                     w-10
                     h-10
                     rounded-full
-                    bg-white
+                    bg-white/10
                     border
-                    border-[#1B4D31]/15
+                    border-white/20
+                    text-white
                     shadow-sm
                   "
                 >
 
-                  <ShoppingBag className="w-5 h-5 text-[#2D7D52]" />
+                  <ShoppingBag className="w-5 h-5 text-[#4EA874]" />
 
                   {getItemCount() > 0 && (
                     <span
@@ -456,11 +464,11 @@ const Navbar = () => {
                     w-10
                     h-10
                     rounded-full
-                    bg-white
+                    bg-white/10
                     border
-                    border-[#1B4D31]/15
-                    text-[#143D28]
-                    hover:text-[#2D7D52]
+                    border-white/20
+                    text-white
+                    hover:bg-white/20
                     shadow-sm
                     transition-colors
                   "
@@ -523,9 +531,9 @@ const Navbar = () => {
                   relative
                   z-20
                   lg:hidden
-                  bg-[#F7F5EE]
+                  bg-[#0D2417]
                   border-b
-                  border-[#1B4D31]/15
+                  border-[#2D7D52]/25
                   shadow-2xl
                 "
               >
@@ -554,8 +562,8 @@ const Navbar = () => {
                             transition-all
                             ${
                               active
-                                ? 'bg-[#EAF5EE] text-[#143D28]'
-                                : 'text-[#385E46] hover:bg-[#EAF5EE]/60'
+                                ? 'bg-[#143D28] text-white border border-[#2D7D52]/30'
+                                : 'text-[#C4DEC9] hover:bg-white/5 hover:text-white'
                             }
                           `}
                         >
@@ -568,7 +576,7 @@ const Navbar = () => {
                                 w-2
                                 h-2
                                 rounded-full
-                                bg-[#2D7D52]
+                                bg-[#4EA874]
                               "
                             />
                           )}
@@ -591,8 +599,9 @@ const Navbar = () => {
                         rounded-xl
                         text-base
                         font-semibold
-                        text-[#385E46]
-                        hover:bg-[#EAF5EE]/60
+                        text-[#C4DEC9]
+                        hover:bg-white/5
+                        hover:text-white
                         transition-all
                       "
                     >
@@ -633,9 +642,11 @@ const Navbar = () => {
                         rounded-xl
                         bg-gradient-to-r
                         from-[#2D7D52]
-                        to-[#1B4D31]
+                        to-[#1E5D3B]
                         text-white
                         font-bold
+                        border
+                        border-[#4EA874]/30
                         shadow-md
                         transition-all
                         min-h-[44px]
