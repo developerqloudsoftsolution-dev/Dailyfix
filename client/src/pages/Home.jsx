@@ -58,9 +58,22 @@ const SHADES = [
     img: shadeBlackImg
   },
   {
+    id: 'brown-black',
+    slug: 'black-brown-beard-colour',
+    number: '02',
+    name: 'Black Brown',
+    badge: 'Natural Blend',
+    tagline: 'Balanced transition shade for a naturally textured beard.',
+    price: 450,
+    rating: 4.8,
+    reviews: '560+',
+    colorHex: '#271D18',
+    img: shadeBrownBlackImg
+  },
+  {
     id: 'dark-brown',
     slug: 'dark-brown-beard-colour',
-    number: '02',
+    number: '03',
     name: 'Dark Brown',
     badge: "Gentleman's Choice",
     tagline: 'Rich espresso tone with warm depth for versatile styling.',
@@ -69,19 +82,6 @@ const SHADES = [
     reviews: '890+',
     colorHex: '#3E2723',
     img: shadeDarkBrownImg
-  },
-  {
-    id: 'brown-black',
-    slug: 'black-brown-beard-colour',
-    number: '03',
-    name: 'Brown Black',
-    badge: 'Natural Blend',
-    tagline: 'Balanced transition shade for a naturally textured beard.',
-    price: 450,
-    rating: 4.8,
-    reviews: '560+',
-    colorHex: '#271D18',
-    img: shadeBrownBlackImg
   }
 ];
 
@@ -150,17 +150,17 @@ const Home = () => {
 
     const itemToAdd = matchedProduct
       ? {
-          ...matchedProduct,
-          price: effectivePrice,
-          image: matchedProduct.image || shade.img
-        }
+        ...matchedProduct,
+        price: effectivePrice,
+        image: matchedProduct.image || shade.img
+      }
       : {
-          id: shade.id,
-          name: `DailyFix Beard Colour - ${shade.name}`,
-          price: effectivePrice,
-          slug: shade.slug,
-          image: shade.img
-        };
+        id: shade.id,
+        name: `DailyFix Beard Colour - ${shade.name}`,
+        price: effectivePrice,
+        slug: shade.slug,
+        image: shade.img
+      };
 
     addToCart(itemToAdd, 1);
     toast.success(`${shade.name} added to cart!`, {
@@ -346,9 +346,8 @@ const Home = () => {
                   <button
                     key={shade.id}
                     onClick={() => setActiveShadeIndex(idx)}
-                    className={`${styles.shadeOptionBtn} ${
-                      activeShadeIndex === idx ? styles.shadeOptionBtnActive : ''
-                    }`}
+                    className={`${styles.shadeOptionBtn} ${activeShadeIndex === idx ? styles.shadeOptionBtnActive : ''
+                      }`}
                   >
                     <span
                       className={styles.shadeSwatchCircle}
