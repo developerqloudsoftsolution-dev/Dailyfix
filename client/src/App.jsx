@@ -14,6 +14,7 @@ import Home from './pages/Home'
 import Sample1 from './pages/Sample1'
 import Sample2 from './pages/Sample2'
 import Sample3 from './pages/Sample3'
+import SampleFounder from './pages/SampleFounder'
 import About from './pages/About'
 import Shop from './pages/Shop'
 import Blog from './pages/Blog'
@@ -62,6 +63,7 @@ function App() {
             <Route element={<MainLayout />}>
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
+              <Route path="/sample-founder" element={<SampleFounder />} />
               <Route path="/shop" element={<Shop />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogDetail />} />
