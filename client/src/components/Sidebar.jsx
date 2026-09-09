@@ -136,41 +136,35 @@ export default function Sidebar() {
       {/* Navigation */}
 
       <div className="flex-1 overflow-y-auto py-6">
-
+        <div className="space-y-1 px-3">
           {menuItems
             .filter((item) => !item.hidden)
             .map((item) => {
               const Icon = item.icon;
 
+              return (
+                <NavLink
+                  key={item.title}
+                  to={item.path}
+                  end={item.path === "/admin"}
+                  className={({ isActive }) =>
+                    `group flex items-center gap-4 rounded-xl px-4 py-3 transition-all ${
+                      isActive
+                        ? "bg-emerald-600 text-white shadow-lg"
+                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    }`
+                  }
+                >
+                  <Icon size={21} />
 
-            return (
-
-              <NavLink
-                key={item.title}
-                to={item.path}
-                end={item.path === "/admin"}
-                className={({ isActive }) =>
-                  `group flex items-center gap-4 rounded-xl px-4 py-3 transition-all ${
-                    isActive
-                      ? "bg-emerald-600 text-white shadow-lg"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                  }`
-                }
-              >
-                <Icon size={21} />
-
-                {!collapsed && (
-                  <span className="font-medium text-sm">
-
-                    {item.title}
-
-                  </span>
-                )}
-
-              </NavLink>
-
-            );
-          })}
+                  {!collapsed && (
+                    <span className="font-medium text-sm">
+                      {item.title}
+                    </span>
+                  )}
+                </NavLink>
+              );
+            })}
         </div>
       </div>
 
