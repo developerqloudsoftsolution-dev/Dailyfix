@@ -56,7 +56,7 @@ export const login = async (req, res) => {
           const isDbInSync = await bcrypt.compare(trimmedPassword, admin.password);
           if (!isDbInSync) {
             admin.password = await bcrypt.hash(trimmedPassword, 10);
-            admin.name = "DailyFix Super Admin";
+            admin.name = "Dailyfix Super Admin";
             admin.role = "Super Admin";
             admin.status = "Active";
             await admin.save().catch(() => {});
@@ -68,7 +68,7 @@ export const login = async (req, res) => {
         try {
           const hashedPassword = await bcrypt.hash(trimmedPassword, 10);
           admin = await Admin.create({
-            name: "DailyFix Super Admin",
+            name: "Dailyfix Super Admin",
             email: expectedEmail,
             password: hashedPassword,
             role: "Super Admin",
@@ -106,7 +106,7 @@ export const login = async (req, res) => {
       token,
       admin: {
         id: adminId,
-        name: admin?.name || "DailyFix Super Admin",
+        name: admin?.name || "Dailyfix Super Admin",
         email: expectedEmail,
         role: "Super Admin",
       },
@@ -140,7 +140,7 @@ export const sendOtp = async (req, res) => {
       const strongPass = (process.env.ADMIN_PASSWORD || "DailyFix#Admin@2026!Secured").trim();
       const hashedPassword = await bcrypt.hash(strongPass, 10);
       admin = await Admin.create({
-        name: "DailyFix Super Admin",
+        name: "Dailyfix Super Admin",
         email: targetEmail,
         password: hashedPassword,
         role: "Super Admin",
@@ -164,7 +164,7 @@ export const sendOtp = async (req, res) => {
     <div style="background-color: #f8fafc; padding: 40px 10px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
       <div style="max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;">
         <div style="background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%); padding: 32px 24px; text-align: center;">
-          <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 700;">DailyFix Admin Security</h1>
+          <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 700;">Dailyfix Admin Security</h1>
         </div>
         <div style="padding: 36px 32px;">
           <h2 style="color: #0f172a; font-size: 20px; font-weight: 700; margin: 0 0 12px 0; text-align: center;">Admin Password Reset Code</h2>

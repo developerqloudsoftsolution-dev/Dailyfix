@@ -79,13 +79,13 @@ const Marketplaces = () => {
           </motion.div>
 
           <motion.h2
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.05 }}
             className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#143D28] tracking-tight leading-tight"
           >
-            Find DailyFix On Your{" "}
+            Find Dailyfix On Your{" "}
             <span className="italic bg-clip-text text-transparent bg-gradient-to-r from-[#1B4D31] via-[#2D7D52] to-[#4EA874]">
               Favorite Apps
             </span>
@@ -98,7 +98,7 @@ const Marketplaces = () => {
             transition={{ delay: 0.1 }}
             className="mt-3 text-[#4A6352] text-sm sm:text-base max-w-2xl mx-auto leading-relaxed font-sans"
           >
-            Prefer shopping on your trusted platform? Order genuine DailyFix Ammonia-Free Beard Colour with fast doorstep shipping across India.
+            Prefer shopping on your trusted platform? Order genuine Dailyfix Ammonia-Free Beard Colour with fast doorstep shipping across India.
           </motion.p>
         </div>
       </div>

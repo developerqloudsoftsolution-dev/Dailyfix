@@ -56,7 +56,7 @@ export default function WhatsAppConnect() {
   // Test Message
   const [testPhone, setTestPhone] = useState("");
   const [testMessage, setTestMessage] = useState(
-    "🧪 *DailyFix Care WhatsApp Bot Test*\n\nYour WhatsApp connection is working smoothly! ✅"
+    "🧪 *Dailyfix Care WhatsApp Bot Test*\n\nYour WhatsApp connection is working smoothly! ✅"
   );
   const [sendingTest, setSendingTest] = useState(false);
 

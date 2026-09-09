@@ -69,7 +69,7 @@ const sendEmail = async ({ to, subject, html, text }) => {
   }
 
   try {
-    const fromName = process.env.SMTP_FROM_NAME || "DailyFixCare";
+    const fromName = process.env.SMTP_FROM_NAME || "DailyfixCare";
     const fromEmail =
       process.env.SMTP_FROM_EMAIL || process.env.SMTP_USER || "noreply@dailyfixcare.com";
 

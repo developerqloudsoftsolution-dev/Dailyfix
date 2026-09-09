@@ -21,7 +21,7 @@ const Blog = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    document.title = 'The DailyFix Journal | Men’s Beard Grooming Advice & Style Guides';
+    document.title = 'The Dailyfix Journal | Men’s Beard Grooming Advice & Style Guides';
   }, []);
 
   const filteredPosts = useMemo(() => {
@@ -63,7 +63,7 @@ const Blog = () => {
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#EAF5EE] border border-[#2D7D52]/30 text-[#1B4D31] text-xs font-extrabold uppercase tracking-widest shadow-xs"
           >
             <Sparkles size={14} className="text-[#2D7D52]" />
-            <span>The DailyFix Journal</span>
+            <span>The Dailyfix Journal</span>
           </motion.div>
 
           <motion.h1
@@ -301,13 +301,13 @@ const Blog = () => {
             </h2>
 
             <p className="font-sans text-xs sm:text-base text-[#4A6352] leading-relaxed max-w-xl mx-auto">
-              Subscribe to the DailyFix Journal for monthly expert shade guides, beard care secrets, and early VIP access to product drops.
+              Subscribe to the Dailyfix Journal for monthly expert shade guides, beard care secrets, and early VIP access to product drops.
             </p>
 
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                alert('Thank you for subscribing to the DailyFix Journal!');
+                alert('Thank you for subscribing to the Dailyfix Journal!');
               }}
               className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 max-w-md mx-auto w-full"
             >

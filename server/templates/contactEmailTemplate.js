@@ -25,7 +25,7 @@ const contactEmailTemplate = (contactData) => {
               <tr>
                 <td align="center" style="background:linear-gradient(135deg,#059669 0%,#047857 100%);padding:32px 24px;border-radius:16px 16px 0 0;">
                   <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:700;">New Contact Message</h1>
-                  <p style="margin:8px 0 0;color:#d1fae5;font-size:14px;">DailyFixCare Website</p>
+                  <p style="margin:8px 0 0;color:#d1fae5;font-size:14px;">DailyfixCare Website</p>
                 </td>
               </tr>
 
@@ -33,7 +33,7 @@ const contactEmailTemplate = (contactData) => {
               <tr>
                 <td style="padding:40px 32px 24px;">
                   <p style="margin:0 0 24px;color:#4b5563;font-size:16px;line-height:1.6;">
-                    A new contact form has been submitted from the DailyFixCare website.
+                    A new contact form has been submitted from the DailyfixCare website.
                   </p>
 
                   <!-- Contact Details -->
@@ -101,7 +101,7 @@ const contactEmailTemplate = (contactData) => {
               <tr>
                 <td align="center" style="background-color:#f9fafb;padding:20px 24px;border-radius:0 0 16px 16px;border-top:1px solid #e5e7eb;">
                   <p style="margin:0;color:#9ca3af;font-size:12px;">
-                    This email was sent from the DailyFixCare contact form.
+                    This email was sent from the DailyfixCare contact form.
                   </p>
                 </td>
               </tr>

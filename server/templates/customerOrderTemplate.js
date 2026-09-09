@@ -98,7 +98,7 @@ const customerOrderTemplate = (order) => {
                 font-weight:bold;
                 letter-spacing:1px;
               ">
-                DailyFixCare
+                DailyfixCare
               </h1>
 
               <p style="

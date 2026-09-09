@@ -50,7 +50,7 @@ const customerStatusEmailTemplate = (order, customStatus = null) => {
     case "Delivered":
       statusBadgeBg = "#16a34a";
       statusTitle = "Order Delivered Successfully! 🎉";
-      statusDescription = `Your order <strong>#${orderId}</strong> has been delivered. Thank you for shopping with DailyFix! Enjoy your natural beard colour.`;
+      statusDescription = `Your order <strong>#${orderId}</strong> has been delivered. Thank you for shopping with Dailyfix! Enjoy your natural beard colour.`;
       break;
     case "Cancelled":
       statusBadgeBg = "#e11d48";
@@ -94,7 +94,7 @@ const customerStatusEmailTemplate = (order, customStatus = null) => {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>${statusTitle} - DailyFix</title>
+  <title>${statusTitle} - Dailyfix</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #334155;">
 
@@ -109,7 +109,7 @@ const customerStatusEmailTemplate = (order, customStatus = null) => {
           <tr>
             <td style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 32px 30px; text-align: center;">
               <h1 style="margin: 0; color: #ffffff; font-size: 26px; font-weight: 800; letter-spacing: 0.5px;">
-                DailyFix<span style="color: #10b981;">Care</span>
+                Dailyfix<span style="color: #10b981;">Care</span>
               </h1>
               <div style="display: inline-block; margin-top: 12px; background-color: ${statusBadgeBg}; color: #ffffff; padding: 5px 16px; border-radius: 9999px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;">
                 ${currentStatus}
@@ -208,7 +208,7 @@ const customerStatusEmailTemplate = (order, customStatus = null) => {
                 Email us at <a href="mailto:support@dailyfixcare.com" style="color: #10b981; font-weight: 600; text-decoration: none;">support@dailyfixcare.com</a> or reply directly to this email.
               </p>
               <p style="margin: 12px 0 0; font-size: 11px; color: #94a3b8;">
-                © ${new Date().getFullYear()} DailyFix Care. All rights reserved.
+                © ${new Date().getFullYear()} Dailyfix Care. All rights reserved.
               </p>
             </td>
           </tr>

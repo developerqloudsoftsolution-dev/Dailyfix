@@ -107,7 +107,7 @@ export default function Sidebar() {
           <div>
              <h2 className="font-bold text-slate-900 text-lg">
 
-              DailyFix
+              Dailyfix
 
             </h2>
 
@@ -229,7 +229,7 @@ export default function Sidebar() {
           <div className="mt-5 text-center">
 
             <p className="text-xs text-slate-400">
-              DailyFix Admin Panel
+              Dailyfix Admin Panel
             </p>
 
             <p className="text-[11px] text-slate-300 mt-1">

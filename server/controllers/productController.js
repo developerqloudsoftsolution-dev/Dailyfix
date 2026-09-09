@@ -152,7 +152,7 @@ const createProduct = async (req, res) => {
       price: Number(price),
       stock: stock !== undefined ? Number(stock) : 0,
       sku: sku || '',
-      brand: brand || 'DailyFix',
+      brand: brand || 'Dailyfix',
       category: category || 'Beard Care',
       image: image || '',
       weight: weight ? Number(weight) : 500,

@@ -32,7 +32,7 @@ const BlogDetail = () => {
 
   useEffect(() => {
     const originalTitle = document.title;
-    document.title = post ? `${post.title} | DailyFix Journal` : 'Article Not Found | DailyFix';
+    document.title = post ? `${post.title} | Dailyfix Journal` : 'Article Not Found | Dailyfix';
     return () => {
       document.title = originalTitle;
     };
@@ -185,7 +185,7 @@ const BlogDetail = () => {
           <div className="mt-12 pt-6 border-t border-[#1B4D31]/10 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-xs font-bold text-[#143D28]">
               <Sparkles size={16} className="text-[#2D7D52]" />
-              <span>Tested & Approved by DailyFix Master Barbers</span>
+              <span>Tested & Approved by Dailyfix Master Barbers</span>
             </div>
             <button
               onClick={() => {
@@ -212,7 +212,7 @@ const BlogDetail = () => {
           <div className="text-center sm:text-left space-y-1.5">
             <h3 className="font-serif text-xl font-bold text-[#143D28]">{post.author}</h3>
             <p className="font-sans text-xs font-bold uppercase tracking-wider text-[#2D7D52]">
-              Beard Grooming Specialist • DailyFix
+              Beard Grooming Specialist • Dailyfix
             </p>
             <p className="font-sans text-xs sm:text-sm text-[#4A6352] leading-relaxed pt-1">
               Committed to science-backed botanical grooming advice and honest formulation insights to help Indian gentlemen look sharp with zero effort.

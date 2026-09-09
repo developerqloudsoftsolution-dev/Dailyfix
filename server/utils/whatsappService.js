@@ -242,13 +242,13 @@ class WhatsAppService {
       const customerName = `${order.customer?.firstName || 'Customer'} ${order.customer?.lastName || ''}`.trim();
       const itemsList = order.items && order.items.length > 0
         ? order.items.map((i) => `• ${i.name} (Qty: ${i.quantity}) - ₹${i.price * i.quantity}`).join('\n')
-        : '• DailyFix Natural Beard Colour';
+        : '• Dailyfix Natural Beard Colour';
 
-      const message = `🎉 *Order Confirmation - DailyFix Care*
+      const message = `🎉 *Order Confirmation - Dailyfix Care*
 
 Hello *${customerName}*,
 
-Thank you for choosing DailyFix! Your order has been placed successfully.
+Thank you for choosing Dailyfix! Your order has been placed successfully.
 
 📦 *Order ID:* ${order.orderId}
 💰 *Total Amount:* ₹${order.total || order.totalAmount || 0}
@@ -291,7 +291,7 @@ We are preparing your package and will send you live tracking details as soon as
         ? order.items.map((i) => `• ${i.name} (x${i.quantity})`).join('\n')
         : '• 1 x Beard Colour';
 
-      const message = `🚨 *NEW ORDER RECEIVED - DailyFix*
+      const message = `🚨 *NEW ORDER RECEIVED - Dailyfix*
 
 🛍️ *Order ID:* ${order.orderId}
 👤 *Customer:* ${customerName} (${order.customer?.phone || 'No phone'})
@@ -334,7 +334,7 @@ ${itemsList}
 
       const customerName = `${order.customer?.firstName || 'Customer'}`.trim();
 
-      const message = `🚚 *Your DailyFix Order has Shipped!*
+      const message = `🚚 *Your Dailyfix Order has Shipped!*
 
 Hello *${customerName}*,
 
@@ -349,7 +349,7 @@ ${trackingUrl}
 You can also track on our website:
 https://dailyfixcare.com/track-order?orderId=${order.orderId}
 
-Thank you for shopping with DailyFix!`;
+Thank you for shopping with Dailyfix!`;
 
       const res = await this.sendTextMessage(customerPhone, message);
       console.log(`[WhatsApp] Shipment tracking notification sent for ${order.orderId} (${courierName}):`, res.ok ? 'SUCCESS' : res.message);
@@ -365,7 +365,7 @@ Thank you for shopping with DailyFix!`;
       const config = await this.getConfig();
       if (!config.enabled || !config.settings.notifyAdminOnProductAdd) return;
 
-      const message = `✨ *Product Created / Updated - DailyFix*
+      const message = `✨ *Product Created / Updated - Dailyfix*
 
 🏷️ *Product:* ${product.name || 'New Product'}
 💰 *Price:* ₹${product.price || 0} (MRP: ₹${product.mrp || product.price || 0})
@@ -386,7 +386,7 @@ Thank you for shopping with DailyFix!`;
       const config = await this.getConfig();
       if (!config.enabled || !config.settings.notifyAdminOnContact) return;
 
-      const message = `📩 *New Contact Form Message - DailyFix*
+      const message = `📩 *New Contact Form Message - Dailyfix*
 
 👤 *Name:* ${contactData.name || 'Visitor'}
 📞 *Phone:* ${contactData.phone || 'N/A'}
@@ -428,40 +428,40 @@ Thank you for shopping with DailyFix!`;
         ? `https://ekartlogistics.com/shipmenttrack/${waybill}`
         : `https://www.delhivery.com/track/package/${waybill}`;
 
-      let title = `📦 *Order Update - DailyFix Care*`;
+      let title = `📦 *Order Update - Dailyfix Care*`;
       let statusDesc = `Your order *#${orderId}* status has been updated to *${newStatus}*.`;
 
       switch (newStatus) {
         case 'Confirmed':
-          title = `✅ *Order Confirmed - DailyFix Care*`;
+          title = `✅ *Order Confirmed - Dailyfix Care*`;
           statusDesc = `Great news! Your order *#${orderId}* has been confirmed by our team and is scheduled for packing.`;
           break;
         case 'Processing':
-          title = `⚙️ *Order Processing - DailyFix Care*`;
+          title = `⚙️ *Order Processing - Dailyfix Care*`;
           statusDesc = `Your order *#${orderId}* is currently being packed and prepared for courier dispatch.`;
           break;
         case 'Shipped':
-          title = `🚚 *Order Shipped - DailyFix Care*`;
+          title = `🚚 *Order Shipped - Dailyfix Care*`;
           statusDesc = `Your package for order *#${orderId}* is on its way via ${courierName}!${
             waybill ? `\n🏷️ *AWB:* ${waybill}\n🔎 *Track Live:* ${trackingUrl}` : ''
           }`;
           break;
         case 'Out for Delivery':
-          title = `🛵 *Out for Delivery - DailyFix Care*`;
+          title = `🛵 *Out for Delivery - Dailyfix Care*`;
           statusDesc = `Your order *#${orderId}* is out for delivery today. Please keep your phone handy!`;
           break;
         case 'Delivered':
-          title = `🎉 *Order Delivered - DailyFix Care*`;
-          statusDesc = `Your order *#${orderId}* has been successfully delivered! Thank you for choosing DailyFix. Enjoy your natural beard colour!`;
+          title = `🎉 *Order Delivered - Dailyfix Care*`;
+          statusDesc = `Your order *#${orderId}* has been successfully delivered! Thank you for choosing Dailyfix. Enjoy your natural beard colour!`;
           break;
         case 'Cancelled':
-          title = `❌ *Order Cancelled - DailyFix Care*`;
+          title = `❌ *Order Cancelled - Dailyfix Care*`;
           statusDesc = `Your order *#${orderId}* has been cancelled.${
             waybill ? ' Associated courier delivery has also been stopped.' : ''
           }\nIf you did not request this cancellation, please reply to this message directly.`;
           break;
         default:
-          title = `ℹ️ *Order Status Update - DailyFix Care*`;
+          title = `ℹ️ *Order Status Update - Dailyfix Care*`;
           statusDesc = `Your order *#${orderId}* is now marked as *${newStatus}*.`;
           break;
       }
@@ -503,7 +503,7 @@ ${statusDesc}
         ? (order.ekart?.waybill ? `📦 *Ekart AWB:* ${order.ekart.waybill}\n` : '')
         : (order.delhivery?.waybill ? `🚚 *Delhivery AWB:* ${order.delhivery.waybill}\n` : '');
 
-      const message = `${statusEmoji} *ORDER STATUS CHANGED - DailyFix*
+      const message = `${statusEmoji} *ORDER STATUS CHANGED - Dailyfix*
 
 📦 *Order ID:* ${order.orderId}
 👤 *Customer:* ${customerName} (${customerPhone})

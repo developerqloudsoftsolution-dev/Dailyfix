@@ -2545,7 +2545,7 @@ export const notifyOrderCustomer = async (req, res) => {
           const emailHtml = customerStatusEmailTemplate(order);
           const eRes = await sendEmail({
             to: email,
-            subject: `Order Update #${order.orderId} - ${order.status} | DailyFix`,
+            subject: `Order Update #${order.orderId} - ${order.status} | Dailyfix`,
             html: emailHtml,
           });
 

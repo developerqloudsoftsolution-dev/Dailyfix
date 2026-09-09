@@ -192,7 +192,7 @@ export default function ReturnOrderPage() {
         <div className="text-center space-y-3">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 text-emerald-800 text-xs font-semibold border border-emerald-200 shadow-sm">
             <ShieldCheck size={15} className="text-emerald-600" />
-            <span>DailyFix Hassle-Free Returns & Replacements</span>
+            <span>Dailyfix Hassle-Free Returns & Replacements</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
             Initiate Product Return

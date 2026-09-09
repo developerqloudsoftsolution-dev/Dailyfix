@@ -72,7 +72,7 @@ const Sample1 = () => {
   const [cartCount, setCartCount] = useState(1);
 
   useEffect(() => {
-    document.title = 'DailyFix | Luxury Green & Cream Client Demonstration';
+    document.title = 'Dailyfix | Luxury Green & Cream Client Demonstration';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
@@ -117,7 +117,7 @@ const Sample1 = () => {
       <header className={styles.headerSticky}>
         <div className={styles.headerInner}>
           <div className={styles.brandLogoWrap} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <img src={brandFavicon} alt="DailyFix" className={styles.brandLogoImg} />
+            <img src={brandFavicon} alt="Dailyfix" className={styles.brandLogoImg} />
             <div className={styles.brandDivider} />
             <div className={styles.brandTaglineCol}>
               <span className={styles.brandSubtag}>Botanical Grooming</span>
@@ -228,7 +228,7 @@ const Sample1 = () => {
                 onClick={() => scrollToSection('bento-features')}
                 className={styles.btnSecondaryOutline}
               >
-                <span>Why DailyFix?</span>
+                <span>Why Dailyfix?</span>
               </button>
             </div>
 
@@ -339,7 +339,7 @@ const Sample1 = () => {
           </h2>
 
           <p className={styles.sectionSubheading}>
-            Unlike harsh boxed dyes, DailyFix is designed specifically for coarser beard hair textures while preserving skin comfort.
+            Unlike harsh boxed dyes, Dailyfix is designed specifically for coarser beard hair textures while preserving skin comfort.
           </p>
         </div>
 
@@ -438,7 +438,7 @@ const Sample1 = () => {
             </div>
           </motion.div>
 
-          {/* Card 4: Why Gentlemen Choose DailyFix (Span 7) */}
+          {/* Card 4: Why Gentlemen Choose Dailyfix (Span 7) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -596,7 +596,7 @@ const Sample1 = () => {
         <div className={styles.footerInner}>
           <div className={styles.footerBrandCol}>
             <div className={styles.brandLogoWrap} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-              <img src={brandFavicon} alt="DailyFix" className={styles.brandLogoImg} />
+              <img src={brandFavicon} alt="Dailyfix" className={styles.brandLogoImg} />
               <div className={styles.brandDivider} />
               <div className={styles.brandTaglineCol}>
                 <span className={styles.brandSubtag}>Botanical Grooming</span>
@@ -667,7 +667,7 @@ const Sample1 = () => {
 
         <div className={styles.footerBottom}>
           <p className={styles.footerCopyright}>
-            © {new Date().getFullYear()} DailyFix Grooming Essentials. All rights reserved.
+            © {new Date().getFullYear()} Dailyfix Grooming Essentials. All rights reserved.
           </p>
           <div className="flex items-center gap-4 text-xs text-[#637D6C]">
             <span>Ammonia-Free</span>

@@ -27,7 +27,7 @@ import shadeBrownBlackImg from '../assets/images/002 Brown black2.png';
 
 const About = () => {
   useEffect(() => {
-    document.title = 'About DailyFix | Botanical Men’s Grooming & Ammonia-Free Beard Colour';
+    document.title = 'About Dailyfix | Botanical Men’s Grooming & Ammonia-Free Beard Colour';
   }, []);
 
   const stats = [
@@ -157,7 +157,7 @@ const About = () => {
             transition={{ duration: 0.55, delay: 0.1 }}
             className="font-sans text-base sm:text-lg lg:text-xl text-[#4A6352] leading-relaxed max-w-2xl mx-auto"
           >
-            DailyFix was created with a singular focus: to redefine modern men’s grooming with botanical formulas that deliver undetectable gray coverage in 10 minutes without burning or staining skin.
+            Dailyfix was created with a singular focus: to redefine modern men’s grooming with botanical formulas that deliver undetectable gray coverage in 10 minutes without burning or staining skin.
           </motion.p>
         </div>
       </section>
@@ -180,7 +180,7 @@ const About = () => {
               <div className="relative w-full rounded-[20px] shadow-[0_20px_50px_rgba(27,77,49,0.12)] border border-[#1B4D31]/20 overflow-hidden bg-black">
                 <img
                   src={poster}
-                  alt="DailyFix Craft Poster"
+                  alt="Dailyfix Craft Poster"
                   loading="lazy"
                   className="w-full h-auto block group-hover:scale-[1.02] transition-transform duration-500"
                 />
@@ -221,7 +221,7 @@ const About = () => {
                 For decades, Indian men looking to maintain their beard encountered an unacceptable trade-off: harsh boxed hair dyes full of ammonia and abrasive oxidants. These products left a stiff, artificial purple sheen on hair, caused burning sensations on delicate facial skin, and stained cheeks with messy patches.
               </p>
               <p>
-                DailyFix was founded to solve this problem from the ground up. We dedicated our research to formulating a beard colour specifically calibrated for coarser facial hair textures, powered by natural botanical extracts that nourish skin and hair fibers simultaneously.
+                Dailyfix was founded to solve this problem from the ground up. We dedicated our research to formulating a beard colour specifically calibrated for coarser facial hair textures, powered by natural botanical extracts that nourish skin and hair fibers simultaneously.
               </p>
               <p>
                 The result is a clean, 10-minute ritual that looks 100% natural in daylight, feels completely undetectable to the touch, and gives gentlemen the confidence of looking sharp every single day.
@@ -266,7 +266,7 @@ const About = () => {
           </h2>
 
           <p className="font-sans text-sm sm:text-base text-[#4A6352] mt-3 max-w-xl mx-auto">
-            Every ingredient in DailyFix serves a functional purpose: achieving optimal color depth while preserving your natural skin barrier.
+            Every ingredient in Dailyfix serves a functional purpose: achieving optimal color depth while preserving your natural skin barrier.
           </p>
         </div>
 
@@ -451,7 +451,7 @@ const About = () => {
             </div>
 
             <h2 className="font-serif text-2xl sm:text-4xl lg:text-5xl font-bold text-[#143D28] tracking-tight leading-tight">
-              Experience the DailyFix Difference
+              Experience the Dailyfix Difference
             </h2>
 
             <p className="font-sans text-xs sm:text-base text-[#4A6352] leading-relaxed max-w-xl mx-auto">

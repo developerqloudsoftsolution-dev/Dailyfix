@@ -93,7 +93,7 @@ const Home = () => {
   const { addToCart } = useCart();
 
   useEffect(() => {
-    document.title = 'DailyFix | Beard Colour for Men | Natural, Ammonia-Free Shades';
+    document.title = 'Dailyfix | Beard Colour for Men | Natural, Ammonia-Free Shades';
 
     const fetchProducts = async () => {
       try {
@@ -156,7 +156,7 @@ const Home = () => {
       }
       : {
         id: shade.id,
-        name: `DailyFix Beard Colour - ${shade.name}`,
+        name: `Dailyfix Beard Colour - ${shade.name}`,
         price: effectivePrice,
         slug: shade.slug,
         image: shade.img
@@ -268,7 +268,7 @@ const Home = () => {
                 onClick={() => scrollToSection('bento-features')}
                 className={styles.btnSecondaryOutline}
               >
-                <span>Why DailyFix?</span>
+                <span>Why Dailyfix?</span>
               </button>
             </div>
 
@@ -378,7 +378,7 @@ const Home = () => {
           </h2>
 
           <p className={styles.sectionSubheading}>
-            Unlike harsh boxed dyes, DailyFix is designed specifically for coarser beard hair textures
+            Unlike harsh boxed dyes, Dailyfix is designed specifically for coarser beard hair textures
             while preserving skin comfort.
           </p>
         </div>
@@ -481,7 +481,7 @@ const Home = () => {
             </div>
           </motion.div>
 
-          {/* Card 4: Why Gentlemen Choose DailyFix (Span 7) */}
+          {/* Card 4: Why Gentlemen Choose Dailyfix (Span 7) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -659,7 +659,7 @@ const Home = () => {
                 <div className="relative w-full rounded-[20px] shadow-[0_20px_50px_rgba(27,77,49,0.12)] border border-[#1B4D31]/20 overflow-hidden bg-black">
                   <img
                     src={poster}
-                    alt="DailyFix Botanical Grooming"
+                    alt="Dailyfix Botanical Grooming"
                     loading="lazy"
                     className="w-full h-auto block group-hover:scale-[1.02] transition-transform duration-500"
                   />
@@ -697,7 +697,7 @@ const Home = () => {
               </h2>
 
               <p className="font-sans text-base sm:text-lg text-[#4A6352] leading-relaxed">
-                DailyFix was born to solve a real frustration: harsh boxed dyes that leave an artificial,
+                Dailyfix was born to solve a real frustration: harsh boxed dyes that leave an artificial,
                 stiff stain on skin and facial hair. We engineered a gentle, botanical alternative that
                 gives undetectable gray coverage while actively nourishing your beard and face.
               </p>
@@ -768,7 +768,7 @@ const Home = () => {
             </h2>
 
             <p className="text-[#4A6352] font-sans text-sm sm:text-base leading-relaxed">
-              Watch how cleanly DailyFix applies with zero mess. Keratin-bonding botanical pigments
+              Watch how cleanly Dailyfix applies with zero mess. Keratin-bonding botanical pigments
               blend effortlessly across beards, mustaches, and sideburns without artificial dye sheen.
             </p>
 
@@ -892,7 +892,7 @@ const Home = () => {
             </h2>
 
             <p className="font-sans text-xs sm:text-base text-[#4A6352] leading-relaxed max-w-xl mx-auto">
-              Join thousands of discerning Indian gentlemen who have switched to DailyFix Ammonia-Free Beard Colour.
+              Join thousands of discerning Indian gentlemen who have switched to Dailyfix Ammonia-Free Beard Colour.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 pt-2 w-full">

@@ -115,7 +115,7 @@ const adminOrderTemplate = (order) => {
               <!-- Footer -->
               <tr>
                 <td style="background-color:#111827;padding:24px 32px;border-radius:0 0 16px 16px;text-align:center;">
-                  <p style="margin:0;color:#6b7280;font-size:13px;">© ${new Date().getFullYear()} DailyFixCare Admin. This is an automated email.</p>
+                  <p style="margin:0;color:#6b7280;font-size:13px;">© ${new Date().getFullYear()} DailyfixCare Admin. This is an automated email.</p>
                 </td>
               </tr>
             </table>

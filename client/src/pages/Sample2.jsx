@@ -70,7 +70,7 @@ const Sample2 = () => {
   const [cartCount, setCartCount] = useState(1);
 
   useEffect(() => {
-    document.title = 'DailyFix Sample 2 | Amber Gold & Obsidian Luxury Edition';
+    document.title = 'Dailyfix Sample 2 | Amber Gold & Obsidian Luxury Edition';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
@@ -116,7 +116,7 @@ const Sample2 = () => {
       <header className={styles.headerSticky}>
         <div className={styles.headerInner}>
           <div className={styles.brandLogoWrap} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <img src={brandFavicon} alt="DailyFix" className={styles.brandLogoImg} />
+            <img src={brandFavicon} alt="Dailyfix" className={styles.brandLogoImg} />
             <div className={styles.brandDivider} />
             <div className={styles.brandTaglineCol}>
               <span className={styles.brandSubtag}>Amber Gold Edition</span>
@@ -227,7 +227,7 @@ const Sample2 = () => {
                 onClick={() => scrollToSection('bento-features')}
                 className={styles.btnSecondaryOutline}
               >
-                <span>Why DailyFix?</span>
+                <span>Why Dailyfix?</span>
               </button>
             </div>
 
@@ -338,7 +338,7 @@ const Sample2 = () => {
           </h2>
 
           <p className={styles.sectionSubheading}>
-            Specially designed for coarser facial hair textures, DailyFix coats each follicle without stinging or stripping natural oils.
+            Specially designed for coarser facial hair textures, Dailyfix coats each follicle without stinging or stripping natural oils.
           </p>
         </div>
 
@@ -595,7 +595,7 @@ const Sample2 = () => {
         <div className={styles.footerInner}>
           <div className={styles.footerBrandCol}>
             <div className={styles.brandLogoWrap} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-              <img src={brandFavicon} alt="DailyFix" className={styles.brandLogoImg} />
+              <img src={brandFavicon} alt="Dailyfix" className={styles.brandLogoImg} />
               <div className={styles.brandDivider} />
               <div className={styles.brandTaglineCol}>
                 <span className={styles.brandSubtag}>Amber Gold Edition</span>
@@ -666,7 +666,7 @@ const Sample2 = () => {
 
         <div className={styles.footerBottom}>
           <p className={styles.footerCopyright}>
-            © {new Date().getFullYear()} DailyFix Grooming Essentials. All rights reserved.
+            © {new Date().getFullYear()} Dailyfix Grooming Essentials. All rights reserved.
           </p>
           <div className="flex items-center gap-4 text-xs text-[#5C564E]">
             <span>Ammonia-Free</span>

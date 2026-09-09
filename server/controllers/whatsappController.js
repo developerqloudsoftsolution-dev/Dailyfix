@@ -194,7 +194,7 @@ export const sendTestMessage = async (req, res) => {
       });
     }
 
-    const text = message?.trim() || '🧪 *Test Message from DailyFix Care WhatsApp Bot*\n\nYour WhatsApp API connection is working perfectly! ✅';
+    const text = message?.trim() || '🧪 *Test Message from Dailyfix Care WhatsApp Bot*\n\nYour WhatsApp API connection is working perfectly! ✅';
     const result = await whatsappService.sendTextMessage(phone, text);
 
     if (result.ok) {

@@ -218,7 +218,7 @@ connectDB()
         const existing = await Admin.findOne({ email: soleEmail });
         if (!existing) {
           await Admin.create({
-            name: "DailyFix Super Admin",
+            name: "Dailyfix Super Admin",
             email: soleEmail,
             password: hashedPassword,
             role: "Super Admin",
@@ -227,7 +227,7 @@ connectDB()
           console.log(`✅ Sole Admin Account created: ${soleEmail}`);
         } else {
           existing.password = hashedPassword;
-          existing.name = "DailyFix Super Admin";
+          existing.name = "Dailyfix Super Admin";
           existing.role = "Super Admin";
           existing.status = "Active";
           await existing.save();

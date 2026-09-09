@@ -22,7 +22,7 @@ const Shop = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    document.title = 'Beard Colour | DailyFix 100% Ammonia-Free Signature Shades';
+    document.title = 'Beard Colour | Dailyfix 100% Ammonia-Free Signature Shades';
 
     const fetchProducts = async () => {
       try {

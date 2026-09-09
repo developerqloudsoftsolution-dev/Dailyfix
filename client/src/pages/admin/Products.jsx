@@ -29,7 +29,7 @@ import Modal from "../../components/Modal";
 
 const initialProductForm = {
   name: "",
-  brand: "DailyFix",
+  brand: "Dailyfix",
   category: "Beard Care",
   price: "",
   stock: "50",
@@ -163,7 +163,7 @@ export default function Products() {
     setCurrentProduct(product);
     setFormData({
       name: product.name || "",
-      brand: product.brand || "DailyFix",
+      brand: product.brand || "Dailyfix",
       category: product.category || "Beard Care",
       price: product.price || "",
       stock: product.stock !== undefined ? String(product.stock) : "0",
@@ -452,7 +452,7 @@ export default function Products() {
                             {product.name}
                           </h3>
                           <div className="flex items-center gap-2 mt-0.5 text-xs text-slate-500">
-                            <span>{product.brand || "DailyFix"}</span>
+                            <span>{product.brand || "Dailyfix"}</span>
                             {product.sku && (
                               <span className="font-mono text-[11px] bg-slate-100 px-1.5 py-0.5 rounded">
                                 SKU: {product.sku}
@@ -587,7 +587,7 @@ export default function Products() {
                   <input
                     type="text"
                     required
-                    placeholder="e.g. DailyFix Natural Black Beard Colour"
+                    placeholder="e.g. Dailyfix Natural Black Beard Colour"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full px-3.5 py-2.5 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 text-xs"

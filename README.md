@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-# DailyFixCare - Healthcare E-commerce Platform
+# DailyfixCare - Healthcare E-commerce Platform
 
 A full-stack healthcare e-commerce platform built with React, Node.js, Express, and MySQL.
 
@@ -154,6 +153,3 @@ daily/
 - GET /api/banners - Get active banners
 - GET /api/banners/admin - Get all banners (admin)
 - POST /api/banners - Create banner (admin)
-=======
-# Dailyfix
->>>>>>> 76c62b1e6494957373cdc2bccebf6f7b9950a90a

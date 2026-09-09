@@ -80,7 +80,7 @@ const Sample3 = () => {
   const [cartCount, setCartCount] = useState(1);
 
   useEffect(() => {
-    document.title = 'DailyFix Sample 3 | Editorial Maximalism Edition';
+    document.title = 'Dailyfix Sample 3 | Editorial Maximalism Edition';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
@@ -126,10 +126,10 @@ const Sample3 = () => {
       <header className={styles.headerSticky}>
         <div className={styles.headerInner}>
           <div className={styles.brandLogoWrap} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <img src={brandFavicon} alt="DailyFix" className={styles.brandLogoImg} />
+            <img src={brandFavicon} alt="Dailyfix" className={styles.brandLogoImg} />
             <div className={styles.brandDivider} />
             <div className={styles.brandTaglineCol}>
-              <span className={styles.brandSubtag}>DailyFix</span>
+              <span className={styles.brandSubtag}>Dailyfix</span>
               <span className={styles.brandTaglineSmall}>Maximalist Edition</span>
             </div>
           </div>
@@ -563,8 +563,8 @@ const Sample3 = () => {
         <div className={styles.footerInner}>
           <div>
             <div className={styles.footerBrandLogoWrap} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-              <img src={brandFavicon} alt="DailyFix" className={styles.footerLogoImg} />
-              <span className="font-['Bebas_Neue'] text-3xl tracking-wider text-white">DailyFix Grooming</span>
+              <img src={brandFavicon} alt="Dailyfix" className={styles.footerLogoImg} />
+              <span className="font-['Bebas_Neue'] text-3xl tracking-wider text-white">Dailyfix Grooming</span>
             </div>
             <h4 className={styles.footerHeadlineHuge}>
               MAXIMALIST MEN'S CARE.
@@ -626,7 +626,7 @@ const Sample3 = () => {
 
         <div className={styles.footerBottomMax}>
           <p className="font-bold text-sm text-white/70">
-            © {new Date().getFullYear()} DailyFix Grooming Essentials. All rights reserved.
+            © {new Date().getFullYear()} Dailyfix Grooming Essentials. All rights reserved.
           </p>
           <div className="flex items-center gap-6 font-bold text-xs uppercase tracking-widest text-[#D8A257]">
             <span>Ammonia-Free</span>

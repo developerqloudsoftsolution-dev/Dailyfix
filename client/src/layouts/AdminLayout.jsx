@@ -51,7 +51,7 @@ function AdminLayout() {
     <div className="min-h-screen flex bg-gray-50">
       <aside className="fixed top-0 left-0 z-30 flex flex-col w-64 h-screen bg-gray-900 text-white">
         <div className="p-4 border-b border-gray-800 flex-shrink-0">
-          <h1 className="text-xl font-bold text-primary">DailyFixCare Admin</h1>
+          <h1 className="text-xl font-bold text-primary">DailyfixCare Admin</h1>
         </div>
         <nav className="p-4 flex-1 overflow-y-auto">
           <ul className="space-y-2">

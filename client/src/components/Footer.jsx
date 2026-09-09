@@ -205,7 +205,7 @@ const Footer = () => {
         {/* Bottom Trust Watermark & Copyright */}
         <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-[#A3C9B0] text-xs">
-            © {new Date().getFullYear()} DailyFix Grooming Essentials. All rights reserved.
+            © {new Date().getFullYear()} Dailyfix Grooming Essentials. All rights reserved.
           </p>
 
           <div className="flex items-center gap-3 text-xs text-[#A3C9B0] font-semibold">

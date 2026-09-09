@@ -84,7 +84,7 @@ const HomeFAQ = () => {
 
               <p className="font-sans text-sm sm:text-base text-[#4A6352] leading-relaxed">
                 Yes, absolutely. Unlike harsh generic dyes that produce an artificial, dense shoe-polish
-                tint, DailyFix is calibrated specifically for Indian and South Asian beard hair textures.
+                tint, Dailyfix is calibrated specifically for Indian and South Asian beard hair textures.
                 Its botanical micro-pigments bind selectively to gray and white hair, blending seamlessly
                 with your facial hair tone under bright daylight.
               </p>
@@ -215,7 +215,7 @@ const HomeFAQ = () => {
               </h3>
 
               <p className="font-sans text-sm sm:text-base text-[#4A6352] leading-relaxed">
-                No. DailyFix locks directly onto the beard's keratin fibers. Daily face washes, warm showers,
+                No. Dailyfix locks directly onto the beard's keratin fibers. Daily face washes, warm showers,
                 and beard oils won't wash away the colour. It remains rich for 4+ weeks, requiring touch-ups
                 only as new gray roots naturally sprout.
               </p>

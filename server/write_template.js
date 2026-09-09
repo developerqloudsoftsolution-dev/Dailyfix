@@ -38,7 +38,7 @@ const customerOrderTemplate = (data) => {
               
               <tr>
                 <td align="center" style="background:linear-gradient(135deg,#2563eb 0%,#1d4ed8 100%);padding:32px;border-radius:16px 16px 0 0;">
-                  <h1 style="margin:0;color:#fff;font-size:28px;font-weight:700;">DailyFixCare</h1>
+                  <h1 style="margin:0;color:#fff;font-size:28px;font-weight:700;">DailyfixCare</h1>
                 </td>
               </tr>
 

@@ -857,7 +857,7 @@ export default function Dashboard() {
                           </div>
                           <div>
                             <p className="font-bold text-slate-800">
-                              {item.name || item.product?.name || "DailyFix Beard Colour"}
+                              {item.name || item.product?.name || "Dailyfix Beard Colour"}
                             </p>
                             <p className="text-slate-400">
                               Qty: {item.quantity} × ₹{item.price}
@@ -871,7 +871,7 @@ export default function Dashboard() {
                     ))
                   ) : (
                     <div className="p-3 text-xs text-slate-500 italic">
-                      DailyFix Natural Beard Colour (1 pack)
+                      Dailyfix Natural Beard Colour (1 pack)
                     </div>
                   )}
                 </div>

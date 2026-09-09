@@ -577,7 +577,7 @@ const InstagramFeed = () => {
               <Sparkles size={15} />
             </div>
             <span>
-              Join <strong className="text-[#143D28] font-bold">12,800+</strong> gentlemen elevating their daily grooming with DailyFix
+              Join <strong className="text-[#143D28] font-bold">12,800+</strong> gentlemen elevating their daily grooming with Dailyfix
             </span>
           </div>
 
