@@ -4,10 +4,13 @@
 <head>
   <meta charset="UTF-8" />
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/jpeg" href="/favicon.jpeg" />
+  <!-- Favicon and Brand Icons -->
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+  <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
   <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/jpeg" href="/favicon.jpeg" />
 
   <meta name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
@@ -46,13 +49,23 @@
 
   <!-- Open Graph -->
   <meta property="og:site_name" content="DailyFix" />
-  <meta property="og:title" content="DailyFix | Beard Colour for Men" />
+  <meta property="og:title" content="DailyFix | Beard Colour for Men | Natural, Ammonia-Free Shades" />
   <meta
     property="og:description"
-    content="Premium natural beard colour for men. Ammonia-free, long-lasting and easy to use."
+    content="DailyFix offers premium natural beard colour for men. Ammonia-free, long-lasting and easy to use."
   />
   <meta property="og:url" content="https://dailyfixcare.com/" />
   <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://dailyfixcare.com/logo.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="DailyFix | Beard Colour for Men" />
+  <meta
+    name="twitter:description"
+    content="DailyFix offers premium natural beard colour for men. Ammonia-free, long-lasting and easy to use."
+  />
+  <meta name="twitter:image" content="https://dailyfixcare.com/logo.png" />
 
   <!-- ============================= -->
   <!-- GOOGLE WEBSITE STRUCTURED DATA -->
@@ -63,7 +76,11 @@
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "DailyFix",
-    "alternateName": "DailyFix Care",
+    "alternateName": [
+      "DailyFix Grooming",
+      "DailyFix Care",
+      "DailyFixCare"
+    ],
     "url": "https://dailyfixcare.com/"
   }
   </script>
@@ -77,38 +94,18 @@
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "DailyFix",
+    "alternateName": [
+      "DailyFix Care",
+      "DailyFixCare",
+      "DailyFix Grooming"
+    ],
     "url": "https://dailyfixcare.com/",
-    "logo": "https://dailyfixcare.com/favicon.jpeg"
-  }
-  </script>
-
-  <!-- ============================= -->
-  <!-- BREADCRUMB STRUCTURED DATA -->
-  <!-- ============================= -->
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Beard Colour",
-        "item": "https://dailyfixcare.com/shop"
-      },
-      {
-        "@type": "ListItem",
-        "position": 2,
-        "name": "About Us",
-        "item": "https://dailyfixcare.com/about"
-      },
-      {
-        "@type": "ListItem",
-        "position": 3,
-        "name": "Contact Us",
-        "item": "https://dailyfixcare.com/contact"
-      }
+    "logo": "https://dailyfixcare.com/logo.png",
+    "sameAs": [
+      "https://www.instagram.com/dailyfix_care/",
+      "https://www.facebook.com/share/1JShp38pJT/",
+      "https://www.youtube.com/channel/UC2OE1pPDCj9cWVJ0k9m_ttQ",
+      "https://www.linkedin.com/company/daily-fix-care/"
     ]
   }
   </script>
