@@ -40,6 +40,7 @@ import beardVideo from '../assets/Untitled design (3).mp4';
 import InstagramFeed from '../components/Instagramfeed.jsx';
 import Marketplaces from '../components/Marketplaces.jsx';
 import HomeFAQ from '../components/HomeFAQ.jsx';
+import FounderCardWithoutImage from '../components/founder/FounderCardWithoutImage.jsx';
 
 import styles from './Sample1.module.css';
 
@@ -733,7 +734,7 @@ const Home = () => {
       </section>
 
       {/* ========================================================
-          SECTION 5: VIDEO TRANSFORMATION SHOWCASE (Light Luxury)
+          SECTION 6: VIDEO TRANSFORMATION SHOWCASE (Light Luxury)
       ========================================================= */}
       <section className="py-16 sm:py-20 px-4 sm:px-8 max-w-7xl mx-auto relative z-10">
         <div className="bg-white rounded-[32px] p-6 sm:p-10 lg:p-12 shadow-[0_16px_48px_rgba(27,77,49,0.06)] border border-[#1B4D31]/12 flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
@@ -786,12 +787,19 @@ const Home = () => {
       </section>
 
       {/* ========================================================
-          SECTION 6: OFFICIAL MARKETPLACES
+          SECTION 7: THE FACE BEHIND DAILYFIX (FOUNDER KEYNOTE)
+      ========================================================= */}
+      <section id="founder-section" aria-label="Founder Profile with Brand Crest" className="py-12 sm:py-16 lg:py-20 px-4 sm:px-8 max-w-7xl mx-auto relative z-10">
+        <FounderCardWithoutImage />
+      </section>
+
+      {/* ========================================================
+          SECTION 8: OFFICIAL MARKETPLACES
       ========================================================= */}
       <Marketplaces />
 
       {/* ========================================================
-          SECTION 7: BLOG & GROOMING TIPS INFINITE CAROUSEL
+          SECTION 9: BLOG & GROOMING TIPS INFINITE CAROUSEL
       ========================================================= */}
       <section className="py-16 sm:py-20 px-0 overflow-hidden relative z-10 bg-[#F7F5EE]/60 border-t border-[#1B4D31]/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-8 mb-8 sm:mb-12">
@@ -872,12 +880,12 @@ const Home = () => {
       </section>
 
       {/* ========================================================
-          SECTION 8: FREQUENTLY ASKED QUESTIONS (Bento Box Model)
+          SECTION 10: FREQUENTLY ASKED QUESTIONS (Bento Box Model)
       ========================================================= */}
       <HomeFAQ />
 
       {/* ========================================================
-          SECTION 10: ELEVATED CLOSING BANNER (Light Luxury)
+          SECTION 11: ELEVATED CLOSING BANNER (Light Luxury)
       ========================================================= */}
       <section className="py-14 sm:py-20 px-4 sm:px-8 max-w-7xl mx-auto relative z-10">
         <div className="bg-white rounded-[28px] sm:rounded-[32px] p-6 sm:p-14 lg:p-16 text-center relative overflow-hidden shadow-[0_18px_50px_rgba(27,77,49,0.06)] border border-[#1B4D31]/12">
