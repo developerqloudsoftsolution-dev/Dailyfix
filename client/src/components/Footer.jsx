@@ -28,7 +28,7 @@ const Footer = () => {
               <img
                 src={logo}
                 alt="Dailyfix"
-                className="h-10 sm:h-11 w-auto object-contain filter drop-shadow-[0_2px_8px_rgba(255,255,255,0.12)]"
+                className="h-11 sm:h-12 w-auto object-contain filter drop-shadow-[0_2px_8px_rgba(255,255,255,0.12)]"
               />
             </Link>
             <p className="text-[#A3C9B0] text-sm leading-relaxed">

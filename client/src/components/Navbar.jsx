@@ -198,9 +198,9 @@ const Navbar = () => {
                   src={logo}
                   alt="Dailyfix"
                   className="
-                    h-9
-                    sm:h-10
-                    lg:h-11
+                    h-10
+                    sm:h-11
+                    lg:h-12
                     w-auto
                     object-contain
                     filter
