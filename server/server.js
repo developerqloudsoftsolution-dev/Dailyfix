@@ -162,6 +162,13 @@ if (frontendExists) {
   app.use(express.static(frontendPath));
 
   app.get(/^\/(?!api|uploads).*/, (req, res) => {
+    const cleanPath = req.path.replace(/^\/+|\/+$/g, '');
+    if (cleanPath) {
+      const candidateRouteFile = path.join(frontendPath, cleanPath, 'index.html');
+      if (fs.existsSync(candidateRouteFile)) {
+        return res.sendFile(candidateRouteFile);
+      }
+    }
     res.sendFile(
       path.join(frontendPath, 'index.html')
     );

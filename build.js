@@ -29,8 +29,13 @@ const clientDist = path.join(clientDir, 'dist');
 const rootDist = path.join(__dirname, 'dist');
 const serverDist = path.join(__dirname, 'server', 'dist');
 
+console.log('⚡ Pre-rendering static SEO pages for all public routes...');
+const { prerenderAll } = await import('./scripts/prerender-seo.js');
+prerenderAll(clientDist);
+
 console.log('🔄 Syncing dist to root dist/ and server/dist/ ...');
 fs.cpSync(clientDist, rootDist, { recursive: true, force: true });
 fs.cpSync(clientDist, serverDist, { recursive: true, force: true });
 
-console.log('✅ Build and sync complete! Ready for deployment.');
+console.log('✅ Build, SEO pre-render, and sync complete! Ready for deployment.');
+
