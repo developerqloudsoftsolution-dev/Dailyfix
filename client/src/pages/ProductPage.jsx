@@ -48,6 +48,10 @@ const ProductPage = () => {
 
         if (detailData.seoTitle) {
           document.title = detailData.seoTitle;
+          const ogTitle = document.querySelector('meta[property="og:title"]');
+          if (ogTitle) ogTitle.content = detailData.seoTitle;
+          const twTitle = document.querySelector('meta[name="twitter:title"]');
+          if (twTitle) twTitle.content = detailData.seoTitle;
         }
         if (detailData.seoDescription) {
           let meta = document.querySelector('meta[name="description"]');
@@ -57,6 +61,15 @@ const ProductPage = () => {
             document.head.appendChild(meta);
           }
           meta.content = detailData.seoDescription;
+
+          const ogDesc = document.querySelector('meta[property="og:description"]');
+          if (ogDesc) ogDesc.content = detailData.seoDescription;
+          const twDesc = document.querySelector('meta[name="twitter:description"]');
+          if (twDesc) twDesc.content = detailData.seoDescription;
+        }
+        const kwMeta = document.querySelector('meta[name="keywords"]');
+        if (kwMeta && detailData.seoTitle) {
+          kwMeta.content = `Dailyfix, ${detailData.seoTitle}, Beard Colour for Men, Men's Beard Colour, Beard Hair Colour, Ammonia-Free Beard Colour, Natural-Looking Beard Colour, Beard Colour for Grey Hair`;
         }
 
         const mappedProduct = {
@@ -201,7 +214,7 @@ const ProductPage = () => {
                   {media.type === 'image' ? (
                     <img
                       src={media.src}
-                      alt={`${product.name} thumbnail ${index + 1}`}
+                      alt={`${detail?.imageAlt || product.name} - View ${index + 1}`}
                       className="w-full h-full object-contain"
                     />
                   ) : (
@@ -236,7 +249,7 @@ const ProductPage = () => {
                 {product.images[currentImageIndex].type === 'image' ? (
                   <img
                     src={product.images[currentImageIndex].src}
-                    alt={product.name}
+                    alt={detail?.imageAlt || product.name}
                     className="w-full h-full object-contain p-6 sm:p-8"
                     draggable={false}
                   />
@@ -654,7 +667,7 @@ const ProductPage = () => {
           {product.images[currentImageIndex].type === 'image' ? (
             <img
               src={product.images[currentImageIndex].src}
-              alt={product.name}
+              alt={detail?.imageAlt || product.name}
               className="max-w-full max-h-[85vh] object-contain rounded-2xl"
               onClick={(e) => e.stopPropagation()}
             />

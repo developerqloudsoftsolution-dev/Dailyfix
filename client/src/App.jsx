@@ -65,15 +65,21 @@ function App() {
               <Route path="/about" element={<About />} />
               <Route path="/sample-founder" element={<SampleFounder />} />
               <Route path="/shop" element={<Shop />} />
+              <Route path="/beard-colour-for-men" element={<Shop />} />
               <Route path="/blog" element={<Blog />} />
+              <Route path="/beard-grooming-advice" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogDetail />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/store-locator" element={<StoreLocator />} />
               <Route path="/beard-oil" element={<BeardOil />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="/terms-and-conditions" element={<TermsOfService />} />
               <Route path="/return-policy" element={<ReturnPolicy />} />
+              <Route path="/refund-cancellation-policy" element={<ReturnPolicy />} />
+              <Route path="/cancellation-policy" element={<ReturnPolicy />} />
               <Route path="/shipping-policy" element={<ShippingPolicy />} />
+              <Route path="/shipping-delivery-policy" element={<ShippingPolicy />} />
               <Route path="/product/:id" element={<ProductPage />} />
               <Route path="/cart" element={<CartPage />} />
               <Route path="/checkout" element={<CheckoutPage />} />

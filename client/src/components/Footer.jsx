@@ -81,18 +81,16 @@ const Footer = () => {
           {/* Quick Links */}
           <div className="space-y-4">
             <h4 className="font-serif text-lg font-bold text-white tracking-tight">
-              Quick Links
+              Explore Dailyfix
             </h4>
             <ul className="space-y-2.5">
               {[
                 { label: 'Home', path: '/' },
+                { label: 'Beard Colour for Men', path: '/shop' },
+                { label: "Men's Beard Grooming Advice", path: '/blog' },
                 { label: 'About Us', path: '/about' },
-                { label: 'Beard Colour', path: '/shop' },
-                { label: 'Track Order', path: '/track-order' },
-                { label: 'Return Policy', path: '/return-policy' },
-                { label: 'Shipping Policy', path: '/shipping-policy' },
-                { label: 'Contact', path: '/contact' },
-                { label: 'Store Locator', path: '/store-locator' }
+                { label: 'Store Locator', path: '/store-locator' },
+                { label: 'Contact Us', path: '/contact' }
               ].map((link, index) => (
                 <li key={index}>
                   <Link
@@ -107,39 +105,29 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Our Products */}
+          {/* Customer Care & Policies */}
           <div className="space-y-4">
             <h4 className="font-serif text-lg font-bold text-white tracking-tight">
-              Shade Portfolio
+              Customer Policies
             </h4>
             <ul className="space-y-2.5">
-              <li>
-                <Link
-                  to="/product/natural-black-beard-colour"
-                  className="text-[#C4DEC9] hover:text-white hover:translate-x-1 transition-all duration-200 text-sm flex items-center gap-2 group"
-                >
-                  <span className="w-2 h-2 rounded-full bg-[#18181B] border border-white/40 shadow-xs" />
-                  01 Natural Black
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/product/black-brown-beard-colour"
-                  className="text-[#C4DEC9] hover:text-white hover:translate-x-1 transition-all duration-200 text-sm flex items-center gap-2 group"
-                >
-                  <span className="w-2 h-2 rounded-full bg-[#271D18] border border-white/40 shadow-xs" />
-                  02 Black Brown
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/product/dark-brown-beard-colour"
-                  className="text-[#C4DEC9] hover:text-white hover:translate-x-1 transition-all duration-200 text-sm flex items-center gap-2 group"
-                >
-                  <span className="w-2 h-2 rounded-full bg-[#3E2723] border border-white/40 shadow-xs" />
-                  03 Dark Brown
-                </Link>
-              </li>
+              {[
+                { label: 'Track Order', path: '/track-order' },
+                { label: 'Shipping & Delivery Policy', path: '/shipping-policy' },
+                { label: 'Refund/Cancellation Policy', path: '/return-policy' },
+                { label: 'Privacy Policy', path: '/privacy-policy' },
+                { label: 'Terms & Conditions', path: '/terms-of-service' }
+              ].map((link, index) => (
+                <li key={index}>
+                  <Link
+                    to={link.path}
+                    className="text-[#C4DEC9] hover:text-white hover:translate-x-1 transition-all duration-200 text-sm flex items-center gap-2 group"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#4EA874] opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -216,12 +204,18 @@ const Footer = () => {
             <span>Dermatologist Approved</span>
           </div>
 
-          <div className="flex gap-6 text-xs text-[#A3C9B0]">
+          <div className="flex flex-wrap gap-4 sm:gap-6 text-xs text-[#A3C9B0]">
+            <Link to="/shipping-policy" className="hover:text-white transition-colors">
+              Shipping & Delivery
+            </Link>
+            <Link to="/return-policy" className="hover:text-white transition-colors">
+              Refund & Cancellation
+            </Link>
             <Link to="/privacy-policy" className="hover:text-white transition-colors">
               Privacy Policy
             </Link>
             <Link to="/terms-of-service" className="hover:text-white transition-colors">
-              Terms of Service
+              Terms & Conditions
             </Link>
             <Link to="/admin/login" className="hover:text-white transition-colors">
               Admin Portal

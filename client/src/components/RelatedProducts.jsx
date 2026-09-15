@@ -219,7 +219,7 @@ const RelatedProducts = ({ currentSlug, currentProduct }) => {
                   <div className="w-full h-64 sm:h-72 flex items-center justify-center relative">
                     <img
                       src={imgSrc}
-                      alt={item.name}
+                      alt={detailData?.imageAlt || item.name}
                       loading="lazy"
                       className="max-h-full max-w-full object-contain group-hover:scale-108 transition-transform duration-700 ease-out drop-shadow-md"
                     />

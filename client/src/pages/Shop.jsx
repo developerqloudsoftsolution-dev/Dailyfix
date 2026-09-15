@@ -22,7 +22,12 @@ const Shop = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    document.title = 'Beard Colour | Dailyfix 100% Ammonia-Free Signature Shades';
+    document.title = 'Beard Colour for Men | Ammonia-Free Natural Shades | Dailyfix';
+
+    let meta = document.querySelector('meta[name="description"]');
+    if (meta) {
+      meta.content = 'Explore Dailyfix Beard Colour for Men. 100% ammonia-free, natural-looking beard hair colour in Natural Black, Black Brown, and Dark Brown for complete grey hair coverage.';
+    }
 
     const fetchProducts = async () => {
       try {
@@ -86,11 +91,11 @@ const Shop = () => {
             </div>
 
             <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#143D28] tracking-tight">
-              Signature Beard Colour
+              Beard Colour for Men
             </h1>
 
             <p className="font-sans text-xs sm:text-sm text-[#4A6352]">
-              100% Ammonia-free botanical formula. Undetectable gray coverage in 10 minutes.
+              Ammonia-free, natural-looking beard hair colour designed for complete grey hair coverage in 10 minutes.
             </p>
           </div>
 

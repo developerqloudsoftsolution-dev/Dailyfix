@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import { ShoppingCart, Star } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { getProductImageSrc } from '../utils/productImages';
+import { getProductDetailData } from '../data/productDetailData';
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
+  const detail = getProductDetailData(product.slug);
 
   const handleAddToCart = (e) => {
     e.preventDefault();
@@ -47,7 +49,7 @@ const ProductCard = ({ product }) => {
           <div className="w-full h-64 sm:h-72 rounded-[22px] bg-gradient-to-b from-[#F7F5EE] to-white border border-[#1B4D31]/5 flex items-center justify-center p-6 mb-5 overflow-hidden">
             <img
               src={getProductImageSrc(product)}
-              alt={product.name}
+              alt={detail?.imageAlt || product.name}
               onError={handleImageError}
               loading="lazy"
               className="max-h-full max-w-full object-contain mix-blend-multiply group-hover:scale-108 transition-transform duration-500"

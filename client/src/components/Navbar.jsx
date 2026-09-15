@@ -95,7 +95,7 @@ const Navbar = () => {
       path: '/',
     },
     {
-      label: 'BEARD COLOUR',
+      label: 'BEARD COLOUR FOR MEN',
       path: '/shop',
     },
     {
@@ -103,8 +103,16 @@ const Navbar = () => {
       path: '/about',
     },
     {
-      label: 'BLOG',
+      label: 'GROOMING ADVICE',
       path: '/blog',
+    },
+    {
+      label: 'STORE LOCATOR',
+      path: '/store-locator',
+    },
+    {
+      label: 'TRACK ORDER',
+      path: '/track-order',
     },
   ];
 
@@ -626,6 +634,37 @@ const Navbar = () => {
 
                     </Link>
 
+
+                    {/* Mobile Policy & Service Links */}
+                    <div className="pt-3 border-t border-white/10 mt-2 flex flex-col gap-1">
+                      <p className="px-5 text-[11px] font-bold uppercase tracking-wider text-[#A3C9B0]/70 mb-1">
+                        Customer Care & Policies
+                      </p>
+                      <Link
+                        to="/shipping-policy"
+                        className="px-5 py-2 rounded-lg text-sm text-[#C4DEC9] hover:text-white hover:bg-white/5 transition-all"
+                      >
+                        Shipping & Delivery Policy
+                      </Link>
+                      <Link
+                        to="/return-policy"
+                        className="px-5 py-2 rounded-lg text-sm text-[#C4DEC9] hover:text-white hover:bg-white/5 transition-all"
+                      >
+                        Refund/Cancellation Policy
+                      </Link>
+                      <Link
+                        to="/privacy-policy"
+                        className="px-5 py-2 rounded-lg text-sm text-[#C4DEC9] hover:text-white hover:bg-white/5 transition-all"
+                      >
+                        Privacy Policy
+                      </Link>
+                      <Link
+                        to="/terms-of-service"
+                        className="px-5 py-2 rounded-lg text-sm text-[#C4DEC9] hover:text-white hover:bg-white/5 transition-all"
+                      >
+                        Terms & Conditions
+                      </Link>
+                    </div>
 
                     {/* Contact */}
 

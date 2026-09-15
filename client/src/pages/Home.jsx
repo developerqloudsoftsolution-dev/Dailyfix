@@ -56,7 +56,8 @@ const SHADES = [
     rating: 4.9,
     reviews: '1,420+',
     colorHex: '#18181B',
-    img: shadeBlackImg
+    img: shadeBlackImg,
+    seoAlt: 'Dailyfix 001 Natural Black Beard Colour for Men'
   },
   {
     id: 'brown-black',
@@ -69,7 +70,8 @@ const SHADES = [
     rating: 4.8,
     reviews: '560+',
     colorHex: '#271D18',
-    img: shadeBrownBlackImg
+    img: shadeBrownBlackImg,
+    seoAlt: 'Dailyfix 002 Black Brown Beard Colour for Men'
   },
   {
     id: 'dark-brown',
@@ -82,7 +84,8 @@ const SHADES = [
     rating: 4.9,
     reviews: '890+',
     colorHex: '#3E2723',
-    img: shadeDarkBrownImg
+    img: shadeDarkBrownImg,
+    seoAlt: 'Dailyfix 003 Dark Brown Beard Colour for Men'
   }
 ];
 
@@ -94,7 +97,15 @@ const Home = () => {
   const { addToCart } = useCart();
 
   useEffect(() => {
-    document.title = 'Dailyfix | Beard Colour for Men | Natural, Ammonia-Free Shades';
+    document.title = 'Dailyfix Beard Colour for Men | Ammonia-Free & Natural-Looking';
+
+    let meta = document.querySelector('meta[name="description"]');
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.name = 'description';
+      document.head.appendChild(meta);
+    }
+    meta.content = 'Discover Dailyfix Beard Colour for Men – ammonia-free, natural-looking beard colour designed for beard and sideburns. Available in Natural Black, Black Brown and Dark Brown shades.';
 
     const fetchProducts = async () => {
       try {
@@ -213,8 +224,8 @@ const Home = () => {
             </div>
 
             <h1 className={styles.heroTitle}>
-              Pure Grooming, <br />
-              <span className={styles.heroTitleHighlight}>Naturally Defined.</span>
+              Beard Colour for Men – <br />
+              <span className={styles.heroTitleHighlight}>Natural-Looking Colour by Dailyfix</span>
             </h1>
 
             <p className={styles.heroSubtitle}>
@@ -320,7 +331,7 @@ const Home = () => {
                   exit={{ opacity: 0, y: -15 }}
                   transition={{ duration: 0.3 }}
                   src={activeShade.img || heroProductImg}
-                  alt={activeShade.name}
+                  alt={activeShade.seoAlt || `Dailyfix ${activeShade.name} Beard Colour for Men`}
                   className={styles.heroProductImg}
                 />
               </AnimatePresence>
@@ -563,7 +574,7 @@ const Home = () => {
                   <div className={styles.productImageFrame}>
                     <img
                       src={product.img}
-                      alt={product.name}
+                      alt={product.seoAlt || `Dailyfix ${product.name} Beard Colour for Men`}
                       className={styles.productImg}
                     />
                   </div>

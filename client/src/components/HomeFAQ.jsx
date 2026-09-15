@@ -253,8 +253,8 @@ const HomeFAQ = () => {
                   Still unsure which shade matches your beard?
                 </h4>
                 <p className="font-sans text-xs sm:text-sm text-[#4A6352] mt-1 max-w-xl">
-                  Our grooming advisors are ready to assist you free. Choose between 01 Natural Black,
-                  02 Dark Brown, or 03 Brown Black with expert advice.
+                  Our grooming advisors are ready to assist you free. Choose between 001 Natural Black,
+                  002 Black Brown, or 003 Dark Brown with expert advice.
                 </p>
               </div>
             </div>
