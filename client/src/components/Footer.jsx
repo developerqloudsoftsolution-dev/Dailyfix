@@ -88,8 +88,9 @@ const Footer = () => {
                 { label: 'Home', path: '/' },
                 { label: 'Beard Colour for Men', path: '/shop' },
                 { label: "Men's Beard Grooming Advice", path: '/blog' },
-                { label: 'About Us', path: '/about' },
                 { label: 'Store Locator', path: '/store-locator' },
+                { label: 'Track Order', path: '/track-order' },
+                { label: 'About Us', path: '/about' },
                 { label: 'Contact Us', path: '/contact' }
               ].map((link, index) => (
                 <li key={index}>
@@ -105,10 +106,46 @@ const Footer = () => {
             </ul>
           </div>
 
+          {/* Shade Portfolio */}
+          <div className="space-y-4">
+            <h4 className="font-serif text-lg font-bold text-white tracking-tight">
+              Shade Portfolio
+            </h4>
+            <ul className="space-y-2.5">
+              <li>
+                <Link
+                  to="/product/natural-black-beard-colour"
+                  className="text-[#C4DEC9] hover:text-white hover:translate-x-1 transition-all duration-200 text-sm flex items-center gap-2 group"
+                >
+                  <span className="w-2 h-2 rounded-full bg-[#18181B] border border-white/40 shadow-xs" />
+                  01 Natural Black
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/product/black-brown-beard-colour"
+                  className="text-[#C4DEC9] hover:text-white hover:translate-x-1 transition-all duration-200 text-sm flex items-center gap-2 group"
+                >
+                  <span className="w-2 h-2 rounded-full bg-[#271D18] border border-white/40 shadow-xs" />
+                  02 Black Brown
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/product/dark-brown-beard-colour"
+                  className="text-[#C4DEC9] hover:text-white hover:translate-x-1 transition-all duration-200 text-sm flex items-center gap-2 group"
+                >
+                  <span className="w-2 h-2 rounded-full bg-[#3E2723] border border-white/40 shadow-xs" />
+                  03 Dark Brown
+                </Link>
+              </li>
+            </ul>
+          </div>
+
           {/* Customer Care & Policies */}
           <div className="space-y-4">
             <h4 className="font-serif text-lg font-bold text-white tracking-tight">
-              Customer Policies
+              Policies & Care
             </h4>
             <ul className="space-y-2.5">
               {[

@@ -1,17 +1,28 @@
+# Disable directory browsing/listing for security
+Options -Indexes
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
 
-  # 1. Do not rewrite existing physical files or directories
+  # 1. 301 Redirect www to non-www (canonical)
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+
+  # 2. Enforce HTTPS
+  RewriteCond %{HTTPS} off
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+  # 3. Do not rewrite existing physical files or directories
   RewriteCond %{REQUEST_FILENAME} -f [OR]
   RewriteCond %{REQUEST_FILENAME} -d
   RewriteRule ^ - [L]
 
-  # 2. Do not rewrite API or uploads requests
+  # 4. Do not rewrite API or uploads requests
   RewriteRule ^api/ - [L]
   RewriteRule ^uploads/ - [L]
 
-  # 3. Route all other Single Page Application (SPA) routes to index.html
+  # 5. Route all other Single Page Application (SPA) routes to index.html
   RewriteRule ^index\.html$ - [L]
   RewriteRule . /index.html [L]
 </IfModule>

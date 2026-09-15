@@ -97,7 +97,7 @@ const Home = () => {
   const { addToCart } = useCart();
 
   useEffect(() => {
-    document.title = 'Dailyfix Beard Colour for Men | Ammonia-Free & Natural-Looking';
+    document.title = 'Dailyfix Beard Colour for Men | Ammonia-Free & Natural';
 
     let meta = document.querySelector('meta[name="description"]');
     if (!meta) {
@@ -105,7 +105,7 @@ const Home = () => {
       meta.name = 'description';
       document.head.appendChild(meta);
     }
-    meta.content = 'Discover Dailyfix Beard Colour for Men – ammonia-free, natural-looking beard colour designed for beard and sideburns. Available in Natural Black, Black Brown and Dark Brown shades.';
+    meta.content = 'Discover Dailyfix Beard Colour for Men – ammonia-free, natural-looking beard colour for beards & sideburns in Natural Black, Black Brown & Dark Brown shades.';
 
     const fetchProducts = async () => {
       try {

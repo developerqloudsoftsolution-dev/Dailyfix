@@ -95,7 +95,7 @@ const Navbar = () => {
       path: '/',
     },
     {
-      label: 'BEARD COLOUR FOR MEN',
+      label: 'BEARD COLOUR',
       path: '/shop',
     },
     {
@@ -103,16 +103,8 @@ const Navbar = () => {
       path: '/about',
     },
     {
-      label: 'GROOMING ADVICE',
+      label: 'BLOG',
       path: '/blog',
-    },
-    {
-      label: 'STORE LOCATOR',
-      path: '/store-locator',
-    },
-    {
-      label: 'TRACK ORDER',
-      path: '/track-order',
     },
   ];
 
