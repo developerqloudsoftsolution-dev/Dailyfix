@@ -124,9 +124,152 @@
     gtag('config', 'G-ZNB0CD11KY');
   </script>
 
+  <!-- Preload Critical Logo for Zero-FOUC Instant Loader -->
+  <link rel="preload" href="/dailyfix-logo.png" as="image" type="image/png" fetchpriority="high" />
+
+  <style>
+    /* ==========================================================================
+       Zero-FOUC Instant Base & Full-Page Bouncing Logo Loading Animation (0ms)
+       ========================================================================== */
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: #0D2417;
+      color: #FFFFFF;
+    }
+
+    #initial-page-loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 99999999;
+      background-color: #0D2417;
+      background-image: radial-gradient(circle at 50% 48%, rgba(45, 125, 82, 0.32) 0%, rgba(13, 36, 23, 0.96) 60%, #0D2417 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      cursor: wait;
+      overflow: hidden;
+      transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), filter 0.65s ease, visibility 0.65s ease;
+    }
+
+    #initial-page-loader.loader-hidden {
+      opacity: 0;
+      filter: blur(8px);
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    @keyframes dailyfixBounce {
+      0%, 100% {
+        transform: translateY(0) scale(1.04, 0.96);
+      }
+      50% {
+        transform: translateY(-32px) scale(0.97, 1.04);
+      }
+    }
+
+    @keyframes dailyfixShadow {
+      0%, 100% {
+        transform: scale(1.1, 1.1);
+        opacity: 0.65;
+      }
+      50% {
+        transform: scale(0.58, 0.65);
+        opacity: 0.18;
+      }
+    }
+
+    @keyframes dailyfixShimmer {
+      0% {
+        transform: translateX(-100%);
+      }
+      100% {
+        transform: translateX(100%);
+      }
+    }
+
+    @keyframes dailyfixPulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      50% {
+        transform: scale(1.6);
+        opacity: 0.3;
+      }
+    }
+
+    .df-bounce-logo {
+      animation: dailyfixBounce 1.05s ease-in-out infinite;
+      will-change: transform;
+    }
+
+    .df-bounce-shadow {
+      animation: dailyfixShadow 1.05s ease-in-out infinite;
+      will-change: transform, opacity;
+    }
+
+    .df-shimmer-bar {
+      animation: dailyfixShimmer 1.3s ease-in-out infinite;
+      will-change: transform;
+    }
+
+    .df-dot-pulse {
+      animation: dailyfixPulse 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+  </style>
+
 </head>
 
 <body>
+
+  <!-- Instant Pure-CSS Zero-FOUC Page Loader (Renders at 0ms before JS/CSS loads) -->
+  <div id="initial-page-loader" role="status" aria-live="polite" aria-label="Loading Dailyfix">
+    <div style="position: absolute; width: 384px; height: 384px; border-radius: 9999px; filter: blur(48px); background-color: rgba(78, 168, 116, 0.15); pointer-events: none;" aria-hidden="true"></div>
+
+    <div style="position: relative; display: flex; flex-direction: column; align-items: center; z-index: 10; padding: 0 24px;">
+      <!-- Centralized Bouncing Logo -->
+      <div class="df-bounce-logo" style="display: flex; align-items: center; justify-content: center;">
+        <img
+          src="/dailyfix-logo.png"
+          alt="Dailyfix Logo"
+          fetchpriority="high"
+          style="width: 220px; max-width: 75vw; height: auto; object-fit: contain; filter: drop-shadow(0 12px 32px rgba(78,168,116,0.35));"
+        />
+      </div>
+
+      <!-- Dynamic Contact Shadow Beneath Logo -->
+      <div
+        class="df-bounce-shadow"
+        style="width: 170px; max-width: 60vw; height: 14px; border-radius: 9999px; background-color: rgba(0, 0, 0, 0.6); filter: blur(6px); margin-top: 16px;"
+        aria-hidden="true"
+      ></div>
+
+      <!-- Tagline & Shimmer Loading Bar -->
+      <div style="margin-top: 32px; display: flex; flex-direction: column; align-items: center; gap: 14px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span class="df-dot-pulse" style="width: 6px; height: 6px; border-radius: 9999px; background-color: #4EA874; display: inline-block;"></span>
+          <span style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 0.28em; font-weight: 800; color: rgba(196, 222, 201, 0.9);">
+            Botanical Grooming
+          </span>
+          <span class="df-dot-pulse" style="width: 6px; height: 6px; border-radius: 9999px; background-color: #4EA874; display: inline-block;"></span>
+        </div>
+
+        <!-- Minimal Luxury Shimmer Loading Bar -->
+        <div style="width: 190px; height: 2px; background-color: rgba(255, 255, 255, 0.12); border-radius: 9999px; overflow: hidden; position: relative;">
+          <div
+            class="df-shimmer-bar"
+            style="position: absolute; top: 0; left: 0; width: 50%; height: 100%; background: linear-gradient(to right, transparent, #4EA874, transparent); border-radius: 9999px; box-shadow: 0 0 8px #4EA874;"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div id="root">
     <!-- Prerendered Semantic SEO Content for Web Crawlers & Non-JS Clients -->
@@ -231,6 +374,41 @@
   </div>
 
   <script type="module" src="/src/main.jsx"></script>
+
+  <!-- Dismiss Zero-FOUC Loader after minimum 2 seconds and full page load -->
+  <script>
+    (function () {
+      var minDuration = 2000;
+      var startTime = Date.now();
+      var loader = document.getElementById('initial-page-loader');
+
+      document.body.style.overflow = 'hidden';
+
+      function dismissLoader() {
+        if (!loader) return;
+        var elapsed = Date.now() - startTime;
+        var remaining = Math.max(0, minDuration - elapsed);
+
+        setTimeout(function () {
+          loader.classList.add('loader-hidden');
+          document.body.style.overflow = '';
+          setTimeout(function () {
+            if (loader && loader.parentNode) {
+              loader.parentNode.removeChild(loader);
+            }
+          }, 750);
+        }, remaining);
+      }
+
+      if (document.readyState === 'complete') {
+        dismissLoader();
+      } else {
+        window.addEventListener('load', dismissLoader);
+      }
+
+      setTimeout(dismissLoader, 4500);
+    })();
+  </script>
 
 </body>
 

@@ -47,13 +47,11 @@ import AdminReviews from './pages/admin/Reviews'
 
 import AdminLayout from './layouts/AdminLayout'
 import MainLayout from './layouts/MainLayout'
-import PageLoader from './components/PageLoader'
 
 function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <PageLoader />
         <Router>
           <ScrollToTop />
           <Routes>
