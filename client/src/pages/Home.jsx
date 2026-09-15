@@ -224,13 +224,12 @@ const Home = () => {
             </div>
 
             <h1 className={styles.heroTitle}>
-              Beard Colour for Men – <br />
-              <span className={styles.heroTitleHighlight}>Natural-Looking Colour by Dailyfix</span>
+              Dailyfix Beard Colour for Men – <br />
+              <span className={styles.heroTitleHighlight}>Ammonia-Free &amp; Natural Beard Hair Colour</span>
             </h1>
 
             <p className={styles.heroSubtitle}>
-              Experience an undetectable, salon-grade beard transformation in just 10 minutes.
-              Crafted with nourishing olive and taurine extracts for gentle, skin-friendly coverage.
+              Experience an undetectable, salon-grade beard transformation in just ten minutes with our ammonia-free formula crafted with nourishing olive extract and taurine for gentle, long-lasting grey coverage.
             </p>
 
             {/* 3 Quick Value Bullets */}
