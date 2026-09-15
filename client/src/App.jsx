@@ -44,6 +44,7 @@ import WhatsAppConnect from './pages/admin/WhatsAppConnect'
 import AuthorizeApp from './pages/admin/AuthorizeApp'
 import AdminCoupons from './pages/admin/Coupons'
 import AdminReviews from './pages/admin/Reviews'
+import NotFound from './pages/NotFound'
 
 import AdminLayout from './layouts/AdminLayout'
 import MainLayout from './layouts/MainLayout'
@@ -90,6 +91,7 @@ function App() {
               <Route path="/return-order" element={<ReturnOrderPage />} />
               <Route path="/returns" element={<ReturnOrderPage />} />
               <Route path="/debug" element={<Debug />} />
+              <Route path="*" element={<NotFound />} />
             </Route>
             
             <Route path="/admin/login" element={<AdminLogin />} />

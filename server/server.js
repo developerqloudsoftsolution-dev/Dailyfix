@@ -86,8 +86,69 @@ app.use('/api', apiLimiter);
 
 // ===============================
 // SECURITY
-// ===============================
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "'unsafe-eval'",
+          'https://www.googletagmanager.com',
+          'https://www.google-analytics.com',
+          'https://checkout.razorpay.com'
+        ],
+        scriptSrcElem: [
+          "'self'",
+          "'unsafe-inline'",
+          'https://www.googletagmanager.com',
+          'https://www.google-analytics.com',
+          'https://checkout.razorpay.com'
+        ],
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          'https://fonts.googleapis.com'
+        ],
+        styleSrcElem: [
+          "'self'",
+          "'unsafe-inline'",
+          'https://fonts.googleapis.com'
+        ],
+        imgSrc: [
+          "'self'",
+          'data:',
+          'blob:',
+          'https:',
+          'http:'
+        ],
+        fontSrc: [
+          "'self'",
+          'data:',
+          'https://fonts.gstatic.com'
+        ],
+        connectSrc: [
+          "'self'",
+          'https://www.google-analytics.com',
+          'https://*.google-analytics.com',
+          'https://*.analytics.google.com',
+          'https://*.googletagmanager.com',
+          'https://api.razorpay.com',
+          'https://*.tile.openstreetmap.org'
+        ],
+        frameSrc: [
+          "'self'",
+          'https://api.razorpay.com',
+          'https://checkout.razorpay.com'
+        ],
+        mediaSrc: ["'self'", 'data:', 'blob:'],
+        objectSrc: ["'none'"]
+      }
+    },
+    crossOriginEmbedderPolicy: false
+  })
+);
 
 app.use(
   cors({

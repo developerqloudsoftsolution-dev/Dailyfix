@@ -5,21 +5,35 @@
   <meta charset="UTF-8" />
 
   <!-- Favicon and Brand Icons -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
   <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <link rel="icon" type="image/jpeg" href="/favicon.jpeg" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
 
-  <!-- Google Fonts for Luxury Design Language -->
+  <!-- Google Fonts for Luxury Design Language (Asynchronously loaded to eliminate render-blocking) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
+    rel="preload"
+    as="style"
     href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
-    rel="stylesheet" />
+  />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
+    />
+  </noscript>
 
   <!-- Google Search Title -->
   <title>Dailyfix Beard Colour for Men | Ammonia-Free & Natural</title>
@@ -125,7 +139,7 @@
   </script>
 
   <!-- Preload Critical Logo for Zero-FOUC Instant Loader -->
-  <link rel="preload" href="/dailyfix-logo.png" as="image" type="image/png" fetchpriority="high" />
+  <link rel="preload" href="/dailyfix-logo.webp" as="image" type="image/webp" fetchpriority="high" />
 
   <style>
     /* ==========================================================================
@@ -154,7 +168,7 @@
       user-select: none;
       cursor: wait;
       overflow: hidden;
-      transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), filter 0.65s ease, visibility 0.65s ease;
+      transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), filter 0.4s ease, visibility 0.4s ease;
     }
 
     #initial-page-loader.loader-hidden {
@@ -222,6 +236,39 @@
     .df-dot-pulse {
       animation: dailyfixPulse 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
+
+    /* ==========================================================================
+       Responsive Media Queries (Eliminates aspect-ratio distortion & responsive test flags)
+       ========================================================================== */
+    img {
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
+    }
+
+    @media (max-width: 640px) {
+      .df-bounce-logo img {
+        width: 170px !important;
+        height: auto !important;
+      }
+      #root main section {
+        padding: 16px;
+      }
+    }
+
+    @media (min-width: 641px) and (max-width: 1024px) {
+      .df-bounce-logo img {
+        width: 200px !important;
+        height: auto !important;
+      }
+    }
+
+    @media (min-width: 1025px) {
+      .df-bounce-logo img {
+        width: 220px !important;
+        height: auto !important;
+      }
+    }
   </style>
 
 </head>
@@ -233,11 +280,13 @@
     <div style="position: absolute; width: 384px; height: 384px; border-radius: 9999px; filter: blur(48px); background-color: rgba(78, 168, 116, 0.15); pointer-events: none;" aria-hidden="true"></div>
 
     <div style="position: relative; display: flex; flex-direction: column; align-items: center; z-index: 10; padding: 0 24px;">
-      <!-- Centralized Bouncing Logo -->
+      <!-- Centralized Bouncing Logo with exact natural aspect ratio -->
       <div class="df-bounce-logo" style="display: flex; align-items: center; justify-content: center;">
         <img
-          src="/dailyfix-logo.png"
+          src="/dailyfix-logo.webp"
           alt="Dailyfix Logo"
+          width="220"
+          height="76"
           fetchpriority="high"
           style="width: 220px; max-width: 75vw; height: auto; object-fit: contain; filter: drop-shadow(0 12px 32px rgba(78,168,116,0.35));"
         />
@@ -295,10 +344,10 @@
           Unlike conventional hair dyes that contain aggressive chemicals and cause uncomfortable skin burning, our botanical blend works gently to protect delicate facial skin while locking in long-lasting, masculine colour.
         </p>
         <img
-          src="/images/dailyfix-beard-colour.png"
+          src="/images/dailyfix-beard-colour.webp"
           alt="Dailyfix Beard Colour for Men - Ammonia-Free Botanical Formula"
           width="600"
-          height="600"
+          height="779"
           fetchpriority="high"
         />
         <a href="/shop">Explore Signature Shades</a>
@@ -316,10 +365,10 @@
           The soothing, dermatologically tested formulation completely eliminates harsh chemical odours and scalp itching, allowing gentlemen to achieve professional, salon-calibre grooming results comfortably in their own homes.
         </p>
         <img
-          src="/images/dailyfix-poster.png"
+          src="/images/dailyfix-poster.webp"
           alt="Dailyfix Botanical Beard Grooming Craft and Heritage"
           width="500"
-          height="600"
+          height="708"
           loading="lazy"
         />
       </section>
@@ -330,10 +379,10 @@
           Our three meticulously calibrated shades are purposefully developed to match natural male undertones, ensuring a seamless transition that blends discreetly with your existing beard texture without any artificial bluish or reddish glare.
         </p>
         <img
-          src="/images/dailyfix-shades-collection.png"
+          src="/images/dailyfix-shades-collection.webp"
           alt="Dailyfix Beard Colour 3 Shades Signature Collection"
           width="600"
-          height="400"
+          height="364"
           loading="lazy"
         />
         <div>
@@ -342,10 +391,10 @@
             Dailyfix 001 Natural Black provides deep, authentic coverage designed for men with naturally jet black or deep espresso facial hair who want complete grey concealment with a healthy, vibrant sheen.
           </p>
           <img
-            src="/images/natural-black.png"
+            src="/images/natural-black.webp"
             alt="Dailyfix 001 Natural Black Beard Colour for Men"
             width="500"
-            height="500"
+            height="488"
             loading="lazy"
           />
           <a href="/product/natural-black">View 001 Natural Black Beard Colour</a>
@@ -356,10 +405,10 @@
             Dailyfix 002 Black Brown delivers a harmonious, softer dark tone ideal for men whose beards reflect warm charcoal undertones in natural sunlight, creating a refined and youthful appearance.
           </p>
           <img
-            src="/images/black-brown.png"
+            src="/images/black-brown.webp"
             alt="Dailyfix 002 Black Brown Beard Colour for Men"
             width="500"
-            height="500"
+            height="488"
             loading="lazy"
           />
           <a href="/product/black-brown">View 002 Black Brown Beard Colour</a>
@@ -370,10 +419,10 @@
             Dailyfix 003 Dark Brown offers a rich, versatile coffee-toned finish that adds depth, definition, and subtle warmth to lighter or sun-lightened beard textures without ever looking flat or synthetic.
           </p>
           <img
-            src="/images/dark-brown.png"
+            src="/images/dark-brown.webp"
             alt="Dailyfix 003 Dark Brown Beard Colour for Men"
             width="500"
-            height="500"
+            height="487"
             loading="lazy"
           />
           <a href="/product/dark-brown">View 003 Dark Brown Beard Colour</a>
@@ -417,14 +466,12 @@
 
   <script type="module" src="/src/main.jsx"></script>
 
-  <!-- Dismiss Zero-FOUC Loader after minimum 2 seconds and full page load -->
+  <!-- Fast & Responsive Zero-FOUC Loader Dismissal (Dismisses immediately upon page load without artificial delay) -->
   <script>
     (function () {
-      var minDuration = 2000;
+      var minDuration = 180;
       var startTime = Date.now();
       var loader = document.getElementById('initial-page-loader');
-
-      document.body.style.overflow = 'hidden';
 
       function dismissLoader() {
         if (!loader) return;
@@ -438,17 +485,18 @@
             if (loader && loader.parentNode) {
               loader.parentNode.removeChild(loader);
             }
-          }, 750);
+          }, 450);
         }, remaining);
       }
 
-      if (document.readyState === 'complete') {
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
         dismissLoader();
       } else {
+        window.addEventListener('DOMContentLoaded', dismissLoader);
         window.addEventListener('load', dismissLoader);
       }
 
-      setTimeout(dismissLoader, 4500);
+      setTimeout(dismissLoader, 1500);
     })();
   </script>
 
