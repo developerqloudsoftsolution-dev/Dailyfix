@@ -336,11 +336,11 @@ const ProductPage = () => {
   }
 
   return (
-    <div className="min-h-screen pt-8 pb-24 bg-stone-50 text-stone-800">
+    <div className="min-h-screen pt-16 sm:pt-20 lg:pt-24 pb-24 bg-stone-50 text-stone-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* BREADCRUMB NAVIGATION */}
-        <nav aria-label="Breadcrumb" className="mb-6">
+        <nav aria-label="Breadcrumb" className="mb-6 sm:mb-8">
           <ol className="flex items-center gap-2 text-xs sm:text-sm text-stone-500">
             <li>
               <Link to="/" className="hover:text-emerald-700 transition-colors">Home</Link>
@@ -364,7 +364,7 @@ const ProductPage = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6 }}
-            className="flex flex-col-reverse sm:flex-row gap-4 sm:gap-6 lg:sticky lg:top-24 lg:self-start"
+            className="flex flex-col-reverse sm:flex-row gap-4 sm:gap-6 lg:sticky lg:top-36 lg:self-start"
           >
             {/* Thumbnails */}
             <div className="flex sm:flex-col gap-3 overflow-x-auto sm:overflow-visible sm:w-20 lg:w-24 pb-2 sm:pb-0">
