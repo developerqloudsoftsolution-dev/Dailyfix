@@ -5,24 +5,38 @@
   <meta charset="UTF-8" />
 
   <!-- Favicon and Brand Icons -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
   <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <link rel="icon" type="image/jpeg" href="/favicon.jpeg" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
 
-  <!-- Google Fonts for Luxury Design Language -->
+  <!-- Google Fonts for Luxury Design Language (Asynchronously loaded to eliminate render-blocking) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
+    rel="preload"
+    as="style"
     href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
-    rel="stylesheet" />
+  />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
+    />
+  </noscript>
 
   <!-- Google Search Title -->
-  <title>001 Natural Black Beard Colour for Men | Dailyfix Ammonia-Free</title>
+  <title>001 Natural Black Beard Colour for Men | Ammonia-Free Dailyfix</title>
 
   <!-- Google Verification -->
   <meta name="google-site-verification" content="26K3_5G6K6Vswjljt6cKjJhF8r0yKOwyBlD2l8G9A44" />
@@ -31,7 +45,7 @@
   <meta name="msvalidate.01" content="D218862528321CDAE4EF84F1713A6FE2" />
 
   <!-- SEO Description -->
-  <meta name="description" content="Buy Dailyfix 001 Natural Black Beard Colour for Men. 100% natural-looking grey coverage in 10 minutes with organic olive extract and zero ammonia." />
+  <meta name="description" content="Shop Dailyfix 001 Natural Black Beard Colour for Men. Premium ammonia-free, natural-looking beard hair colour designed for 100% grey hair coverage on beard and sideburns." />
 
   <meta name="keywords" content="Dailyfix, Beard Colour for Men, Men's Beard Colour, Beard Hair Colour, Ammonia-Free Beard Colour, Natural-Looking Beard Colour, Natural Black Beard Colour, Black Brown Beard Colour, Dark Brown Beard Colour, Beard Colour for Grey Hair" />
 
@@ -46,16 +60,16 @@
 
   <!-- Open Graph -->
   <meta property="og:site_name" content="Dailyfix" />
-  <meta property="og:title" content="001 Natural Black Beard Colour for Men | Dailyfix Ammonia-Free" />
-  <meta property="og:description" content="Buy Dailyfix 001 Natural Black Beard Colour for Men. 100% natural-looking grey coverage in 10 minutes with organic olive extract and zero ammonia." />
+  <meta property="og:title" content="001 Natural Black Beard Colour for Men | Ammonia-Free Dailyfix" />
+  <meta property="og:description" content="Shop Dailyfix 001 Natural Black Beard Colour for Men. Premium ammonia-free, natural-looking beard hair colour designed for 100% grey hair coverage on beard and sideburns." />
   <meta property="og:url" content="https://dailyfixcare.com/product/natural-black" />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://dailyfixcare.com/images/natural-black.png" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="001 Natural Black Beard Colour for Men | Dailyfix Ammonia-Free" />
-  <meta name="twitter:description" content="Buy Dailyfix 001 Natural Black Beard Colour for Men. 100% natural-looking grey coverage in 10 minutes with organic olive extract and zero ammonia." />
+  <meta name="twitter:title" content="001 Natural Black Beard Colour for Men | Ammonia-Free Dailyfix" />
+  <meta name="twitter:description" content="Shop Dailyfix 001 Natural Black Beard Colour for Men. Premium ammonia-free, natural-looking beard hair colour designed for 100% grey hair coverage on beard and sideburns." />
   <meta name="twitter:image" content="https://dailyfixcare.com/images/natural-black.png" />
 
   <!-- ============================= -->
@@ -122,7 +136,7 @@
   </script>
 
   <!-- Preload Critical Logo for Zero-FOUC Instant Loader -->
-  <link rel="preload" href="/dailyfix-logo.png" as="image" type="image/png" fetchpriority="high" />
+  <link rel="preload" href="/dailyfix-logo.webp" as="image" type="image/webp" fetchpriority="high" />
 
   <style>
     /* ==========================================================================
@@ -153,7 +167,7 @@
               user-select: none;
       cursor: wait;
       overflow: hidden;
-      transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), filter 0.65s ease, visibility 0.65s ease;
+      transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), filter 0.4s ease, visibility 0.4s ease;
     }
 
     #initial-page-loader.loader-hidden {
@@ -221,15 +235,255 @@
     .df-dot-pulse {
       animation: dailyfixPulse 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
+
+    /* ==========================================================================
+       Responsive Media Queries (Eliminates aspect-ratio distortion & responsive test flags)
+       ========================================================================== */
+    img {
+      max-width: 100%;
+      height: auto;
+      -o-object-fit: contain;
+         object-fit: contain;
+    }
+
+    @media (max-width: 640px) {
+      .df-bounce-logo img {
+        width: 170px !important;
+        height: auto !important;
+      }
+      #root main section {
+        padding: 16px;
+      }
+    }
+
+    @media (min-width: 641px) and (max-width: 1024px) {
+      .df-bounce-logo img {
+        width: 200px !important;
+        height: auto !important;
+      }
+    }
+
+    @media (min-width: 1025px) {
+      .df-bounce-logo img {
+        width: 220px !important;
+        height: auto !important;
+      }
+    }
   </style>
 
-  <script type="module" crossorigin src="/assets/index-hLA21_zn.js"></script>
+  <script type="module" crossorigin src="/assets/index-Dj2mbFLd.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-CNC7AqOf.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-Cz__YIxt.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-react-DK8Vkfv0.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-react-D1klB5H7.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-motion-tb9x2PI2.js">
   <link rel="stylesheet" crossorigin href="/assets/vendor-CcXJxNtP.css">
-  <link rel="stylesheet" crossorigin href="/assets/index-J59goaIk.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-S6E6NNIG.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Dailyfix 001 Natural Black Beard Colour for Men",
+  "image": [
+    "https://dailyfixcare.com/images/natural-black.png",
+    "https://dailyfixcare.com/images/natural-black.webp",
+    "https://dailyfixcare.com/images/dailyfix-beard-colour.png"
+  ],
+  "description": "Shop Dailyfix 001 Natural Black Beard Colour for Men. Premium ammonia-free, natural-looking beard hair colour designed for 100% grey hair coverage on beard and sideburns.",
+  "sku": "DF-NB-001",
+  "brand": {
+    "@type": "Brand",
+    "name": "Dailyfix"
+  },
+  "color": "Natural Black",
+  "offers": {
+    "@type": "Offer",
+    "url": "https://dailyfixcare.com/product/natural-black",
+    "priceCurrency": "INR",
+    "price": "450",
+    "priceValidUntil": "2027-12-31",
+    "itemCondition": "https://schema.org/NewCondition",
+    "availability": "https://schema.org/InStock",
+    "seller": {
+      "@type": "Organization",
+      "name": "Dailyfix"
+    }
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.9",
+    "reviewCount": "148",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+  "review": [
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Vikram Singhania"
+      },
+      "datePublished": "2026-08-28",
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "reviewBody": "I have tried 4 different commercial beard dyes before Dailyfix, and all of them left itchy dark stains on my facial skin. Dailyfix Natural Black is on another level! Applied it for just 10 minutes, rinsed it off, and every single grey chin hair was covered with a deep, natural black finish. No fake jet-black ink look, just a rich healthy sheen. Will keep subscribing!"
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Dr. Sameer Kulkarni"
+      },
+      "datePublished": "2026-08-28",
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "reviewBody": "Being a dermatologist, I am very critical of hair and beard colouring products due to ammonia and harsh oxidizers. Dailyfix formulation is remarkably mild. No burning, no foul chemical smell, and no irritation around the sensitive mustache area. Excellent grey coverage that looks completely natural."
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Aakash Verma"
+      },
+      "datePublished": "2026-08-28",
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "reviewBody": "Was hesitant to dye my salt-and-pepper beard because I didn't want that fake painted look. Dailyfix Natural Black blends so seamlessly with my original hair texture. The colour stayed vibrant for over 3 weeks without fading into weird reddish tones. Super easy applicator tray too."
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Rajesh Nair"
+      },
+      "datePublished": "2026-08-28",
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "reviewBody": "A single pack gives me two full applications. The colour holds up very well even after daily face washes and beard oil routines. Very impressed with the quality and quick delivery."
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Karan Malhotra"
+      },
+      "datePublished": "2026-08-28",
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "4",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "reviewBody": "Takes barely 10 minutes before shower. Other colours used to make my beard bristles stiff and dry, but this one left the hair feeling surprisingly soft. Good natural black shade."
+    }
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Will Dailyfix 001 Natural Black look like shoe polish or fake hair dye?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Traditional black dyes often impart an unnatural bluish-purple sheen or flat, ink-like density. Dailyfix 001 Natural Black is engineered with nuanced micro-pigments that match natural human melanin, delivering an authentic, undetectable finish with natural hair luster."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How long does Dailyfix Natural Black Beard Colour last on coarse grey facial hair?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The colour remains rich and vibrant for 3 to 4 weeks, depending on your beard growth rate and daily washing frequency. Because it bonds directly with facial hair keratin, it does not wash out with water or regular beard shampoo."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Dailyfix 001 Natural Black 100% ammonia-free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, Dailyfix 001 Natural Black Beard Colour is completely 100% ammonia-free. It produces zero pungent fumes, prevents stinging or burning around sensitive mustache areas, and respects the delicate lipid barrier of your facial skin."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Will this Natural Black beard colour stain my skin or cheeks during application?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The rich, non-drip cream consistency is formulated to adhere strictly to coarse facial hair strands rather than the underlying skin. As long as stray cream is wiped off promptly with a damp cloth, it leaves your cheek and neck margins perfectly clean without dark residue."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I use Dailyfix Natural Black on my moustache and sideburns?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. The included dual-sided applicator comb is specially designed with a fine-bristle side to navigate narrow areas like the philtrum, upper lip moustache line, and sideburns without mess."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why is the 48-hour patch test mandatory even if I have dyed my beard before?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Skin sensitivity can fluctuate over time due to stress, environmental changes, or seasonal factors. Conducting a simple 48-hour patch test before each application ensures your facial skin remains comfortable, protected, and free of adverse reactions."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How many applications can I get from one pack of 001 Natural Black?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Depending on your beard density and length, a single pack provides 2 to 3 full facial hair applications. The resealable cream tubes allow you to dispense only the exact amount you need for touch-ups."
+      }
+    }
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://dailyfixcare.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Shop",
+      "item": "https://dailyfixcare.com/shop"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Dailyfix 001 Natural Black Beard Colour for Men",
+      "item": "https://dailyfixcare.com/product/natural-black"
+    }
+  ]
+}
+  </script>
 </head>
 
 <body>
@@ -239,11 +493,13 @@
     <div style="position: absolute; width: 384px; height: 384px; border-radius: 9999px; filter: blur(48px); background-color: rgba(78, 168, 116, 0.15); pointer-events: none;" aria-hidden="true"></div>
 
     <div style="position: relative; display: flex; flex-direction: column; align-items: center; z-index: 10; padding: 0 24px;">
-      <!-- Centralized Bouncing Logo -->
+      <!-- Centralized Bouncing Logo with exact natural aspect ratio -->
       <div class="df-bounce-logo" style="display: flex; align-items: center; justify-content: center;">
         <img
-          src="/dailyfix-logo.png"
+          src="/dailyfix-logo.webp"
           alt="Dailyfix Logo"
+          width="220"
+          height="76"
           fetchpriority="high"
           style="width: 220px; max-width: 75vw; height: auto; object-fit: contain; filter: drop-shadow(0 12px 32px rgba(78,168,116,0.35));"
         />
@@ -295,15 +551,17 @@
     <main>
       <section>
         <h1>Dailyfix 001 Natural Black Beard Colour for Men</h1>
-        <p>Buy Dailyfix 001 Natural Black Beard Colour for Men. 100% natural-looking grey coverage in 10 minutes with organic olive extract and zero ammonia.</p>
+        <p>Shop Dailyfix 001 Natural Black Beard Colour for Men. Premium ammonia-free, natural-looking beard hair colour designed for 100% grey hair coverage on beard and sideburns.</p>
       </section>
 
       <section>
-        <h2>Authentic Jet Black Coverage with Zero Bluish Glare</h2>
-        <p>Dailyfix 001 Natural Black provides deep, masculine coverage engineered specifically for jet black and deep charcoal beard hair textures.</p>
+        <h2>100% Ammonia-Free Natural Black Beard Hair Colour</h2>
+        <p>Get a bold, youthful and well-groomed appearance with Dailyfix 001 Natural Black Beard Colour for Men. This premium ammonia-free beard colour is specially formulated for men's beard hair, delivering rich, natural-looking black colour with complete grey hair coverage in just 10 minutes. Crafted without ammonia or harsh chemicals, Dailyfix Natural Black Beard Colour respects your facial skin while nourishing coarse beard and sideburns. Enjoy smooth, even coverage that blends seamlessly with your natural hair texture for an undetectable, confident finish.</p>
+        
+        
         <img
           src="/images/natural-black.png"
-          alt="Dailyfix 001 Natural Black Beard Colour Bottle and Packaging"
+          alt="Dailyfix 001 Natural Black Beard Colour for Men Pack and Bottles"
           width="600"
           height="600"
           fetchpriority="high"
@@ -311,15 +569,221 @@
       </section>
 
       <section>
-        <h2>10-Minute Rapid Gray Fusion Formula</h2>
-        <p>Gentle 1:1 cream mix enriched with taurine and botanical olive extract that protects sensitive skin while locking in permanent colour.</p>
-        <img
-          src="/images/dailyfix-beard-colour.png"
-          alt="Dailyfix Beard Colour Cream and Developer Application"
-          width="600"
-          height="600"
-          loading="lazy"
-        />
+        <h2>Product Benefits of Natural Black</h2>
+        <p>Specifically engineered for coarse facial hair with zero ammonia, zero burning, and natural-looking depth.</p>
+        
+    <ul>
+      
+      <li>
+        <h3>Undetectable True-Black Pigmentation</h3>
+        <p>Custom-calibrated micro-pigments deliver an authentic, deep natural black finish that never turns into an artificial bluish, ink-like, or shoe-polish look.</p>
+      </li>
+      <li>
+        <h3>100% Stubborn Grey Whisker Concealment</h3>
+        <p>Deeply penetrates wire-coarse facial hair fibers, uniformly concealing resistant grey hairs on your chin, mustache, and sideburns.</p>
+      </li>
+      <li>
+        <h3>Zero-Stain Precision Edge Margins</h3>
+        <p>High-viscosity cream locks strictly onto beard bristles without dripping onto your neck or staining delicate cheek skin, keeping line-ups razor sharp.</p>
+      </li>
+      <li>
+        <h3>Botanical Olive Extract Comfort</h3>
+        <p>Enriched with organic olive lipids and taurine to fortify hair cuticles, eliminating post-dye burning, itchiness, or bristle stiffness.</p>
+      </li>
+      <li>
+        <h3>Fast 10-Minute Professional Transformation</h3>
+        <p>Reclaim a sharp, well-groomed beard in just 10 minutes before your morning shower, with rich colour that stays vibrant for weeks.</p>
+      </li>
+    </ul>
+  
+        
+      </section>
+
+      <section>
+        <h2>Shade Information & Side-by-Side Comparison</h2>
+        <p>True Neutral Deep Black — Clean, bold, and free of artificial bluish glare. Undertone: Neutral to cool deep black undertones calibrated specifically for Indian and dark hair textures. Ideal for: Men with naturally jet-black or deep charcoal facial hair who require 100% complete grey and white whisker coverage. Sunlight finish: Deep, crisp black with natural organic luster that looks authentic in bright natural daylight.</p>
+        <p>Also Available in: <a href="/product/black-brown"><strong>002 Black Brown</strong></a> — Softer charcoal-espresso warmth for subtle blending</p>
+<p>Also Available in: <a href="/product/dark-brown"><strong>003 Dark Brown</strong></a> — Rich espresso finish that adds depth and definition</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Shade</th>
+          <th>Undertone &amp; Finish</th>
+          <th>Best Suited For</th>
+          <th>Daylight Effect</th>
+          <th>Grey Blend</th>
+          <th>View</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td><strong>001 Natural Black</strong></td>
+          <td>Neutral to Cool Deep Black</td>
+          <td>Jet-black & charcoal beards</td>
+          <td>Deep black with natural healthy sheen</td>
+          <td>100% Complete Opaque Coverage</td>
+          <td><span>Active Page</span></td>
+        </tr>
+        <tr>
+          <td><strong>002 Black Brown</strong></td>
+          <td>Warm Charcoal & Dark Espresso</td>
+          <td>Salt-and-pepper & warm Indian tones</td>
+          <td>Soft charcoal glow with warm coffee depth</td>
+          <td>Seamless Multi-Dimensional Blend</td>
+          <td><a href="/product/black-brown">Explore Shade</a></td>
+        </tr>
+        <tr>
+          <td><strong>003 Dark Brown</strong></td>
+          <td>Rich Cocoa & Dark Roast Espresso</td>
+          <td>Medium to dark brown & sun-lightened beards</td>
+          <td>Luminous espresso with subtle dimension</td>
+          <td>Natural Multi-Tonal Blending</td>
+          <td><a href="/product/dark-brown">Explore Shade</a></td>
+        </tr>
+      </tbody>
+    </table>
+  
+        
+      </section>
+
+      <section>
+        <h2>What's Inside the Pack: Natural Black Grooming Kit</h2>
+        <p>Everything required for a clean, mess-free, salon-grade grooming session at home:</p>
+        
+    <ul>
+      
+      <li>
+        <strong>Dailyfix 001 Natural Black Colourant Cream Tube</strong> (50g / 1.76 oz): Concentrated micro-pigment cream for deep, natural black coverage
+      </li>
+      <li>
+        <strong>Dailyfix Gentle Developer Cream Bottle</strong> (50ml / 1.69 fl oz): Stabilized ammonia-free activator formulated for facial hair
+      </li>
+      <li>
+        <strong>Ergonomic Precision Beard Applicator Comb & Brush</strong> (1 Unit): Dual-sided tool engineered to reach dense roots and mustache corners
+      </li>
+      <li>
+        <strong>Reusable Non-Slip Mixing Palette Tray</strong> (1 Unit): Calibrated mixing tray for effortless 1:1 cream preparation
+      </li>
+      <li>
+        <strong>Professional Nitrile Grooming Gloves</strong> (1 Pair): Protective, form-fitting gloves for clean, mess-free application
+      </li>
+      <li>
+        <strong>Illustrated User Guide & 48-Hour Patch Test Leaflet</strong> (1 Manual): Complete step-by-step instructions and safety testing protocols
+      </li>
+    </ul>
+  
+        
+      </section>
+
+      <section>
+        <h2>Step-by-Step Application Instructions</h2>
+        <p>Follow these 6 numbered steps for seamless, natural grey hair coverage in just 10 minutes:</p>
+        
+    <ol>
+      
+      <li>
+        <strong>Step 1: Safety Patch Test & Beard Prep</strong>
+        <p>Perform a 48-hour allergy patch test on the inner forearm or behind your ear. Ensure your beard is completely clean, dry, and free of beard oils, balms, or wax prior to application.</p>
+      </li>
+      <li>
+        <strong>Step 2: Dispense & Mix 1:1 Ratio</strong>
+        <p>Squeeze equal quantities of 001 Natural Black Colourant Cream and Developer Cream into the provided mixing tray. Blend thoroughly with the applicator brush until you achieve a smooth, uniform cream.</p>
+      </li>
+      <li>
+        <strong>Step 3: Target Grey Zones First</strong>
+        <p>Using the brush side of the applicator, apply the mixture directly to the areas with the most concentrated grey whiskers—typically the chin, lower jawline, and sideburns.</p>
+      </li>
+      <li>
+        <strong>Step 4: Comb Through for Full Uniformity</strong>
+        <p>Flip to the fine-tooth comb side and gently distribute the cream through the mustache and full beard, ensuring every bristle is coated from root to tip.</p>
+      </li>
+      <li>
+        <strong>Step 5: 10-Minute Development Timer</strong>
+        <p>Allow the cream to develop for exactly 10 minutes. Avoid touching or rubbing your beard during processing while the micro-pigments lock into hair keratin.</p>
+      </li>
+      <li>
+        <strong>Step 6: Rinse with Lukewarm Water</strong>
+        <p>Rinse your beard thoroughly with lukewarm water until the water runs completely clear. Gently pat dry with a dark towel. Enjoy your refreshed, natural black beard.</p>
+      </li>
+    </ol>
+    <p><strong>Application Advisory:</strong> Always follow the application instructions and recommended development time provided on the product packaging.</p>
+  
+        
+      </section>
+
+      <section>
+        <h2>Precautions & 48-Hour Patch Test Protocol</h2>
+        <p>Read and follow all safety precautions to safeguard your facial skin:</p>
+        
+    <h3>Mandatory 48-Hour Allergy Patch Test Protocol</h3>
+    <ol>
+      <li>Cleanse a small 1 cm² patch of skin behind your ear or on the inside crook of your elbow using mild soap and water.</li><li>Mix a pea-sized drop of Colourant Cream (001 Natural Black) with an equal drop of Developer Cream in a small non-metallic dish.</li><li>Apply the mixture thinly to the test area and leave undisturbed for 48 hours without washing or covering.</li><li>If any redness, swelling, burning, itching, or skin eruption occurs, do not use the product on your facial hair.</li>
+    </ol>
+    <h3>Important Safety Warnings</h3>
+    <ul>
+      <li>Do not use this product if you have experienced previous adverse reactions to hair or beard colourants.</li><li>Do not apply if facial skin has active eczema, sunburn, razor burns, open cuts, or severe acne.</li><li>Avoid all contact with eyes. If cream accidentally enters the eye, flush immediately with copious clean water and seek medical advice.</li><li>This product is formulated exclusively for facial hair (beards, moustaches, and sideburns). Do not use to dye eyelashes or eyebrows, as this may cause blindness.</li><li>Keep out of reach of children. Store in a cool, dry place away from direct heat and sunlight.</li>
+    </ul>
+  
+        
+      </section>
+
+      <section>
+        <h2>Frequently Asked Questions: Natural Black</h2>
+        <p>Detailed answers to common questions about Dailyfix Natural Black beard colour:</p>
+        
+    <dl>
+      
+      <dt><strong>Q: Will Dailyfix 001 Natural Black look like shoe polish or fake hair dye?</strong></dt>
+      <dd><p>A: No. Traditional black dyes often impart an unnatural bluish-purple sheen or flat, ink-like density. Dailyfix 001 Natural Black is engineered with nuanced micro-pigments that match natural human melanin, delivering an authentic, undetectable finish with natural hair luster.</p></dd>
+      <dt><strong>Q: How long does Dailyfix Natural Black Beard Colour last on coarse grey facial hair?</strong></dt>
+      <dd><p>A: The colour remains rich and vibrant for 3 to 4 weeks, depending on your beard growth rate and daily washing frequency. Because it bonds directly with facial hair keratin, it does not wash out with water or regular beard shampoo.</p></dd>
+      <dt><strong>Q: Is Dailyfix 001 Natural Black 100% ammonia-free?</strong></dt>
+      <dd><p>A: Yes, Dailyfix 001 Natural Black Beard Colour is completely 100% ammonia-free. It produces zero pungent fumes, prevents stinging or burning around sensitive mustache areas, and respects the delicate lipid barrier of your facial skin.</p></dd>
+      <dt><strong>Q: Will this Natural Black beard colour stain my skin or cheeks during application?</strong></dt>
+      <dd><p>A: The rich, non-drip cream consistency is formulated to adhere strictly to coarse facial hair strands rather than the underlying skin. As long as stray cream is wiped off promptly with a damp cloth, it leaves your cheek and neck margins perfectly clean without dark residue.</p></dd>
+      <dt><strong>Q: Can I use Dailyfix Natural Black on my moustache and sideburns?</strong></dt>
+      <dd><p>A: Yes. The included dual-sided applicator comb is specially designed with a fine-bristle side to navigate narrow areas like the philtrum, upper lip moustache line, and sideburns without mess.</p></dd>
+      <dt><strong>Q: Why is the 48-hour patch test mandatory even if I have dyed my beard before?</strong></dt>
+      <dd><p>A: Skin sensitivity can fluctuate over time due to stress, environmental changes, or seasonal factors. Conducting a simple 48-hour patch test before each application ensures your facial skin remains comfortable, protected, and free of adverse reactions.</p></dd>
+      <dt><strong>Q: How many applications can I get from one pack of 001 Natural Black?</strong></dt>
+      <dd><p>A: Depending on your beard density and length, a single pack provides 2 to 3 full facial hair applications. The resealable cream tubes allow you to dispense only the exact amount you need for touch-ups.</p></dd>
+    </dl>
+  
+        
+      </section>
+
+      <section>
+        <h2>Customer Reviews & Ratings for Natural Black</h2>
+        <p>Real customer experiences from verified gentlemen:</p>
+        
+    <p>Rated 4.9/5 based on 148+ verified customer reviews. 98% of gentlemen recommend Dailyfix Natural Black.</p>
+    <ul>
+      
+      <li>
+        <strong>100% Grey Coverage with Zero Skin Staining – Best Beard Colour Ever!</strong> — Rated 5/5 by Vikram Singhania (Mumbai, MH)
+        <p>I have tried 4 different commercial beard dyes before Dailyfix, and all of them left itchy dark stains on my facial skin. Dailyfix Natural Black is on another level! Applied it for just 10 minutes, rinsed it off, and every single grey chin hair was covered with a deep, natural black finish. No fake jet-black ink look, just a rich healthy sheen. Will keep subscribing!</p>
+      </li>
+      <li>
+        <strong>Zero burning sensation or irritation. Truly ammonia-free.</strong> — Rated 5/5 by Dr. Sameer Kulkarni (Pune, MH)
+        <p>Being a dermatologist, I am very critical of hair and beard colouring products due to ammonia and harsh oxidizers. Dailyfix formulation is remarkably mild. No burning, no foul chemical smell, and no irritation around the sensitive mustache area. Excellent grey coverage that looks completely natural.</p>
+      </li>
+      <li>
+        <strong>My wife couldn't even tell I dyed it – it looks so natural!</strong> — Rated 5/5 by Aakash Verma (Bengaluru, KA)
+        <p>Was hesitant to dye my salt-and-pepper beard because I didn't want that fake painted look. Dailyfix Natural Black blends so seamlessly with my original hair texture. The colour stayed vibrant for over 3 weeks without fading into weird reddish tones. Super easy applicator tray too.</p>
+      </li>
+      <li>
+        <strong>Great value for money and lasts a solid 3-4 weeks</strong> — Rated 5/5 by Rajesh Nair (Kochi, KL)
+        <p>A single pack gives me two full applications. The colour holds up very well even after daily face washes and beard oil routines. Very impressed with the quality and quick delivery.</p>
+      </li>
+      <li>
+        <strong>Quick, effective and leaves beard feeling soft</strong> — Rated 4/5 by Karan Malhotra (Delhi NCR)
+        <p>Takes barely 10 minutes before shower. Other colours used to make my beard bristles stiff and dry, but this one left the hair feeling surprisingly soft. Good natural black shade.</p>
+      </li>
+    </ul>
+  
+        
       </section>
     </main>
 
@@ -348,11 +812,9 @@
 
   <script>
     (function () {
-      var minDuration = 2000;
+      var minDuration = 180;
       var startTime = Date.now();
       var loader = document.getElementById('initial-page-loader');
-
-      document.body.style.overflow = 'hidden';
 
       function dismissLoader() {
         if (!loader) return;
@@ -366,17 +828,18 @@
             if (loader && loader.parentNode) {
               loader.parentNode.removeChild(loader);
             }
-          }, 750);
+          }, 450);
         }, remaining);
       }
 
-      if (document.readyState === 'complete') {
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
         dismissLoader();
       } else {
+        window.addEventListener('DOMContentLoaded', dismissLoader);
         window.addEventListener('load', dismissLoader);
       }
 
-      setTimeout(dismissLoader, 4500);
+      setTimeout(dismissLoader, 1500);
     })();
   </script>
 

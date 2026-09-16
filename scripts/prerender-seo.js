@@ -1,12 +1,257 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { shadeInfo, SHADE_COMPARISON_MATRIX } from '../client/src/data/productDetailData.js';
+import { SHADE_REVIEWS_MAP } from '../client/src/data/productReviews.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..');
 
 const BASE_URL = 'https://dailyfixcare.com';
+
+function createProductRoute(slug, dataKey) {
+  const det = shadeInfo[dataKey];
+  const reviewsList = SHADE_REVIEWS_MAP[dataKey] || [];
+  const canonicalUrl = `${BASE_URL}/product/${slug}`;
+
+  const otherShadesHtml = det.shadeDetails?.otherShades?.map(o =>
+    `<p>Also Available in: <a href="/product/${o.slug}"><strong>${o.name}</strong></a> — ${o.label}</p>`
+  ).join('\n') || '';
+
+  const comparisonTableHtml = `
+    <table>
+      <thead>
+        <tr>
+          <th>Shade</th>
+          <th>Undertone &amp; Finish</th>
+          <th>Best Suited For</th>
+          <th>Daylight Effect</th>
+          <th>Grey Blend</th>
+          <th>View</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${SHADE_COMPARISON_MATRIX.map(m => `
+        <tr>
+          <td><strong>${m.code} ${m.name}</strong></td>
+          <td>${m.undertone}</td>
+          <td>${m.idealFor}</td>
+          <td>${m.daylightEffect}</td>
+          <td>${m.greyCoverage}</td>
+          <td>${m.slug === slug ? '<span>Active Page</span>' : `<a href="/product/${m.slug}">Explore Shade</a>`}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+
+  const benefitsHtml = `
+    <ul>
+      ${det.benefitsBulletList?.map(b => `
+      <li>
+        <h3>${b.title}</h3>
+        <p>${b.desc}</p>
+      </li>`).join('')}
+    </ul>
+  `;
+
+  const packContentsHtml = `
+    <ul>
+      ${det.packContents?.map(p => `
+      <li>
+        <strong>${p.item}</strong> (${p.qty}): ${p.desc}
+      </li>`).join('')}
+    </ul>
+  `;
+
+  const howToUseHtml = `
+    <ol>
+      ${det.howToUseSteps?.map(s => `
+      <li>
+        <strong>Step ${s.step}: ${s.title}</strong>
+        <p>${s.action}</p>
+      </li>`).join('')}
+    </ol>
+    <p><strong>Application Advisory:</strong> ${det.howToUseNote}</p>
+  `;
+
+  const precautionsHtml = `
+    <h3>${det.precautions?.patchTestHeadline}</h3>
+    <ol>
+      ${det.precautions?.patchTestSteps?.map(p => `<li>${p}</li>`).join('')}
+    </ol>
+    <h3>Important Safety Warnings</h3>
+    <ul>
+      ${det.precautions?.safetyWarnings?.map(w => `<li>${w}</li>`).join('')}
+    </ul>
+  `;
+
+  const faqsHtml = `
+    <dl>
+      ${det.faqs?.map(f => `
+      <dt><strong>Q: ${f.q}</strong></dt>
+      <dd><p>A: ${f.a}</p></dd>`).join('')}
+    </dl>
+  `;
+
+  const reviewsHtml = `
+    <p>Rated 4.9/5 based on 148+ verified customer reviews. 98% of gentlemen recommend Dailyfix ${det.shadeName}.</p>
+    <ul>
+      ${reviewsList.slice(0, 5).map(r => `
+      <li>
+        <strong>${r.headline}</strong> — Rated ${r.rating}/5 by ${r.author} (${r.location || 'Verified Buyer'})
+        <p>${r.content}</p>
+      </li>`).join('')}
+    </ul>
+  `;
+
+  const productSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: det.h1Title,
+    image: [
+      `${BASE_URL}/images/${slug}.png`,
+      `${BASE_URL}/images/${slug}.webp`,
+      `${BASE_URL}/images/dailyfix-beard-colour.png`
+    ],
+    description: det.seoDescription,
+    sku: det.sku,
+    brand: {
+      '@type': 'Brand',
+      name: 'Dailyfix'
+    },
+    color: det.shadeName,
+    offers: {
+      '@type': 'Offer',
+      url: canonicalUrl,
+      priceCurrency: 'INR',
+      price: '450',
+      priceValidUntil: '2027-12-31',
+      itemCondition: 'https://schema.org/NewCondition',
+      availability: 'https://schema.org/InStock',
+      seller: {
+        '@type': 'Organization',
+        name: 'Dailyfix'
+      }
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.9',
+      reviewCount: '148',
+      bestRating: '5',
+      worstRating: '1'
+    },
+    review: reviewsList.slice(0, 5).map(r => ({
+      '@type': 'Review',
+      author: {
+        '@type': 'Person',
+        name: r.author
+      },
+      datePublished: '2026-08-28',
+      reviewRating: {
+        '@type': 'Rating',
+        ratingValue: String(r.rating || 5),
+        bestRating: '5',
+        worstRating: '1'
+      },
+      reviewBody: r.content
+    }))
+  };
+
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: (det.faqs || []).map(f => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: f.a
+      }
+    }))
+  };
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: `${BASE_URL}/`
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Shop',
+        item: `${BASE_URL}/shop`
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: det.h1Title,
+        item: canonicalUrl
+      }
+    ]
+  };
+
+  return {
+    route: `/product/${slug}`,
+    title: det.seoTitle,
+    description: det.seoDescription,
+    h1: det.h1Title,
+    ogImage: `/images/${slug}.png`,
+    schemas: [productSchema, faqSchema, breadcrumbSchema],
+    sections: [
+      {
+        h2: `100% Ammonia-Free ${det.shadeName} Beard Hair Colour`,
+        p: det.longDescription.join(' '),
+        img: {
+          src: `/images/${slug}.png`,
+          alt: det.imageAlt,
+          width: 600,
+          height: 600
+        }
+      },
+      {
+        h2: `Product Benefits of ${det.shadeName}`,
+        p: 'Specifically engineered for coarse facial hair with zero ammonia, zero burning, and natural-looking depth.',
+        html: benefitsHtml
+      },
+      {
+        h2: 'Shade Information & Side-by-Side Comparison',
+        p: `${det.shadeDetails.tone}. Undertone: ${det.shadeDetails.undertone}. Ideal for: ${det.shadeDetails.idealFor}. Sunlight finish: ${det.shadeDetails.sunlightFinish}.`,
+        html: `${otherShadesHtml}\n${comparisonTableHtml}`
+      },
+      {
+        h2: `What's Inside the Pack: ${det.shadeName} Grooming Kit`,
+        p: 'Everything required for a clean, mess-free, salon-grade grooming session at home:',
+        html: packContentsHtml
+      },
+      {
+        h2: 'Step-by-Step Application Instructions',
+        p: 'Follow these 6 numbered steps for seamless, natural grey hair coverage in just 10 minutes:',
+        html: howToUseHtml
+      },
+      {
+        h2: 'Precautions & 48-Hour Patch Test Protocol',
+        p: 'Read and follow all safety precautions to safeguard your facial skin:',
+        html: precautionsHtml
+      },
+      {
+        h2: `Frequently Asked Questions: ${det.shadeName}`,
+        p: `Detailed answers to common questions about Dailyfix ${det.shadeName} beard colour:`,
+        html: faqsHtml
+      },
+      {
+        h2: `Customer Reviews & Ratings for ${det.shadeName}`,
+        p: 'Real customer experiences from verified gentlemen:',
+        html: reviewsHtml
+      }
+    ]
+  };
+}
 
 export const SEO_ROUTES = [
   {
@@ -145,93 +390,9 @@ export const SEO_ROUTES = [
       }
     ]
   },
-  {
-    route: '/product/natural-black',
-    title: '001 Natural Black Beard Colour for Men | Dailyfix Ammonia-Free',
-    description: 'Buy Dailyfix 001 Natural Black Beard Colour for Men. 100% natural-looking grey coverage in 10 minutes with organic olive extract and zero ammonia.',
-    h1: 'Dailyfix 001 Natural Black Beard Colour for Men',
-    ogImage: '/images/natural-black.png',
-    sections: [
-      {
-        h2: 'Authentic Jet Black Coverage with Zero Bluish Glare',
-        p: 'Dailyfix 001 Natural Black provides deep, masculine coverage engineered specifically for jet black and deep charcoal beard hair textures.',
-        img: {
-          src: '/images/natural-black.png',
-          alt: 'Dailyfix 001 Natural Black Beard Colour Bottle and Packaging',
-          width: 600,
-          height: 600
-        }
-      },
-      {
-        h2: '10-Minute Rapid Gray Fusion Formula',
-        p: 'Gentle 1:1 cream mix enriched with taurine and botanical olive extract that protects sensitive skin while locking in permanent colour.',
-        img: {
-          src: '/images/dailyfix-beard-colour.png',
-          alt: 'Dailyfix Beard Colour Cream and Developer Application',
-          width: 600,
-          height: 600
-        }
-      }
-    ]
-  },
-  {
-    route: '/product/black-brown',
-    title: '002 Black Brown Beard Colour for Men | Dailyfix Ammonia-Free',
-    description: 'Buy Dailyfix 002 Black Brown Beard Colour for Men. Soft charcoal undertone with natural sunlight warmth. Ammonia-free 10-minute application.',
-    h1: 'Dailyfix 002 Black Brown Beard Colour for Men',
-    ogImage: '/images/black-brown.png',
-    sections: [
-      {
-        h2: 'Subtle Charcoal Undertones with Natural Warmth',
-        p: 'Dailyfix 002 Black Brown delivers a refined, natural finish for gentlemen whose facial hair carries warm charcoal notes in daylight.',
-        img: {
-          src: '/images/black-brown.png',
-          alt: 'Dailyfix 002 Black Brown Beard Colour Bottle and Packaging',
-          width: 600,
-          height: 600
-        }
-      },
-      {
-        h2: 'Zero Skin Staining & Botanical Defense',
-        p: 'Non-drip consistency adheres strictly to facial hair keratin fibers without staining cheeks or hands.',
-        img: {
-          src: '/images/dailyfix-beard-colour.png',
-          alt: 'Dailyfix Black Brown Gentle Formulation',
-          width: 600,
-          height: 600
-        }
-      }
-    ]
-  },
-  {
-    route: '/product/dark-brown',
-    title: '003 Dark Brown Beard Colour for Men | Dailyfix Ammonia-Free',
-    description: 'Buy Dailyfix 003 Dark Brown Beard Colour for Men. Rich espresso finish that adds depth and definition. 100% ammonia-free and gentle on skin.',
-    h1: 'Dailyfix 003 Dark Brown Beard Colour for Men',
-    ogImage: '/images/dark-brown.png',
-    sections: [
-      {
-        h2: 'Rich Espresso Finish for Refined Depth',
-        p: 'Dailyfix 003 Dark Brown offers a versatile coffee-toned finish that adds depth and definition without looking flat or artificial.',
-        img: {
-          src: '/images/dark-brown.png',
-          alt: 'Dailyfix 003 Dark Brown Beard Colour Bottle and Packaging',
-          width: 600,
-          height: 600
-        }
-      },
-      {
-        h2: 'Nourishing Olive Extract & Taurine Infusion',
-        p: 'Infuses coarse facial hair with conditioning botanicals, leaving your beard soft, lustrous, and impeccably defined.',
-        img: {
-          src: '/images/dailyfix-beard-colour.png',
-          alt: 'Dailyfix Dark Brown Botanical Ingredients',
-          width: 600,
-          height: 600
-        }
-      }
-    ]
-  },
+  createProductRoute('natural-black', 'natural-black-beard-colour'),
+  createProductRoute('black-brown', 'black-brown-beard-colour'),
+  createProductRoute('dark-brown', 'dark-brown-beard-colour'),
   {
     route: '/blog',
     title: 'Men’s Beard Grooming Advice & Style Guides | Dailyfix Journal',
@@ -678,18 +839,26 @@ export function generatePageHtml(templateHtml, pageData) {
   html = html.replace(/<meta\s+name=["']twitter:image["']\s+content=["'][\s\S]*?["']\s*\/?>/i,
     `<meta name="twitter:image" content="${ogImageUrl}" />`);
 
+  // 5.5. Inject Structured Data JSON-LD Schemas in <head>
+  if (pageData.schemas && Array.isArray(pageData.schemas)) {
+    const schemasHtml = pageData.schemas.map(s => `  <script type="application/ld+json">\n${JSON.stringify(s, null, 2)}\n  </script>`).join('\n');
+    html = html.replace('</head>', `${schemasHtml}\n</head>`);
+  }
+
   // 6. Build Content for <div id="root">
   const sectionsHtml = pageData.sections.map((sec, idx) => `
       <section>
         <h2>${sec.h2}</h2>
-        <p>${sec.p}</p>
+        ${sec.p ? `<p>${sec.p}</p>` : ''}
+        ${sec.html ? sec.html : ''}
+        ${sec.img ? `
         <img
           src="${sec.img.src}"
           alt="${sec.img.alt.replace(/"/g, '&quot;')}"
           width="${sec.img.width || 600}"
           height="${sec.img.height || 600}"
           ${idx === 0 ? 'fetchpriority="high"' : 'loading="lazy"'}
-        />
+        />` : ''}
       </section>`).join('\n');
 
   const rootContent = `

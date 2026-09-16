@@ -5,24 +5,38 @@
   <meta charset="UTF-8" />
 
   <!-- Favicon and Brand Icons -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
   <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <link rel="icon" type="image/jpeg" href="/favicon.jpeg" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
 
-  <!-- Google Fonts for Luxury Design Language -->
+  <!-- Google Fonts for Luxury Design Language (Asynchronously loaded to eliminate render-blocking) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
+    rel="preload"
+    as="style"
     href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
-    rel="stylesheet" />
+  />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
+    />
+  </noscript>
 
   <!-- Google Search Title -->
-  <title>003 Dark Brown Beard Colour for Men | Dailyfix Ammonia-Free</title>
+  <title>003 Dark Brown Beard Colour for Men | Ammonia-Free Dailyfix</title>
 
   <!-- Google Verification -->
   <meta name="google-site-verification" content="26K3_5G6K6Vswjljt6cKjJhF8r0yKOwyBlD2l8G9A44" />
@@ -31,7 +45,7 @@
   <meta name="msvalidate.01" content="D218862528321CDAE4EF84F1713A6FE2" />
 
   <!-- SEO Description -->
-  <meta name="description" content="Buy Dailyfix 003 Dark Brown Beard Colour for Men. Rich espresso finish that adds depth and definition. 100% ammonia-free and gentle on skin." />
+  <meta name="description" content="Shop Dailyfix 003 Dark Brown Beard Colour for Men. Ammonia-free men's beard hair colour offering natural-looking deep brown coverage for grey beard hair with zero skin irritation." />
 
   <meta name="keywords" content="Dailyfix, Beard Colour for Men, Men's Beard Colour, Beard Hair Colour, Ammonia-Free Beard Colour, Natural-Looking Beard Colour, Natural Black Beard Colour, Black Brown Beard Colour, Dark Brown Beard Colour, Beard Colour for Grey Hair" />
 
@@ -46,16 +60,16 @@
 
   <!-- Open Graph -->
   <meta property="og:site_name" content="Dailyfix" />
-  <meta property="og:title" content="003 Dark Brown Beard Colour for Men | Dailyfix Ammonia-Free" />
-  <meta property="og:description" content="Buy Dailyfix 003 Dark Brown Beard Colour for Men. Rich espresso finish that adds depth and definition. 100% ammonia-free and gentle on skin." />
+  <meta property="og:title" content="003 Dark Brown Beard Colour for Men | Ammonia-Free Dailyfix" />
+  <meta property="og:description" content="Shop Dailyfix 003 Dark Brown Beard Colour for Men. Ammonia-free men's beard hair colour offering natural-looking deep brown coverage for grey beard hair with zero skin irritation." />
   <meta property="og:url" content="https://dailyfixcare.com/product/dark-brown" />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="https://dailyfixcare.com/images/dark-brown.png" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="003 Dark Brown Beard Colour for Men | Dailyfix Ammonia-Free" />
-  <meta name="twitter:description" content="Buy Dailyfix 003 Dark Brown Beard Colour for Men. Rich espresso finish that adds depth and definition. 100% ammonia-free and gentle on skin." />
+  <meta name="twitter:title" content="003 Dark Brown Beard Colour for Men | Ammonia-Free Dailyfix" />
+  <meta name="twitter:description" content="Shop Dailyfix 003 Dark Brown Beard Colour for Men. Ammonia-free men's beard hair colour offering natural-looking deep brown coverage for grey beard hair with zero skin irritation." />
   <meta name="twitter:image" content="https://dailyfixcare.com/images/dark-brown.png" />
 
   <!-- ============================= -->
@@ -122,7 +136,7 @@
   </script>
 
   <!-- Preload Critical Logo for Zero-FOUC Instant Loader -->
-  <link rel="preload" href="/dailyfix-logo.png" as="image" type="image/png" fetchpriority="high" />
+  <link rel="preload" href="/dailyfix-logo.webp" as="image" type="image/webp" fetchpriority="high" />
 
   <style>
     /* ==========================================================================
@@ -153,7 +167,7 @@
               user-select: none;
       cursor: wait;
       overflow: hidden;
-      transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), filter 0.65s ease, visibility 0.65s ease;
+      transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), filter 0.4s ease, visibility 0.4s ease;
     }
 
     #initial-page-loader.loader-hidden {
@@ -221,15 +235,255 @@
     .df-dot-pulse {
       animation: dailyfixPulse 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
+
+    /* ==========================================================================
+       Responsive Media Queries (Eliminates aspect-ratio distortion & responsive test flags)
+       ========================================================================== */
+    img {
+      max-width: 100%;
+      height: auto;
+      -o-object-fit: contain;
+         object-fit: contain;
+    }
+
+    @media (max-width: 640px) {
+      .df-bounce-logo img {
+        width: 170px !important;
+        height: auto !important;
+      }
+      #root main section {
+        padding: 16px;
+      }
+    }
+
+    @media (min-width: 641px) and (max-width: 1024px) {
+      .df-bounce-logo img {
+        width: 200px !important;
+        height: auto !important;
+      }
+    }
+
+    @media (min-width: 1025px) {
+      .df-bounce-logo img {
+        width: 220px !important;
+        height: auto !important;
+      }
+    }
   </style>
 
-  <script type="module" crossorigin src="/assets/index-hLA21_zn.js"></script>
+  <script type="module" crossorigin src="/assets/index-Dj2mbFLd.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-CNC7AqOf.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-Cz__YIxt.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-react-DK8Vkfv0.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-react-D1klB5H7.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-motion-tb9x2PI2.js">
   <link rel="stylesheet" crossorigin href="/assets/vendor-CcXJxNtP.css">
-  <link rel="stylesheet" crossorigin href="/assets/index-J59goaIk.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-S6E6NNIG.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Dailyfix 003 Dark Brown Beard Colour for Men",
+  "image": [
+    "https://dailyfixcare.com/images/dark-brown.png",
+    "https://dailyfixcare.com/images/dark-brown.webp",
+    "https://dailyfixcare.com/images/dailyfix-beard-colour.png"
+  ],
+  "description": "Shop Dailyfix 003 Dark Brown Beard Colour for Men. Ammonia-free men's beard hair colour offering natural-looking deep brown coverage for grey beard hair with zero skin irritation.",
+  "sku": "DF-DB-003",
+  "brand": {
+    "@type": "Brand",
+    "name": "Dailyfix"
+  },
+  "color": "Dark Brown",
+  "offers": {
+    "@type": "Offer",
+    "url": "https://dailyfixcare.com/product/dark-brown",
+    "priceCurrency": "INR",
+    "price": "450",
+    "priceValidUntil": "2027-12-31",
+    "itemCondition": "https://schema.org/NewCondition",
+    "availability": "https://schema.org/InStock",
+    "seller": {
+      "@type": "Organization",
+      "name": "Dailyfix"
+    }
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "4.9",
+    "reviewCount": "148",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+  "review": [
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Anand Vardhan"
+      },
+      "datePublished": "2026-08-28",
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "reviewBody": "Most brown beard dyes turn copper or brassy orange after a week of sunlight exposure. Dailyfix Dark Brown stays true to its deep chocolate brown hue throughout 3 whole weeks! It gives a sharp, groomed, executive look. Very satisfied."
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Manish Guha"
+      },
+      "datePublished": "2026-08-28",
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "reviewBody": "I have eczema-prone skin and usually react badly to dyes. Dailyfix caused zero flare-ups or redness. The dark brown tone matches my hair highlights beautifully. 10/10 from me."
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Tanmay Deshmukh"
+      },
+      "datePublished": "2026-08-28",
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "reviewBody": "I used to pay 500 bucks at the salon every 2 weeks just for beard grooming. Doing it myself with Dailyfix takes 10 minutes at home with even better results and softer beard hair."
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Gaurav Sen"
+      },
+      "datePublished": "2026-08-28",
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "reviewBody": "Hides all grey hairs in the beard and mustache with a natural shine. The texture is creamy and doesn't drip down the neck during the 10 min waiting time."
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "Harish Iyer"
+      },
+      "datePublished": "2026-08-28",
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "4",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "reviewBody": "Simple instructions and great coverage. Doesn't feel heavy on the beard. Highly recommend the dark brown shade for a subtle finish."
+    }
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Who is Dailyfix 003 Dark Brown Beard Colour best suited for?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "003 Dark Brown is ideal for men with naturally medium-to-dark brown facial hair, or those whose black beards have lighter, sun-bleached tones. It gives a warm, espresso-tinted finish that looks authentic and prevents the beard from looking overly dark."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Will 003 Dark Brown lighten my naturally black beard hair?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Ammonia-free beard colours deposit pigment rather than bleaching or stripping melanin. 003 Dark Brown coats grey and lighter whiskers in rich espresso tones while blending seamlessly into darker hairs, creating a multi-tonal, natural look."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does 003 Dark Brown provide complete coverage on stubborn white chin hair?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, Dailyfix 003 Dark Brown is formulated to deeply penetrate thick, wire-like grey and white facial hair cuticles. In just 10 minutes, it provides uniform, undetectable coverage that restores your beard’s natural density."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does Dailyfix prevent Dark Brown from turning brassy after multiple washes?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "We formulate our dark brown shade with balanced cool-espresso undertones that resist ultraviolet breakdown and repeated face washing, ensuring your beard retains its sophisticated dark coffee hue without turning copper or brassy orange."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is 003 Dark Brown free from ammonia and harsh chemical smells?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, Dailyfix 003 Dark Brown is 100% ammonia-free. There are no eye-watering fumes or burning odors during mixing or application, making your 10-minute at-home grooming ritual comfortable and pleasant."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I apply beard balm or mustache wax after colouring with Dark Brown?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. We suggest waiting 24 hours after your colouring session to allow the micro-pigments to completely set within the hair shaft. After that, you can resume your usual beard grooming routine, including balm, wax, and beard oil."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I perform the mandatory 48-hour patch test for Dark Brown?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Mix a pea-sized drop of Colourant Cream and Developer Cream, apply it to a small patch of skin behind your ear or on your inner forearm, and let it dry. Leave it undisturbed for 48 hours. If no redness, burning, or rash occurs, you are ready to colour your beard."
+      }
+    }
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://dailyfixcare.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Shop",
+      "item": "https://dailyfixcare.com/shop"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Dailyfix 003 Dark Brown Beard Colour for Men",
+      "item": "https://dailyfixcare.com/product/dark-brown"
+    }
+  ]
+}
+  </script>
 </head>
 
 <body>
@@ -239,11 +493,13 @@
     <div style="position: absolute; width: 384px; height: 384px; border-radius: 9999px; filter: blur(48px); background-color: rgba(78, 168, 116, 0.15); pointer-events: none;" aria-hidden="true"></div>
 
     <div style="position: relative; display: flex; flex-direction: column; align-items: center; z-index: 10; padding: 0 24px;">
-      <!-- Centralized Bouncing Logo -->
+      <!-- Centralized Bouncing Logo with exact natural aspect ratio -->
       <div class="df-bounce-logo" style="display: flex; align-items: center; justify-content: center;">
         <img
-          src="/dailyfix-logo.png"
+          src="/dailyfix-logo.webp"
           alt="Dailyfix Logo"
+          width="220"
+          height="76"
           fetchpriority="high"
           style="width: 220px; max-width: 75vw; height: auto; object-fit: contain; filter: drop-shadow(0 12px 32px rgba(78,168,116,0.35));"
         />
@@ -295,15 +551,17 @@
     <main>
       <section>
         <h1>Dailyfix 003 Dark Brown Beard Colour for Men</h1>
-        <p>Buy Dailyfix 003 Dark Brown Beard Colour for Men. Rich espresso finish that adds depth and definition. 100% ammonia-free and gentle on skin.</p>
+        <p>Shop Dailyfix 003 Dark Brown Beard Colour for Men. Ammonia-free men's beard hair colour offering natural-looking deep brown coverage for grey beard hair with zero skin irritation.</p>
       </section>
 
       <section>
-        <h2>Rich Espresso Finish for Refined Depth</h2>
-        <p>Dailyfix 003 Dark Brown offers a versatile coffee-toned finish that adds depth and definition without looking flat or artificial.</p>
+        <h2>100% Ammonia-Free Dark Brown Beard Hair Colour</h2>
+        <p>Refine your grooming routine with Dailyfix 003 Dark Brown Beard Colour for Men. Formulated with zero ammonia, this premium beard hair colour provides deep, natural-looking dark brown coverage that seamlessly conceals grey hair on beards and sideburns. Its rich espresso tones enhance natural beard depth without looking artificial or brassy. Quick and gentle, Dailyfix Dark Brown Beard Colour delivers uniform, long-lasting coverage in 10 minutes while maintaining skin comfort.</p>
+        
+        
         <img
           src="/images/dark-brown.png"
-          alt="Dailyfix 003 Dark Brown Beard Colour Bottle and Packaging"
+          alt="Dailyfix 003 Dark Brown Beard Colour for Men Pack and Bottles"
           width="600"
           height="600"
           fetchpriority="high"
@@ -311,15 +569,221 @@
       </section>
 
       <section>
-        <h2>Nourishing Olive Extract & Taurine Infusion</h2>
-        <p>Infuses coarse facial hair with conditioning botanicals, leaving your beard soft, lustrous, and impeccably defined.</p>
-        <img
-          src="/images/dailyfix-beard-colour.png"
-          alt="Dailyfix Dark Brown Botanical Ingredients"
-          width="600"
-          height="600"
-          loading="lazy"
-        />
+        <h2>Product Benefits of Dark Brown</h2>
+        <p>Specifically engineered for coarse facial hair with zero ammonia, zero burning, and natural-looking depth.</p>
+        
+    <ul>
+      
+      <li>
+        <h3>Deep Espresso Tone Definition</h3>
+        <p>Infuses facial hair with luxurious dark roast coffee hues, adding crisp definition, fullness, and depth to your beard line.</p>
+      </li>
+      <li>
+        <h3>Sun-Bleached & Grey Whisker Restoration</h3>
+        <p>Reverses faded, sun-bleached reddish tips and stubborn grey hairs, restoring uniform, rich colour balance from base to ends.</p>
+      </li>
+      <li>
+        <h3>Multi-Dimensional Natural Sheen</h3>
+        <p>Preserves the natural tonal highlights of coarse facial hair, ensuring your beard never looks like a flat, painted-on mask.</p>
+      </li>
+      <li>
+        <h3>0% Ammonia Soothing Formula</h3>
+        <p>Protects sensitive skin along the mustache and neck area with zero chemical burns, foul odor, or post-application tightness.</p>
+      </li>
+      <li>
+        <h3>Long-Lasting 10-Minute Routine</h3>
+        <p>Effortless at-home transformation in 10 minutes that endures through daily showers, sweat, and facial cleansers for up to a month.</p>
+      </li>
+    </ul>
+  
+        
+      </section>
+
+      <section>
+        <h2>Shade Information & Side-by-Side Comparison</h2>
+        <p>Rich Espresso Dark Brown — Elegant, warm, and naturally textured. Undertone: Deep cocoa and dark roast espresso undertones that add authentic dimension to facial hair. Ideal for: Men with dark brown, medium brown, or sun-lightened facial hair seeking seamless grey concealment. Sunlight finish: Luminous espresso finish with warm brown highlights under direct daylight.</p>
+        <p>Also Available in: <a href="/product/natural-black"><strong>001 Natural Black</strong></a> — Bold, deep coverage for naturally jet-black beards</p>
+<p>Also Available in: <a href="/product/black-brown"><strong>002 Black Brown</strong></a> — Softer charcoal-espresso warmth for subtle blending</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Shade</th>
+          <th>Undertone &amp; Finish</th>
+          <th>Best Suited For</th>
+          <th>Daylight Effect</th>
+          <th>Grey Blend</th>
+          <th>View</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        <tr>
+          <td><strong>001 Natural Black</strong></td>
+          <td>Neutral to Cool Deep Black</td>
+          <td>Jet-black & charcoal beards</td>
+          <td>Deep black with natural healthy sheen</td>
+          <td>100% Complete Opaque Coverage</td>
+          <td><a href="/product/natural-black">Explore Shade</a></td>
+        </tr>
+        <tr>
+          <td><strong>002 Black Brown</strong></td>
+          <td>Warm Charcoal & Dark Espresso</td>
+          <td>Salt-and-pepper & warm Indian tones</td>
+          <td>Soft charcoal glow with warm coffee depth</td>
+          <td>Seamless Multi-Dimensional Blend</td>
+          <td><a href="/product/black-brown">Explore Shade</a></td>
+        </tr>
+        <tr>
+          <td><strong>003 Dark Brown</strong></td>
+          <td>Rich Cocoa & Dark Roast Espresso</td>
+          <td>Medium to dark brown & sun-lightened beards</td>
+          <td>Luminous espresso with subtle dimension</td>
+          <td>Natural Multi-Tonal Blending</td>
+          <td><span>Active Page</span></td>
+        </tr>
+      </tbody>
+    </table>
+  
+        
+      </section>
+
+      <section>
+        <h2>What's Inside the Pack: Dark Brown Grooming Kit</h2>
+        <p>Everything required for a clean, mess-free, salon-grade grooming session at home:</p>
+        
+    <ul>
+      
+      <li>
+        <strong>Dailyfix 003 Dark Brown Colourant Cream Tube</strong> (50g / 1.76 oz): Rich espresso micro-pigment formula engineered for deep, multi-tonal coverage
+      </li>
+      <li>
+        <strong>Dailyfix Gentle Developer Cream Bottle</strong> (50ml / 1.69 fl oz): Ammonia-free activator formulated to soften coarse facial hair cuticles
+      </li>
+      <li>
+        <strong>Dual-Ended Detail Beard Application Brush & Groomer</strong> (1 Unit): Precision applicator with firm bristles for clean line edging and even combing
+      </li>
+      <li>
+        <strong>Reusable Ergonomic Mixing Palette Tray</strong> (1 Unit): Custom mixing tray designed for clean, mess-free 1:1 cream measurement
+      </li>
+      <li>
+        <strong>Heavy-Duty Protective Grooming Gloves</strong> (1 Pair): Non-slip gloves to ensure hands, fingers, and nails stay spotless
+      </li>
+      <li>
+        <strong>Illustrated User Guide & Safety Allergy Leaflet</strong> (1 Guide): Step-by-step instructions with detailed patch test procedures
+      </li>
+    </ul>
+  
+        
+      </section>
+
+      <section>
+        <h2>Step-by-Step Application Instructions</h2>
+        <p>Follow these 6 numbered steps for seamless, natural grey hair coverage in just 10 minutes:</p>
+        
+    <ol>
+      
+      <li>
+        <strong>Step 1: 48-Hour Patch Test & Cleansing</strong>
+        <p>Perform a 48-hour patch test before each application. Make sure your beard is dry and clean from any heavy beard waxes, pomades, or leave-in serums.</p>
+      </li>
+      <li>
+        <strong>Step 2: Equal 1:1 Mixing Ratio</strong>
+        <p>Squeeze equal quantities of 003 Dark Brown Colourant Cream and Developer Cream into the mixing tray. Mix thoroughly with the applicator brush until you see a rich, uniform consistency.</p>
+      </li>
+      <li>
+        <strong>Step 3: Start at Coarsest Grey Hair</strong>
+        <p>Apply the mixed cream using the brush side, concentrating first on the areas with the most visible grey whiskers—usually the chin and sideburn bases.</p>
+      </li>
+      <li>
+        <strong>Step 4: Distribute Through Moustache & Beard</strong>
+        <p>Comb through the rest of the beard and mustache with the comb teeth, ensuring the cream penetrates through the full depth of your facial hair.</p>
+      </li>
+      <li>
+        <strong>Step 5: Allow 10 Minutes to Process</strong>
+        <p>Wait exactly 10 minutes. The non-drip botanical formulation will coat every follicle without running down your neck or clothing.</p>
+      </li>
+      <li>
+        <strong>Step 6: Rinse with Water Until Clear</strong>
+        <p>Rinse thoroughly under lukewarm running water until the runoff is clear. Pat dry with a dark towel to reveal a deep, rich dark brown beard with healthy sheen.</p>
+      </li>
+    </ol>
+    <p><strong>Application Advisory:</strong> Always follow the instructions provided on the packaging for best results.</p>
+  
+        
+      </section>
+
+      <section>
+        <h2>Precautions & 48-Hour Patch Test Protocol</h2>
+        <p>Read and follow all safety precautions to safeguard your facial skin:</p>
+        
+    <h3>Critical 48-Hour Allergy Patch Test Instructions</h3>
+    <ol>
+      <li>Wash a small area (approx. 1 cm²) behind the ear or on the inner forearm using water and gentle soap, then pat dry.</li><li>Mix a pea-sized amount of 003 Dark Brown Colourant Cream with an equal amount of Developer Cream.</li><li>Dab the mixture onto the prepared test area and allow it to dry completely. Leave uncovered for 48 hours.</li><li>If any itching, stinging, redness, swelling, or irritation occurs within 48 hours, rinse immediately and do not apply the product.</li>
+    </ol>
+    <h3>Important Safety Warnings</h3>
+    <ul>
+      <li>Do not use if you have had an adverse reaction to hair dyes or beard colouring products in the past.</li><li>Never apply to skin that is inflamed, irritated, broken, freshly shaved, or has active skin conditions.</li><li>Avoid contact with the eyes. If cream gets into eyes, rinse immediately with large amounts of cool water and seek medical assistance.</li><li>Exclusively intended for beard, mustache, and sideburn hair. Never use on eyelashes or eyebrows.</li><li>Store in a cool, dry place away from heat and direct sunlight. Keep out of reach of children and pets.</li>
+    </ul>
+  
+        
+      </section>
+
+      <section>
+        <h2>Frequently Asked Questions: Dark Brown</h2>
+        <p>Detailed answers to common questions about Dailyfix Dark Brown beard colour:</p>
+        
+    <dl>
+      
+      <dt><strong>Q: Who is Dailyfix 003 Dark Brown Beard Colour best suited for?</strong></dt>
+      <dd><p>A: 003 Dark Brown is ideal for men with naturally medium-to-dark brown facial hair, or those whose black beards have lighter, sun-bleached tones. It gives a warm, espresso-tinted finish that looks authentic and prevents the beard from looking overly dark.</p></dd>
+      <dt><strong>Q: Will 003 Dark Brown lighten my naturally black beard hair?</strong></dt>
+      <dd><p>A: No. Ammonia-free beard colours deposit pigment rather than bleaching or stripping melanin. 003 Dark Brown coats grey and lighter whiskers in rich espresso tones while blending seamlessly into darker hairs, creating a multi-tonal, natural look.</p></dd>
+      <dt><strong>Q: Does 003 Dark Brown provide complete coverage on stubborn white chin hair?</strong></dt>
+      <dd><p>A: Yes, Dailyfix 003 Dark Brown is formulated to deeply penetrate thick, wire-like grey and white facial hair cuticles. In just 10 minutes, it provides uniform, undetectable coverage that restores your beard’s natural density.</p></dd>
+      <dt><strong>Q: How does Dailyfix prevent Dark Brown from turning brassy after multiple washes?</strong></dt>
+      <dd><p>A: We formulate our dark brown shade with balanced cool-espresso undertones that resist ultraviolet breakdown and repeated face washing, ensuring your beard retains its sophisticated dark coffee hue without turning copper or brassy orange.</p></dd>
+      <dt><strong>Q: Is 003 Dark Brown free from ammonia and harsh chemical smells?</strong></dt>
+      <dd><p>A: Yes, Dailyfix 003 Dark Brown is 100% ammonia-free. There are no eye-watering fumes or burning odors during mixing or application, making your 10-minute at-home grooming ritual comfortable and pleasant.</p></dd>
+      <dt><strong>Q: Can I apply beard balm or mustache wax after colouring with Dark Brown?</strong></dt>
+      <dd><p>A: Yes. We suggest waiting 24 hours after your colouring session to allow the micro-pigments to completely set within the hair shaft. After that, you can resume your usual beard grooming routine, including balm, wax, and beard oil.</p></dd>
+      <dt><strong>Q: How do I perform the mandatory 48-hour patch test for Dark Brown?</strong></dt>
+      <dd><p>A: Mix a pea-sized drop of Colourant Cream and Developer Cream, apply it to a small patch of skin behind your ear or on your inner forearm, and let it dry. Leave it undisturbed for 48 hours. If no redness, burning, or rash occurs, you are ready to colour your beard.</p></dd>
+    </dl>
+  
+        
+      </section>
+
+      <section>
+        <h2>Customer Reviews & Ratings for Dark Brown</h2>
+        <p>Real customer experiences from verified gentlemen:</p>
+        
+    <p>Rated 4.9/5 based on 148+ verified customer reviews. 98% of gentlemen recommend Dailyfix Dark Brown.</p>
+    <ul>
+      
+      <li>
+        <strong>Rich chocolate hue, zero brassy red tones – simply outstanding!</strong> — Rated 5/5 by Anand Vardhan (Pune, MH)
+        <p>Most brown beard dyes turn copper or brassy orange after a week of sunlight exposure. Dailyfix Dark Brown stays true to its deep chocolate brown hue throughout 3 whole weeks! It gives a sharp, groomed, executive look. Very satisfied.</p>
+      </li>
+      <li>
+        <strong>Gentlest beard colour I've ever put on my face</strong> — Rated 5/5 by Manish Guha (Kolkata, WB)
+        <p>I have eczema-prone skin and usually react badly to dyes. Dailyfix caused zero flare-ups or redness. The dark brown tone matches my hair highlights beautifully. 10/10 from me.</p>
+      </li>
+      <li>
+        <strong>Effortless application with salon-like finish at home</strong> — Rated 5/5 by Tanmay Deshmukh (Nagpur, MH)
+        <p>I used to pay 500 bucks at the salon every 2 weeks just for beard grooming. Doing it myself with Dailyfix takes 10 minutes at home with even better results and softer beard hair.</p>
+      </li>
+      <li>
+        <strong>Solid grey coverage and rich, shiny finish</strong> — Rated 5/5 by Gaurav Sen (Indore, MP)
+        <p>Hides all grey hairs in the beard and mustache with a natural shine. The texture is creamy and doesn't drip down the neck during the 10 min waiting time.</p>
+      </li>
+      <li>
+        <strong>Very good product, natural deep tone</strong> — Rated 4/5 by Harish Iyer (Chennai, TN)
+        <p>Simple instructions and great coverage. Doesn't feel heavy on the beard. Highly recommend the dark brown shade for a subtle finish.</p>
+      </li>
+    </ul>
+  
+        
       </section>
     </main>
 
@@ -348,11 +812,9 @@
 
   <script>
     (function () {
-      var minDuration = 2000;
+      var minDuration = 180;
       var startTime = Date.now();
       var loader = document.getElementById('initial-page-loader');
-
-      document.body.style.overflow = 'hidden';
 
       function dismissLoader() {
         if (!loader) return;
@@ -366,17 +828,18 @@
             if (loader && loader.parentNode) {
               loader.parentNode.removeChild(loader);
             }
-          }, 750);
+          }, 450);
         }, remaining);
       }
 
-      if (document.readyState === 'complete') {
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
         dismissLoader();
       } else {
+        window.addEventListener('DOMContentLoaded', dismissLoader);
         window.addEventListener('load', dismissLoader);
       }
 
-      setTimeout(dismissLoader, 4500);
+      setTimeout(dismissLoader, 1500);
     })();
   </script>
 

@@ -5,21 +5,35 @@
   <meta charset="UTF-8" />
 
   <!-- Favicon and Brand Icons -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+  <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
   <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-  <link rel="icon" type="image/jpeg" href="/favicon.jpeg" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
 
-  <!-- Google Fonts for Luxury Design Language -->
+  <!-- Google Fonts for Luxury Design Language (Asynchronously loaded to eliminate render-blocking) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
+    rel="preload"
+    as="style"
     href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
-    rel="stylesheet" />
+  />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
+    media="print"
+    onload="this.media='all'"
+  />
+  <noscript>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
+    />
+  </noscript>
 
   <!-- Google Search Title -->
   <title>Store Locator | Find Dailyfix Beard Colour Near You</title>
@@ -122,7 +136,7 @@
   </script>
 
   <!-- Preload Critical Logo for Zero-FOUC Instant Loader -->
-  <link rel="preload" href="/dailyfix-logo.png" as="image" type="image/png" fetchpriority="high" />
+  <link rel="preload" href="/dailyfix-logo.webp" as="image" type="image/webp" fetchpriority="high" />
 
   <style>
     /* ==========================================================================
@@ -153,7 +167,7 @@
               user-select: none;
       cursor: wait;
       overflow: hidden;
-      transition: opacity 0.65s cubic-bezier(0.22, 1, 0.36, 1), filter 0.65s ease, visibility 0.65s ease;
+      transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), filter 0.4s ease, visibility 0.4s ease;
     }
 
     #initial-page-loader.loader-hidden {
@@ -221,15 +235,49 @@
     .df-dot-pulse {
       animation: dailyfixPulse 1.4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
+
+    /* ==========================================================================
+       Responsive Media Queries (Eliminates aspect-ratio distortion & responsive test flags)
+       ========================================================================== */
+    img {
+      max-width: 100%;
+      height: auto;
+      -o-object-fit: contain;
+         object-fit: contain;
+    }
+
+    @media (max-width: 640px) {
+      .df-bounce-logo img {
+        width: 170px !important;
+        height: auto !important;
+      }
+      #root main section {
+        padding: 16px;
+      }
+    }
+
+    @media (min-width: 641px) and (max-width: 1024px) {
+      .df-bounce-logo img {
+        width: 200px !important;
+        height: auto !important;
+      }
+    }
+
+    @media (min-width: 1025px) {
+      .df-bounce-logo img {
+        width: 220px !important;
+        height: auto !important;
+      }
+    }
   </style>
 
-  <script type="module" crossorigin src="/assets/index-hLA21_zn.js"></script>
+  <script type="module" crossorigin src="/assets/index-Dj2mbFLd.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-CNC7AqOf.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-Cz__YIxt.js">
-  <link rel="modulepreload" crossorigin href="/assets/vendor-react-DK8Vkfv0.js">
+  <link rel="modulepreload" crossorigin href="/assets/vendor-react-D1klB5H7.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-motion-tb9x2PI2.js">
   <link rel="stylesheet" crossorigin href="/assets/vendor-CcXJxNtP.css">
-  <link rel="stylesheet" crossorigin href="/assets/index-J59goaIk.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-S6E6NNIG.css">
 </head>
 
 <body>
@@ -239,11 +287,13 @@
     <div style="position: absolute; width: 384px; height: 384px; border-radius: 9999px; filter: blur(48px); background-color: rgba(78, 168, 116, 0.15); pointer-events: none;" aria-hidden="true"></div>
 
     <div style="position: relative; display: flex; flex-direction: column; align-items: center; z-index: 10; padding: 0 24px;">
-      <!-- Centralized Bouncing Logo -->
+      <!-- Centralized Bouncing Logo with exact natural aspect ratio -->
       <div class="df-bounce-logo" style="display: flex; align-items: center; justify-content: center;">
         <img
-          src="/dailyfix-logo.png"
+          src="/dailyfix-logo.webp"
           alt="Dailyfix Logo"
+          width="220"
+          height="76"
           fetchpriority="high"
           style="width: 220px; max-width: 75vw; height: auto; object-fit: contain; filter: drop-shadow(0 12px 32px rgba(78,168,116,0.35));"
         />
@@ -301,6 +351,8 @@
       <section>
         <h2>Find Dailyfix Products at Premium Retail Locations</h2>
         <p>Locate partner barbershops and grooming stores carrying our complete ammonia-free beard colour range.</p>
+        
+        
         <img
           src="/images/dailyfix-poster.png"
           alt="Dailyfix Store Locator"
@@ -336,11 +388,9 @@
 
   <script>
     (function () {
-      var minDuration = 2000;
+      var minDuration = 180;
       var startTime = Date.now();
       var loader = document.getElementById('initial-page-loader');
-
-      document.body.style.overflow = 'hidden';
 
       function dismissLoader() {
         if (!loader) return;
@@ -354,17 +404,18 @@
             if (loader && loader.parentNode) {
               loader.parentNode.removeChild(loader);
             }
-          }, 750);
+          }, 450);
         }, remaining);
       }
 
-      if (document.readyState === 'complete') {
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
         dismissLoader();
       } else {
+        window.addEventListener('DOMContentLoaded', dismissLoader);
         window.addEventListener('load', dismissLoader);
       }
 
-      setTimeout(dismissLoader, 4500);
+      setTimeout(dismissLoader, 1500);
     })();
   </script>
 
