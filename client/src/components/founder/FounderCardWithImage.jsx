@@ -1,9 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Linkedin, ArrowUpRight, Sparkles, ShieldCheck, Award } from 'lucide-react';
+import { Linkedin, Instagram, ArrowUpRight, Sparkles, ShieldCheck, Award } from 'lucide-react';
 import founderImg from '../../assets/images/rohit-jaiswal.jpg';
 
 const LINKEDIN_URL = 'https://in.linkedin.com/in/rohit-jaiswal-694843430';
+const INSTAGRAM_URL = 'https://www.instagram.com/_._rohitjaiswal_._?stkn=MTM3cXo1cTM5NjdrZA%3D%3D';
 
 /**
  * OPTION 3: THE EXECUTIVE KEYNOTE (LIGHT THEME — WITH IMAGE)
@@ -20,6 +21,7 @@ export default function FounderCardWithImage({
   p2 = 'That belief turned into months of research, testing, and refining — not stopping until the formula was right. Natural-looking colour. Zero ammonia. Zero compromise.',
   p3 = 'Today, Dailyfix stands as proof that solving a problem properly, with patience and precision, builds something people can actually trust. For Rohit, this isn\'t just a product — it\'s a standard he refused to lower.',
   linkedinUrl = LINKEDIN_URL,
+  instagramUrl = INSTAGRAM_URL,
 }) {
   return (
     <motion.div
@@ -179,26 +181,43 @@ export default function FounderCardWithImage({
               </div>
             </div>
 
-            {/* Action Row: Apple-Style Executive LinkedIn Pill */}
-            <div className="pt-2 flex flex-wrap items-center gap-4">
+            {/* Action Row: Authentic Brand Social Executive Buttons */}
+            <div className="pt-2 flex flex-wrap items-center gap-3 sm:gap-4">
               <a
                 href={linkedinUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`Connect with ${name} on LinkedIn (opens in a new tab)`}
-                className="inline-flex items-center gap-3 px-7 py-3.5 rounded-full bg-[#143D28] hover:bg-[#1E5437] text-white font-sans text-xs sm:text-sm font-bold shadow-lg shadow-[#143D28]/25 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 ease-out group/btn focus:outline-none focus:ring-2 focus:ring-[#143D28]"
+                className="inline-flex items-center gap-2.5 sm:gap-3 px-5 sm:px-6 py-3 sm:py-3.5 rounded-full bg-[#0A66C2] hover:bg-[#004182] text-white font-sans text-xs sm:text-sm font-bold shadow-[0_6px_20px_rgba(10,102,194,0.3)] hover:shadow-[0_10px_28px_rgba(10,102,194,0.45)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 ease-out group/linkedin focus:outline-none focus:ring-2 focus:ring-[#0A66C2] focus:ring-offset-2"
               >
-                <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-white">
-                  <Linkedin size={14} />
+                <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-white group-hover/linkedin:scale-110 transition-transform duration-300">
+                  <Linkedin size={14} className="fill-white" />
                 </div>
-                <span>Connect with Rohit on LinkedIn</span>
+                <span>Connect on LinkedIn</span>
                 <ArrowUpRight
                   size={16}
-                  className="text-white/80 group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform duration-300"
+                  className="text-white/80 group-hover/linkedin:translate-x-1 group-hover/linkedin:-translate-y-1 transition-transform duration-300"
                 />
               </a>
 
-              <div className="flex items-center gap-2 text-xs font-mono text-[#4A6352] font-semibold">
+              <a
+                href={instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Follow ${name} on Instagram (opens in a new tab)`}
+                className="inline-flex items-center gap-2.5 sm:gap-3 px-5 sm:px-6 py-3 sm:py-3.5 rounded-full bg-gradient-to-r from-[#833AB4] via-[#FD1D1D] to-[#F77737] hover:from-[#6B2896] hover:via-[#D61515] hover:to-[#E56525] text-white font-sans text-xs sm:text-sm font-bold shadow-[0_6px_20px_rgba(253,29,29,0.3)] hover:shadow-[0_10px_28px_rgba(253,29,29,0.45)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 ease-out group/insta focus:outline-none focus:ring-2 focus:ring-[#FD1D1D] focus:ring-offset-2"
+              >
+                <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-white group-hover/insta:scale-110 transition-transform duration-300">
+                  <Instagram size={14} />
+                </div>
+                <span>Follow on Instagram</span>
+                <ArrowUpRight
+                  size={16}
+                  className="text-white/80 group-hover/insta:translate-x-1 group-hover/insta:-translate-y-1 transition-transform duration-300"
+                />
+              </a>
+
+              <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#EAF5EE] border border-[#2D7D52]/20 text-xs font-mono text-[#1B4D31] font-semibold">
                 <span className="w-2 h-2 rounded-full bg-[#2D7D52] animate-pulse" />
                 <span>Verified Executive Profile</span>
               </div>
