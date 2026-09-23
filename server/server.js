@@ -67,6 +67,11 @@ app.use((req, res, next) => {
   next();
 });
 
+// 301 Redirect common typo: /robot.txt -> /robots.txt
+app.get('/robot.txt', (req, res) => {
+  res.redirect(301, '/robots.txt');
+});
+
 // ===============================
 // RATE LIMITER
 // ===============================
