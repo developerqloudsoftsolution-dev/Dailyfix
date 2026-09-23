@@ -1,171 +1,257 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd
+        http://www.google.com/schemas/sitemap-image/1.1
+        http://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd">
 
   <!-- Core Pages -->
   <url>
     <loc>https://dailyfixcare.com/</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://dailyfixcare.com/logo.png</image:loc>
+      <image:title>Dailyfix Official Logo</image:title>
+    </image:image>
+    <image:image>
+      <image:loc>https://dailyfixcare.com/images/dailyfix-beard-colour.png</image:loc>
+      <image:title>Dailyfix Beard Colour for Men</image:title>
+    </image:image>
   </url>
 
   <url>
     <loc>https://dailyfixcare.com/shop</loc>
-    <lastmod>2026-09-09</lastmod>
+    <lastmod>2026-09-23</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://dailyfixcare.com/images/dailyfix-shades-collection.png</image:loc>
+      <image:title>Dailyfix Beard Colour 3 Shades Collection</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://dailyfixcare.com/beard-colour-for-men</loc>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://dailyfixcare.com/images/dailyfix-shades-collection.png</image:loc>
+      <image:title>Dailyfix Ammonia-Free Beard Colour for Men</image:title>
+    </image:image>
   </url>
 
   <url>
     <loc>https://dailyfixcare.com/about</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://dailyfixcare.com/images/dailyfix-poster.png</image:loc>
+      <image:title>About Dailyfix Men's Grooming Heritage</image:title>
+    </image:image>
   </url>
 
   <url>
     <loc>https://dailyfixcare.com/contact</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://dailyfixcare.com/blog</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-23</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://dailyfixcare.com/beard-grooming-advice</loc>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://dailyfixcare.com/beard-oil</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://dailyfixcare.com/store-locator</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://dailyfixcare.com/track-order</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.7</priority>
   </url>
 
   <url>
     <loc>https://dailyfixcare.com/return-order</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>https://dailyfixcare.com/return-policy</loc>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
-    <loc>https://dailyfixcare.com/return-policy</loc>
-    <lastmod>2026-08-31</lastmod>
+    <loc>https://dailyfixcare.com/refund-cancellation-policy</loc>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
     <loc>https://dailyfixcare.com/shipping-policy</loc>
-    <lastmod>2026-08-31</lastmod>
+    <lastmod>2026-09-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://dailyfixcare.com/shipping-delivery-policy</loc>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <url>
     <loc>https://dailyfixcare.com/privacy-policy</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.6</priority>
   </url>
 
   <url>
     <loc>https://dailyfixcare.com/terms-of-service</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.6</priority>
+  </url>
+
+  <url>
+    <loc>https://dailyfixcare.com/terms-and-conditions</loc>
+    <lastmod>2026-09-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
 
   <!-- Product Pages -->
   <url>
     <loc>https://dailyfixcare.com/product/natural-black</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://dailyfixcare.com/images/natural-black.png</image:loc>
+      <image:title>Dailyfix 001 Natural Black Beard Colour for Men</image:title>
+    </image:image>
   </url>
 
   <url>
     <loc>https://dailyfixcare.com/product/black-brown</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://dailyfixcare.com/images/black-brown.png</image:loc>
+      <image:title>Dailyfix 002 Black Brown Beard Colour for Men</image:title>
+    </image:image>
   </url>
 
   <url>
     <loc>https://dailyfixcare.com/product/dark-brown</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://dailyfixcare.com/images/dark-brown.png</image:loc>
+      <image:title>Dailyfix 003 Dark Brown Beard Colour for Men</image:title>
+    </image:image>
   </url>
 
   <!-- Blog Articles -->
   <url>
     <loc>https://dailyfixcare.com/blog/choose-right-beard-colour-shade</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://dailyfixcare.com/images/blog-choose-shade.jpg</image:loc>
+      <image:title>How to Choose the Right Beard Colour Shade</image:title>
+    </image:image>
   </url>
 
   <url>
     <loc>https://dailyfixcare.com/blog/10-beard-grooming-mistakes</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://dailyfixcare.com/blog/grey-beard-not-anymore-black-brown</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://dailyfixcare.com/blog/ammonia-free-beard-colour-benefits</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
   <url>
     <loc>https://dailyfixcare.com/blog/how-to-apply-dailyfix-beard-colour</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://dailyfixcare.com/images/blog-how-to-apply.jpg</image:loc>
+      <image:title>How to Apply Dailyfix Beard Colour</image:title>
+    </image:image>
   </url>
 
   <url>
     <loc>https://dailyfixcare.com/blog/15-minute-hack-younger-looking-beard</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://dailyfixcare.com/images/blog-younger-looking.jpg</image:loc>
+      <image:title>15-Minute Ritual for a Younger-Looking Beard</image:title>
+    </image:image>
   </url>
 
   <url>
     <loc>https://dailyfixcare.com/blog/the-perfect-beard-color-dark-brown</loc>
-    <lastmod>2026-08-29</lastmod>
+    <lastmod>2026-09-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://dailyfixcare.com/images/blog-perfect-color.jpg</image:loc>
+      <image:title>The Perfect Beard Color: Dark Brown</image:title>
+    </image:image>
   </url>
 
 </urlset>
