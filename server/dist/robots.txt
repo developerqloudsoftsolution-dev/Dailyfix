@@ -1,9 +1,13 @@
 # ==============================================================================
 # Dailyfix Robots.txt
-# Optimized for Google Search, Googlebot, Googlebot-Image & Bingbot
+# Optimized for Google Search, Googlebot, Googlebot-Image, Bingbot & Search Console
 # ==============================================================================
 
-# 1. Googlebot-Image (Full access to crawled favicons, logos, and images)
+# 1. Google Inspection Tool (for fast Google Search Console URL inspection & re-indexing)
+User-agent: Google-InspectionTool
+Allow: /
+
+# 2. Googlebot-Image (Full access to crawled favicons, logos, and images)
 User-agent: Googlebot-Image
 Allow: /
 Allow: /favicon.ico
@@ -17,7 +21,7 @@ Allow: /dailyfix-logo.webp
 Allow: /images/
 Allow: /assets/
 
-# 2. Googlebot (Main Google Search crawler)
+# 3. Googlebot (Main Google Search crawler)
 User-agent: Googlebot
 Allow: /
 Disallow: /admin
@@ -28,7 +32,18 @@ Disallow: /order-success/*
 Disallow: /order-summary/*
 Disallow: /debug
 
-# 3. All other search engine crawlers (Bing, Yahoo, DuckDuckGo, etc.)
+# 4. Bingbot (Bing Search crawler)
+User-agent: Bingbot
+Allow: /
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /cart
+Disallow: /checkout
+Disallow: /order-success/*
+Disallow: /order-summary/*
+Disallow: /debug
+
+# 5. All other search engine crawlers (Yahoo, DuckDuckGo, etc.)
 User-agent: *
 Allow: /
 Disallow: /admin
@@ -39,5 +54,6 @@ Disallow: /order-success/*
 Disallow: /order-summary/*
 Disallow: /debug
 
-# XML Sitemap Location
+# Host & XML Sitemap Location
+Host: https://dailyfixcare.com
 Sitemap: https://dailyfixcare.com/sitemap.xml
