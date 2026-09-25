@@ -26,6 +26,8 @@ User-agent: Googlebot
 Allow: /
 Disallow: /admin
 Disallow: /admin/*
+Disallow: /api/
+Disallow: /api/*
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order-success/*
@@ -37,6 +39,8 @@ User-agent: Bingbot
 Allow: /
 Disallow: /admin
 Disallow: /admin/*
+Disallow: /api/
+Disallow: /api/*
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order-success/*
@@ -48,6 +52,8 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /admin/*
+Disallow: /api/
+Disallow: /api/*
 Disallow: /cart
 Disallow: /checkout
 Disallow: /order-success/*

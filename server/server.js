@@ -225,6 +225,11 @@ let frontendPath = candidatePaths.find((p) => fs.existsSync(p) && fs.existsSync(
 const frontendExists = Boolean(frontendPath && fs.existsSync(path.join(frontendPath, 'index.html')));
 
 if (frontendExists) {
+  // 301 Permanent Redirect for /robot.txt typo to /robots.txt
+  app.get('/robot.txt', (req, res) => {
+    res.redirect(301, '/robots.txt');
+  });
+
   app.use(express.static(frontendPath));
 
   app.get(/^\/(?!api|uploads).*/, (req, res) => {
