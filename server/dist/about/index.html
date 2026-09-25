@@ -17,22 +17,14 @@
   <!-- Google Fonts for Luxury Design Language (Asynchronously loaded to eliminate render-blocking) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    rel="preload"
-    as="style"
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" />
+  <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
-  />
-  <link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
-    media="print"
-    onload="this.media='all'"
-  />
+    media="print" onload="this.media='all'" />
   <noscript>
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
-    />
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600;1,700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" />
   </noscript>
 
   <!-- Google Search Title -->
@@ -47,7 +39,8 @@
   <!-- SEO Description -->
   <meta name="description" content="Learn about Dailyfix – redefining modern men’s grooming with botanical formulas that deliver undetectable gray coverage in 10 minutes without burning skin." />
 
-  <meta name="keywords" content="Dailyfix, Beard Colour for Men, Men's Beard Colour, Beard Hair Colour, Ammonia-Free Beard Colour, Natural-Looking Beard Colour, Natural Black Beard Colour, Black Brown Beard Colour, Dark Brown Beard Colour, Beard Colour for Grey Hair" />
+  <meta name="keywords"
+    content="Dailyfix, Beard Colour for Men, Men's Beard Colour, Beard Hair Colour, Ammonia-Free Beard Colour, Natural-Looking Beard Colour, Natural Black Beard Colour, Black Brown Beard Colour, Dark Brown Beard Colour, Beard Colour for Grey Hair" />
 
   <meta name="author" content="Dailyfix" />
 
@@ -82,10 +75,8 @@
     "@type": "WebSite",
     "name": "Dailyfix",
     "alternateName": [
-      "Dailyfix Care",
-      "Daily Fix",
-      "dailyfixcare.com",
-      "DailyfixCare"
+      "Dailyfix",
+      "DailyFix",
     ],
     "url": "https://dailyfixcare.com/"
   }
@@ -144,7 +135,8 @@
     /* ==========================================================================
        Zero-FOUC Instant Base & Full-Page Bouncing Logo Loading Animation (0ms)
        ========================================================================== */
-    html, body {
+    html,
+    body {
       margin: 0;
       padding: 0;
       background-color: #0D2417;
@@ -180,19 +172,25 @@
     }
 
     @keyframes dailyfixBounce {
-      0%, 100% {
+
+      0%,
+      100% {
         transform: translateY(0) scale(1.04, 0.96);
       }
+
       50% {
         transform: translateY(-32px) scale(0.97, 1.04);
       }
     }
 
     @keyframes dailyfixShadow {
-      0%, 100% {
+
+      0%,
+      100% {
         transform: scale(1.1, 1.1);
         opacity: 0.65;
       }
+
       50% {
         transform: scale(0.58, 0.65);
         opacity: 0.18;
@@ -203,16 +201,20 @@
       0% {
         transform: translateX(-100%);
       }
+
       100% {
         transform: translateX(100%);
       }
     }
 
     @keyframes dailyfixPulse {
-      0%, 100% {
+
+      0%,
+      100% {
         transform: scale(1);
         opacity: 1;
       }
+
       50% {
         transform: scale(1.6);
         opacity: 0.3;
@@ -253,6 +255,7 @@
         width: 170px !important;
         height: auto !important;
       }
+
       #root main section {
         padding: 16px;
       }
@@ -286,44 +289,42 @@
 
   <!-- Instant Pure-CSS Zero-FOUC Page Loader (Renders at 0ms before JS/CSS loads) -->
   <div id="initial-page-loader" role="status" aria-live="polite" aria-label="Loading Dailyfix">
-    <div style="position: absolute; width: 384px; height: 384px; border-radius: 9999px; filter: blur(48px); background-color: rgba(78, 168, 116, 0.15); pointer-events: none;" aria-hidden="true"></div>
+    <div
+      style="position: absolute; width: 384px; height: 384px; border-radius: 9999px; filter: blur(48px); background-color: rgba(78, 168, 116, 0.15); pointer-events: none;"
+      aria-hidden="true"></div>
 
-    <div style="position: relative; display: flex; flex-direction: column; align-items: center; z-index: 10; padding: 0 24px;">
+    <div
+      style="position: relative; display: flex; flex-direction: column; align-items: center; z-index: 10; padding: 0 24px;">
       <!-- Centralized Bouncing Logo with exact natural aspect ratio -->
       <div class="df-bounce-logo" style="display: flex; align-items: center; justify-content: center;">
-        <img
-          src="/dailyfix-logo.webp"
-          alt="Dailyfix Logo"
-          width="220"
-          height="76"
-          fetchpriority="high"
-          style="width: 220px; max-width: 75vw; height: auto; object-fit: contain; filter: drop-shadow(0 12px 32px rgba(78,168,116,0.35));"
-        />
+        <img src="/dailyfix-logo.webp" alt="Dailyfix Logo" width="220" height="76" fetchpriority="high"
+          style="width: 220px; max-width: 75vw; height: auto; object-fit: contain; filter: drop-shadow(0 12px 32px rgba(78,168,116,0.35));" />
       </div>
 
       <!-- Dynamic Contact Shadow Beneath Logo -->
-      <div
-        class="df-bounce-shadow"
+      <div class="df-bounce-shadow"
         style="width: 170px; max-width: 60vw; height: 14px; border-radius: 9999px; background-color: rgba(0, 0, 0, 0.6); filter: blur(6px); margin-top: 16px;"
-        aria-hidden="true"
-      ></div>
+        aria-hidden="true"></div>
 
       <!-- Tagline & Shimmer Loading Bar -->
       <div style="margin-top: 32px; display: flex; flex-direction: column; align-items: center; gap: 14px;">
         <div style="display: flex; align-items: center; gap: 10px;">
-          <span class="df-dot-pulse" style="width: 6px; height: 6px; border-radius: 9999px; background-color: #4EA874; display: inline-block;"></span>
-          <span style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 0.28em; font-weight: 800; color: rgba(196, 222, 201, 0.9);">
+          <span class="df-dot-pulse"
+            style="width: 6px; height: 6px; border-radius: 9999px; background-color: #4EA874; display: inline-block;"></span>
+          <span
+            style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 0.28em; font-weight: 800; color: rgba(196, 222, 201, 0.9);">
             Botanical Grooming
           </span>
-          <span class="df-dot-pulse" style="width: 6px; height: 6px; border-radius: 9999px; background-color: #4EA874; display: inline-block;"></span>
+          <span class="df-dot-pulse"
+            style="width: 6px; height: 6px; border-radius: 9999px; background-color: #4EA874; display: inline-block;"></span>
         </div>
 
         <!-- Minimal Luxury Shimmer Loading Bar -->
-        <div style="width: 190px; height: 2px; background-color: rgba(255, 255, 255, 0.12); border-radius: 9999px; overflow: hidden; position: relative;">
-          <div
-            class="df-shimmer-bar"
-            style="position: absolute; top: 0; left: 0; width: 50%; height: 100%; background: linear-gradient(to right, transparent, #4EA874, transparent); border-radius: 9999px; box-shadow: 0 0 8px #4EA874;"
-          ></div>
+        <div
+          style="width: 190px; height: 2px; background-color: rgba(255, 255, 255, 0.12); border-radius: 9999px; overflow: hidden; position: relative;">
+          <div class="df-shimmer-bar"
+            style="position: absolute; top: 0; left: 0; width: 50%; height: 100%; background: linear-gradient(to right, transparent, #4EA874, transparent); border-radius: 9999px; box-shadow: 0 0 8px #4EA874;">
+          </div>
         </div>
       </div>
     </div>
