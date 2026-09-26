@@ -209,7 +209,8 @@ const ProductPage = () => {
       sku: prod.sku,
       brand: {
         '@type': 'Brand',
-        name: 'Dailyfix'
+        name: 'Dailyfix',
+        url: 'https://dailyfixcare.com/'
       },
       color: det.shadeName,
       offers: {
@@ -222,7 +223,9 @@ const ProductPage = () => {
         availability: prod.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
         seller: {
           '@type': 'Organization',
-          name: 'Dailyfix'
+          '@id': 'https://dailyfixcare.com/#organization',
+          name: 'Dailyfix',
+          url: 'https://dailyfixcare.com/'
         }
       },
       aggregateRating: {

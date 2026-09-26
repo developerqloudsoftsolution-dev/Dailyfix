@@ -114,7 +114,7 @@ const Footer = () => {
             <ul className="space-y-2.5">
               <li>
                 <Link
-                  to="/product/natural-black-beard-colour"
+                  to="/product/natural-black"
                   className="text-[#C4DEC9] hover:text-white hover:translate-x-1 transition-all duration-200 text-sm flex items-center gap-2 group"
                 >
                   <span className="w-2 h-2 rounded-full bg-[#18181B] border border-white/40 shadow-xs" />
@@ -123,7 +123,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/product/black-brown-beard-colour"
+                  to="/product/black-brown"
                   className="text-[#C4DEC9] hover:text-white hover:translate-x-1 transition-all duration-200 text-sm flex items-center gap-2 group"
                 >
                   <span className="w-2 h-2 rounded-full bg-[#271D18] border border-white/40 shadow-xs" />
@@ -132,7 +132,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/product/dark-brown-beard-colour"
+                  to="/product/dark-brown"
                   className="text-[#C4DEC9] hover:text-white hover:translate-x-1 transition-all duration-200 text-sm flex items-center gap-2 group"
                 >
                   <span className="w-2 h-2 rounded-full bg-[#3E2723] border border-white/40 shadow-xs" />

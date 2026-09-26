@@ -34,6 +34,11 @@ const { prerenderAll } = await import('./scripts/prerender-seo.js');
 prerenderAll(clientDist);
 
 console.log('🔄 Syncing dist to root dist/ and server/dist/ ...');
+const rootAssets = path.join(rootDist, 'assets');
+const serverAssets = path.join(serverDist, 'assets');
+if (fs.existsSync(rootAssets)) fs.rmSync(rootAssets, { recursive: true, force: true });
+if (fs.existsSync(serverAssets)) fs.rmSync(serverAssets, { recursive: true, force: true });
+
 fs.cpSync(clientDist, rootDist, { recursive: true, force: true });
 fs.cpSync(clientDist, serverDist, { recursive: true, force: true });
 

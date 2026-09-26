@@ -65,53 +65,6 @@
   <meta name="twitter:description" content="Initiate a return or exchange for your Dailyfix order with our customer concierge." />
   <meta name="twitter:image" content="https://dailyfixcare.com/dailyfix-logo.png" />
 
-  <!-- ============================= -->
-  <!-- GOOGLE WEBSITE STRUCTURED DATA (Site Name) -->
-  <!-- ============================= -->
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Dailyfix",
-    "alternateName": [
-      "Dailyfix",
-      "DailyFix",
-    ],
-    "url": "https://dailyfixcare.com/"
-  }
-  </script>
-
-  <!-- ============================= -->
-  <!-- ORGANIZATION STRUCTURED DATA -->
-  <!-- ============================= -->
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "Dailyfix",
-    "alternateName": [
-      "Dailyfix Care",
-      "Daily Fix",
-      "dailyfixcare.com",
-      "DailyfixCare"
-    ],
-    "url": "https://dailyfixcare.com/",
-    "logo": "https://dailyfixcare.com/logo.png",
-    "sameAs": [
-      "https://www.instagram.com/dailyfix_care/",
-      "https://www.facebook.com/share/1JShp38pJT/",
-      "https://www.youtube.com/channel/UC2OE1pPDCj9cWVJ0k9m_ttQ",
-      "https://www.linkedin.com/company/daily-fix-care/",
-      "https://www.amazon.in/s?k=dailyfix+beard+colour",
-      "https://www.flipkart.com/search?q=dailyfix+beard+colour",
-      "https://www.nykaa.com/search/result/?q=dailyfix",
-      "https://www.shopsy.in/search?q=dailyfix"
-    ]
-  }
-  </script>
-
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZNB0CD11KY">
   </script>
@@ -130,7 +83,46 @@
 
   <!-- Preload Critical Logo for Zero-FOUC Instant Loader -->
   <link rel="preload" href="/dailyfix-logo.webp" as="image" type="image/webp" fetchpriority="high" />
-
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://dailyfixcare.com/#organization",
+      "name": "Dailyfix",
+      "alternateName": [
+        "Dailyfix Care",
+        "Daily Fix"
+      ],
+      "url": "https://dailyfixcare.com/",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://dailyfixcare.com/logo.png"
+      },
+      "sameAs": [
+        "https://www.instagram.com/dailyfix_care/",
+        "https://www.facebook.com/share/1JShp38pJT/",
+        "https://www.youtube.com/channel/UC2OE1pPDCj9cWVJ0k9m_ttQ",
+        "https://www.linkedin.com/company/daily-fix-care/"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://dailyfixcare.com/#website",
+      "name": "Dailyfix",
+      "alternateName": [
+        "Dailyfix Care",
+        "Daily Fix"
+      ],
+      "url": "https://dailyfixcare.com/",
+      "publisher": {
+        "@id": "https://dailyfixcare.com/#organization"
+      }
+    }
+  ]
+}
+</script>
   <style>
     /* ==========================================================================
        Zero-FOUC Instant Base & Full-Page Bouncing Logo Loading Animation (0ms)
@@ -276,7 +268,7 @@
     }
   </style>
 
-  <script type="module" crossorigin src="/assets/index-m7iEx333.js"></script>
+  <script type="module" crossorigin src="/assets/index-CK6uC8SE.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-CNC7AqOf.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-Cz__YIxt.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-react-D1klB5H7.js">

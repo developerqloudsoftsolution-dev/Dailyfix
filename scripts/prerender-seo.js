@@ -118,7 +118,8 @@ function createProductRoute(slug, dataKey) {
     sku: det.sku,
     brand: {
       '@type': 'Brand',
-      name: 'Dailyfix'
+      name: 'Dailyfix',
+      url: `${BASE_URL}/`
     },
     color: det.shadeName,
     offers: {
@@ -131,7 +132,9 @@ function createProductRoute(slug, dataKey) {
       availability: 'https://schema.org/InStock',
       seller: {
         '@type': 'Organization',
-        name: 'Dailyfix'
+        '@id': `${BASE_URL}/#organization`,
+        name: 'Dailyfix',
+        url: `${BASE_URL}/`
       }
     },
     aggregateRating: {
@@ -251,6 +254,58 @@ function createProductRoute(slug, dataKey) {
       }
     ]
   };
+}
+
+function createBlogSchema(title, slug, ogImage, description) {
+  return [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: title,
+      description: description,
+      image: ogImage.startsWith('http') ? ogImage : `${BASE_URL}${ogImage}`,
+      author: {
+        '@type': 'Organization',
+        '@id': `${BASE_URL}/#organization`,
+        name: 'Dailyfix Grooming Team'
+      },
+      publisher: {
+        '@type': 'Organization',
+        '@id': `${BASE_URL}/#organization`,
+        name: 'Dailyfix',
+        logo: {
+          '@type': 'ImageObject',
+          url: `${BASE_URL}/logo.png`
+        }
+      },
+      url: `${BASE_URL}/blog/${slug}`,
+      mainEntityOfPage: `${BASE_URL}/blog/${slug}`
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: `${BASE_URL}/`
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Blog',
+          item: `${BASE_URL}/blog`
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: title,
+          item: `${BASE_URL}/blog/${slug}`
+        }
+      ]
+    }
+  ];
 }
 
 export const SEO_ROUTES = [
@@ -447,6 +502,12 @@ export const SEO_ROUTES = [
     description: 'Learn how to select the best beard colour shade for your skin undertone and natural hair colour for an undetectable finish.',
     h1: 'How to Choose the Right Beard Colour Shade for Your Skin Tone',
     ogImage: '/images/blog-choose-shade.jpg',
+    schemas: createBlogSchema(
+      'How to Choose the Right Beard Colour Shade for Your Skin Tone',
+      'choose-right-beard-colour-shade',
+      '/images/blog-choose-shade.jpg',
+      'Learn how to select the best beard colour shade for your skin undertone and natural hair colour for an undetectable finish.'
+    ),
     sections: [
       {
         h2: 'Match Your Skin Undertones with Confidence',
@@ -466,6 +527,12 @@ export const SEO_ROUTES = [
     description: 'Common beard grooming mistakes men make and how to correct them for a healthier, softer, and more attractive beard.',
     h1: '10 Beard Grooming Mistakes to Avoid in 2026',
     ogImage: '/images/dailyfix-poster.png',
+    schemas: createBlogSchema(
+      '10 Beard Grooming Mistakes to Avoid in 2026',
+      '10-beard-grooming-mistakes',
+      '/images/dailyfix-poster.png',
+      'Common beard grooming mistakes men make and how to correct them for a healthier, softer, and more attractive beard.'
+    ),
     sections: [
       {
         h2: 'Fixing Routine Errors for a Better Beard',
@@ -485,6 +552,12 @@ export const SEO_ROUTES = [
     description: 'How Dailyfix Black Brown provides seamless gray coverage with natural charcoal undertones for modern men.',
     h1: 'Grey Beard? Not Anymore: Transform with Black Brown',
     ogImage: '/images/black-brown.png',
+    schemas: createBlogSchema(
+      'Grey Beard? Not Anymore: Transform with Black Brown',
+      'grey-beard-not-anymore-black-brown',
+      '/images/black-brown.png',
+      'How Dailyfix Black Brown provides seamless gray coverage with natural charcoal undertones for modern men.'
+    ),
     sections: [
       {
         h2: 'Natural Transition for Indian Beard Textures',
@@ -504,6 +577,12 @@ export const SEO_ROUTES = [
     description: 'Why ammonia-free beard colour is essential for sensitive facial skin, preventing chemical burning and skin irritation.',
     h1: 'The Crucial Benefits of Ammonia-Free Beard Colour',
     ogImage: '/images/dailyfix-beard-colour.png',
+    schemas: createBlogSchema(
+      'The Crucial Benefits of Ammonia-Free Beard Colour',
+      'ammonia-free-beard-colour-benefits',
+      '/images/dailyfix-beard-colour.png',
+      'Why ammonia-free beard colour is essential for sensitive facial skin, preventing chemical burning and skin irritation.'
+    ),
     sections: [
       {
         h2: 'Protecting Facial Skin Keratin and Lipids',
@@ -523,6 +602,12 @@ export const SEO_ROUTES = [
     description: 'Step-by-step masterclass on mixing and applying Dailyfix Beard Colour for flawless, salon-grade coverage at home.',
     h1: 'How to Apply Dailyfix Beard Colour in Just 10 Minutes',
     ogImage: '/images/blog-how-to-apply.jpg',
+    schemas: createBlogSchema(
+      'How to Apply Dailyfix Beard Colour in Just 10 Minutes',
+      'how-to-apply-dailyfix-beard-colour',
+      '/images/blog-how-to-apply.jpg',
+      'Step-by-step masterclass on mixing and applying Dailyfix Beard Colour for flawless, salon-grade coverage at home.'
+    ),
     sections: [
       {
         h2: 'Simple 1:1 Mixing and Precision Brush Application',
@@ -542,6 +627,12 @@ export const SEO_ROUTES = [
     description: 'Quick grooming rituals that instantly refresh your facial appearance and restore youthful beard vitality.',
     h1: 'The 15-Minute Ritual for a Younger-Looking Beard',
     ogImage: '/images/blog-younger-looking.jpg',
+    schemas: createBlogSchema(
+      'The 15-Minute Ritual for a Younger-Looking Beard',
+      '15-minute-hack-younger-looking-beard',
+      '/images/blog-younger-looking.jpg',
+      'Quick grooming rituals that instantly refresh your facial appearance and restore youthful beard vitality.'
+    ),
     sections: [
       {
         h2: 'Quick Grooming Upgrades with Maximum Impact',
@@ -561,6 +652,12 @@ export const SEO_ROUTES = [
     description: 'Why Dark Brown is the gentleman’s choice for versatile, sophisticated, and natural beard styling.',
     h1: 'The Perfect Beard Color: Why Dark Brown Stands Out',
     ogImage: '/images/blog-perfect-color.jpg',
+    schemas: createBlogSchema(
+      'The Perfect Beard Color: Why Dark Brown Stands Out',
+      'the-perfect-beard-color-dark-brown',
+      '/images/blog-perfect-color.jpg',
+      'Why Dark Brown is the gentleman’s choice for versatile, sophisticated, and natural beard styling.'
+    ),
     sections: [
       {
         h2: 'Sophisticated Espresso Depth for Modern Gentlemen',

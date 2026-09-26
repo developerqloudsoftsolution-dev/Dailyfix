@@ -47,7 +47,7 @@ import styles from './Sample1.module.css';
 const SHADES = [
   {
     id: 'natural-black',
-    slug: 'natural-black-beard-colour',
+    slug: 'natural-black',
     number: '01',
     name: 'Natural Black',
     badge: 'Best Seller',
@@ -60,8 +60,8 @@ const SHADES = [
     seoAlt: 'Dailyfix 001 Natural Black Beard Colour for Men'
   },
   {
-    id: 'brown-black',
-    slug: 'black-brown-beard-colour',
+    id: 'black-brown',
+    slug: 'black-brown',
     number: '02',
     name: 'Black Brown',
     badge: 'Natural Blend',
@@ -75,7 +75,7 @@ const SHADES = [
   },
   {
     id: 'dark-brown',
-    slug: 'dark-brown-beard-colour',
+    slug: 'dark-brown',
     number: '03',
     name: 'Dark Brown',
     badge: "Gentleman's Choice",

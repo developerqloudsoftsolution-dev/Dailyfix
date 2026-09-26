@@ -32,11 +32,62 @@ const BlogDetail = () => {
 
   useEffect(() => {
     const originalTitle = document.title;
-    document.title = post ? `${post.title} | Dailyfix Journal` : 'Article Not Found | Dailyfix';
+    if (post) {
+      document.title = `${post.title} | Dailyfix Journal`;
+
+      let meta = document.querySelector('meta[name="description"]');
+      if (meta && post.excerpt) {
+        meta.content = post.excerpt;
+      }
+
+      let canonical = document.querySelector('link[rel="canonical"]');
+      if (canonical) {
+        canonical.href = `https://dailyfixcare.com/blog/${slug}`;
+      }
+
+      // Inject BlogPosting Schema
+      let script = document.getElementById('blog-post-structured-data');
+      if (!script) {
+        script = document.createElement('script');
+        script.id = 'blog-post-structured-data';
+        script.type = 'application/ld+json';
+        document.head.appendChild(script);
+      }
+
+      const blogSchema = {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: post.title,
+        description: post.excerpt,
+        author: {
+          '@type': 'Organization',
+          '@id': 'https://dailyfixcare.com/#organization',
+          name: post.author || 'Dailyfix Grooming Team'
+        },
+        publisher: {
+          '@type': 'Organization',
+          '@id': 'https://dailyfixcare.com/#organization',
+          name: 'Dailyfix',
+          logo: {
+            '@type': 'ImageObject',
+            url: 'https://dailyfixcare.com/logo.png'
+          }
+        },
+        url: `https://dailyfixcare.com/blog/${slug}`,
+        mainEntityOfPage: `https://dailyfixcare.com/blog/${slug}`
+      };
+
+      script.textContent = JSON.stringify(blogSchema, null, 2);
+    } else {
+      document.title = 'Article Not Found | Dailyfix';
+    }
+
     return () => {
       document.title = originalTitle;
+      const script = document.getElementById('blog-post-structured-data');
+      if (script) script.remove();
     };
-  }, [post]);
+  }, [post, slug]);
 
   if (!post) {
     return (
