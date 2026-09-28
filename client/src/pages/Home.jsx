@@ -41,6 +41,8 @@ import InstagramFeed from '../components/Instagramfeed.jsx';
 import Marketplaces from '../components/Marketplaces.jsx';
 import HomeFAQ from '../components/HomeFAQ.jsx';
 import FounderCardWithoutImage from '../components/founder/FounderCardWithoutImage.jsx';
+import HeroSideBySideVideos from '../components/HeroSideBySideVideos.jsx';
+import ProductShowcaseSlider from '../components/ProductShowcaseSlider.jsx';
 
 import styles from './Sample1.module.css';
 
@@ -191,6 +193,42 @@ const Home = () => {
     });
   };
 
+  const handleAddTrioToCart = () => {
+    SHADES.forEach((shade) => {
+      const matched = getProductForShade(shade);
+      const effectivePrice = matched?.price || shade.price || 450;
+      const itemToAdd = matched
+        ? {
+            ...matched,
+            price: effectivePrice,
+            image: matched.image || shade.img
+          }
+        : {
+            id: shade.id,
+            name: `Dailyfix Beard Colour - ${shade.name}`,
+            price: effectivePrice,
+            slug: shade.slug,
+            image: shade.img
+          };
+      addToCart(itemToAdd, 1);
+    });
+
+    toast.success('Complete Trio (All 3 Shades) added to cart • ₹1,350', {
+      style: {
+        background: '#143D28',
+        color: '#FFFFFF',
+        borderRadius: '14px',
+        fontSize: '14px',
+        fontWeight: '600',
+        padding: '12px 18px'
+      },
+      iconTheme: {
+        primary: '#4EA874',
+        secondary: '#143D28'
+      }
+    });
+  };
+
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
     if (el) {
@@ -207,11 +245,16 @@ const Home = () => {
       <div className={styles.ambientGlowMiddle} aria-hidden="true" />
 
       {/* ========================================================
-          SECTION 1: SPLIT EDITORIAL HERO (Warm Cream + Green)
+          NEW SECTION 1: 3-VIDEO SIDE-BY-SIDE HERO SHOWCASE (Moxie-inspired Wavy Effect)
       ========================================================= */}
+      <HeroSideBySideVideos onSelectShade={setActiveShadeIndex} />
+
+      {/* ========================================================
+          PREVIOUS SECTION 1: SPLIT EDITORIAL HERO (Commented Out as Requested)
+      =========================================================
       <section id="hero-section" className={styles.heroSection}>
         <div className={styles.heroContainer}>
-          {/* Left Column: Headline, Proof Points & Action */}
+          // Left Column: Headline, Proof Points & Action
           <motion.div
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
@@ -232,7 +275,7 @@ const Home = () => {
               Experience an undetectable, salon-grade beard transformation in just ten minutes with our ammonia-free formula crafted with nourishing olive extract and taurine for gentle, long-lasting grey coverage.
             </p>
 
-            {/* 3 Quick Value Bullets */}
+            // 3 Quick Value Bullets
             <div className={styles.heroBulletsGrid}>
               <div className={styles.heroBulletCard}>
                 <div className={styles.heroBulletIcon}>
@@ -265,7 +308,7 @@ const Home = () => {
               </div>
             </div>
 
-            {/* CTAs */}
+            // CTAs
             <div className={styles.heroCtas}>
               <button
                 onClick={() => scrollToSection('product-collection')}
@@ -283,7 +326,7 @@ const Home = () => {
               </button>
             </div>
 
-            {/* Social Proof Bar */}
+            // Social Proof Bar
             <div className={styles.socialProofSnippet}>
               <div className={styles.avatarGroup}>
                 <div className={styles.avatarCircle}>DF</div>
@@ -304,14 +347,14 @@ const Home = () => {
             </div>
           </motion.div>
 
-          {/* Right Column: Hero Visual Card with Shade Switcher */}
+          // Right Column: Hero Visual Card with Shade Switcher
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.55, delay: 0.1, ease: 'easeOut' }}
             className={styles.heroVisualCard}
           >
-            {/* Top Floating Badge */}
+            // Top Floating Badge
             <div className={styles.floatingGlassBadge}>
               <span className="w-2 h-2 rounded-full bg-[#2D7D52] animate-ping" />
               <span className="text-xs font-extrabold text-[#143D28] uppercase tracking-wider">
@@ -319,7 +362,7 @@ const Home = () => {
               </span>
             </div>
 
-            {/* Center Product Visual */}
+            // Center Product Visual
             <div className={styles.heroProductStage}>
               <div className={styles.stageBackdropCircle} />
               <AnimatePresence mode="wait">
@@ -335,7 +378,7 @@ const Home = () => {
                 />
               </AnimatePresence>
 
-              {/* Rating Tag anchored safely to bottom-right of product stage */}
+              // Rating Tag anchored safely to bottom-right of product stage
               <div className={styles.floatingRatingBadge}>
                 <Star size={14} className="fill-amber-400 text-amber-400" />
                 <span className="text-xs font-black text-[#143D28]">4.9</span>
@@ -343,7 +386,7 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Interactive Shade Selector */}
+            // Interactive Shade Selector
             <div className={styles.shadeSelectorWrap}>
               <div className={styles.shadeLabelRow}>
                 <span className={styles.shadeLabelText}>Interactive Shade Selector</span>
@@ -372,9 +415,15 @@ const Home = () => {
           </motion.div>
         </div>
       </section>
+      */}
 
       {/* ========================================================
-          SECTION 2: ASYMMETRIC BENTO GRID (Features & Science)
+          SECTION 2: PRODUCT SHOWCASE SLIDER (Visual Creative Feature)
+      ========================================================= */}
+      <ProductShowcaseSlider onAddToCart={handleAddToCart} onAddTrioToCart={handleAddTrioToCart} />
+
+      {/* ========================================================
+          SECTION 3: ASYMMETRIC BENTO GRID (Features & Science)
       ========================================================= */}
       <section id="bento-features" className={styles.bentoSection}>
         <div className={styles.sectionHeaderCenter}>

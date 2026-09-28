@@ -1,0 +1,395 @@
+/* ProductShowcaseSlider.module.css - Moxie-style Product Cards Carousel with Dailyfix Colors */
+
+.sectionWrapper {
+  position: relative;
+  width: 100%;
+  padding: 4.5rem 1.5rem 5rem 1.5rem;
+  background-color: #F7F5EE; /* Dailyfix Warm Cream */
+  overflow: hidden;
+  z-index: 2;
+}
+
+.container {
+  max-width: 1360px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Header */
+.sectionHeader {
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto 2.5rem auto;
+}
+
+.pillTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 1.15rem;
+  border-radius: 9999px;
+  background: #EAF5EE;
+  border: 1px solid rgba(45, 125, 82, 0.25);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #143D28;
+  margin-bottom: 0.85rem;
+}
+
+.pillTag i {
+  color: #2D7D52;
+}
+
+.sectionTitle {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2rem, 3.8vw, 2.8rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #143D28;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.65rem;
+}
+
+.sectionSubtitle {
+  font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+  line-height: 1.6;
+  color: #5A7363;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Carousel Track & Container */
+.carouselWrapper {
+  position: relative;
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+.cardsTrack {
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding: 0.75rem 0.25rem 1.5rem 0.25rem;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.cardsTrack::-webkit-scrollbar {
+  display: none;
+}
+
+/* Single Product Card (Moxie Aesthetic) */
+.productCard {
+  flex: 0 0 285px;
+  scroll-snap-align: start;
+  background: #FFFFFF;
+  border: 1px solid rgba(20, 61, 40, 0.18);
+  box-shadow: 0 6px 20px rgba(20, 61, 40, 0.05);
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+@media (min-width: 1024px) {
+  .productCard {
+    flex: 0 0 calc(25% - 0.95rem); /* Exactly 4 cards visible on desktop */
+    min-width: 270px;
+  }
+}
+
+.productCard:hover {
+  transform: translateY(-4px);
+  border-color: #2D7D52;
+  box-shadow: 0 12px 28px rgba(20, 61, 40, 0.12);
+}
+
+/* Top Image Stage (Square 1:1) */
+.imageStage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #FAF8F2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 1rem;
+}
+
+.productImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.4s ease;
+}
+
+.productCard:hover .productImage {
+  transform: scale(1.05);
+}
+
+/* Floating Top-Right Badge */
+.topBadge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: #EAF5EE;
+  color: #143D28;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(45, 125, 82, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.topBadge i {
+  color: #2D7D52;
+  font-size: 0.6875rem;
+}
+
+/* Dark Feature Strip directly below image */
+.featureStrip {
+  background: #0D2417; /* Dailyfix Deep Forest */
+  color: #FFFFFF;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: center;
+  padding: 0.45rem 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Product Info Area */
+.infoArea {
+  padding: 1rem 1.15rem 1.15rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
+}
+
+.titleArea {
+  margin-bottom: 0.85rem;
+}
+
+.cardTitle {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #143D28;
+  line-height: 1.35;
+  margin-bottom: 0.35rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.5em;
+}
+
+.cardSubtitle {
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: #637D6C;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Rating & Price Row */
+.ratingPriceRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  padding-top: 0.5rem;
+}
+
+.ratingBox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: #143D28;
+}
+
+.ratingBox i {
+  color: #2D7D52;
+  font-size: 0.8125rem;
+}
+
+.reviewCount {
+  color: #637D6C;
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+.priceBox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.oldPrice {
+  font-size: 0.78rem;
+  color: #94A69B;
+  text-decoration: line-through;
+  font-weight: 500;
+}
+
+.currentPrice {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: #143D28;
+}
+
+/* Full-Width ADD TO CART Button with Dailyfix Colors */
+.addToCartBtn {
+  width: 100%;
+  background: #2D7D52; /* Dailyfix Emerald */
+  color: #FFFFFF;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.8rem 0.5rem;
+  border-radius: 3px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  box-shadow: 0 4px 12px rgba(45, 125, 82, 0.2);
+}
+
+.addToCartBtn:hover {
+  background: #143D28; /* Dailyfix Deep Forest */
+  box-shadow: 0 6px 16px rgba(20, 61, 40, 0.3);
+  transform: translateY(-1px);
+}
+
+.addToCartBtn:active {
+  transform: translateY(0);
+}
+
+/* Floating Navigation Arrows (High-Contrast Dailyfix Forest Green) */
+.navArrowLeft,
+.navArrowRight {
+  position: absolute;
+  top: 45%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #143D28; /* Dailyfix Deep Forest */
+  border: 2px solid #FFFFFF;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 25;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.navArrowLeft {
+  left: -20px;
+}
+
+.navArrowRight {
+  right: -20px;
+}
+
+.navArrowLeft:hover,
+.navArrowRight:hover {
+  background: #2D7D52; /* Emerald */
+  border-color: #FFFFFF;
+  transform: translateY(-50%) scale(1.12);
+  box-shadow: 0 8px 24px rgba(45, 125, 82, 0.45);
+}
+
+.navArrowLeft:active,
+.navArrowRight:active {
+  transform: translateY(-50%) scale(0.96);
+}
+
+.navArrowLeft:hover,
+.navArrowRight:hover {
+  background: #143D28;
+  color: #FFFFFF;
+  border-color: #143D28;
+  transform: translateY(-50%) scale(1.08);
+}
+
+/* Centered Bottom "EXPLORE ALL" Button */
+.exploreAllWrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+.exploreAllBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #2D7D52; /* Dailyfix Emerald */
+  color: #FFFFFF;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.95rem 2.8rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 8px 24px rgba(45, 125, 82, 0.28);
+  text-decoration: none;
+}
+
+.exploreAllBtn:hover {
+  background: #143D28;
+  color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(20, 61, 40, 0.35);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .sectionWrapper {
+    padding: 3rem 1rem 3.5rem 1rem;
+  }
+
+  .navArrowLeft,
+  .navArrowRight {
+    display: none; /* Swipe gesture on mobile */
+  }
+
+  .productCard {
+    flex: 0 0 260px;
+  }
+
+  .exploreAllBtn {
+    padding: 0.85rem 2.2rem;
+    font-size: 0.8125rem;
+  }
+}

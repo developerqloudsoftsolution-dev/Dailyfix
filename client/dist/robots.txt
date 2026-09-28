@@ -1,6 +1,8 @@
 # ==============================================================================
 # Dailyfix Robots.txt
 # Optimized for Google Search, Googlebot, Googlebot-Image, Bingbot & Search Console
+# Site Name: Dailyfix
+# Canonical: https://dailyfixcare.com/
 # ==============================================================================
 
 # 1. Google Inspection Tool (for fast Google Search Console URL inspection & re-indexing)
@@ -20,10 +22,18 @@ Allow: /dailyfix-logo.png
 Allow: /dailyfix-logo.webp
 Allow: /images/
 Allow: /assets/
+Allow: /slide-vid/
 
 # 3. Googlebot (Main Google Search crawler)
 User-agent: Googlebot
 Allow: /
+Allow: /assets/*.js
+Allow: /assets/*.css
+Allow: /assets/*.webp
+Allow: /assets/*.png
+Allow: /assets/*.jpg
+Allow: /images/
+Allow: /slide-vid/
 Disallow: /admin
 Disallow: /admin/*
 Disallow: /api/
@@ -55,7 +65,7 @@ Disallow: /sample2
 Disallow: /sample3
 Disallow: /sample-founder
 
-# 5. All other search engine crawlers (Yahoo, DuckDuckGo, etc.)
+# 5. All other search engine crawlers (Yahoo, DuckDuckGo, Applebot, etc.)
 User-agent: *
 Allow: /
 Disallow: /admin

@@ -21,6 +21,8 @@ import genericListing002 from '../assets/images/002 Brown black2.png';
 import genericListing003 from '../assets/images/003 Drak brown3.png';
 import genericProduct from '../assets/images/Dailyfix Beard Colour Product Only.png';
 import productVideo from '../assets/Untitled design (3).mp4';
+import naturalBlackPoster from '../assets/images/natural-black-poster.jpg';
+import threeShadesShowcase from '../assets/images/three-shades-showcase.jpg';
 
 export const listingImageMap = {
   'natural-black': nb01,
@@ -33,6 +35,8 @@ export const listingImageMap = {
 
 const galleryMapNB = [
   { type: 'image', src: nb01 },
+  { type: 'image', src: naturalBlackPoster },
+  { type: 'image', src: threeShadesShowcase },
   { type: 'image', src: nb02 },
   { type: 'image', src: nb003 },
   { type: 'image', src: nb004 },
@@ -42,6 +46,7 @@ const galleryMapNB = [
 ];
 const galleryMapDBL = [
   { type: 'image', src: dbl01 },
+  { type: 'image', src: threeShadesShowcase },
   { type: 'image', src: dbl02 },
   { type: 'image', src: dbl03 },
   { type: 'image', src: dbl04j },
@@ -51,6 +56,7 @@ const galleryMapDBL = [
 ];
 const galleryMapBB = [
   { type: 'image', src: bb01 },
+  { type: 'image', src: threeShadesShowcase },
   { type: 'image', src: bb02 },
   { type: 'image', src: bb003 },
   { type: 'image', src: bb004 },
