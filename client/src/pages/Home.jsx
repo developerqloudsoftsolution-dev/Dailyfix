@@ -43,6 +43,7 @@ import HomeFAQ from '../components/HomeFAQ.jsx';
 import FounderCardWithoutImage from '../components/founder/FounderCardWithoutImage.jsx';
 import HeroSideBySideVideos from '../components/HeroSideBySideVideos.jsx';
 import ProductShowcaseSlider from '../components/ProductShowcaseSlider.jsx';
+import ThreeShadesShowcaseSection from '../components/ThreeShadesShowcaseSection.jsx';
 
 import styles from './Sample1.module.css';
 
@@ -420,6 +421,11 @@ const Home = () => {
           SECTION 2: PRODUCT SHOWCASE SLIDER (Visual Creative Feature)
       ========================================================= */}
       <ProductShowcaseSlider onAddToCart={handleAddToCart} onAddTrioToCart={handleAddTrioToCart} />
+
+      {/* ========================================================
+          NEW SECTION: 3-SHADE SPECTRUM SHOWCASE (Where Confidence Meets Natural Look)
+      ========================================================= */}
+      <ThreeShadesShowcaseSection onAddToCart={handleAddToCart} onAddTrioToCart={handleAddTrioToCart} />
 
       {/* ========================================================
           SECTION 3: ASYMMETRIC BENTO GRID (Features & Science)

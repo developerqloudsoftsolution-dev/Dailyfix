@@ -7,34 +7,9 @@ import styles from './ProductShowcaseSlider.module.css';
 
 // Respected images & product packs
 import naturalBlackPoster from '../assets/images/natural-black-poster.jpg';
-import threeShadesShowcase from '../assets/images/three-shades-showcase.jpg';
 import shadeBlackImg from '../assets/images/001 Natural black1.png';
 import shadeBrownBlackImg from '../assets/images/002 Brown black2.png';
 import shadeDarkBrownImg from '../assets/images/003 Drak brown3.png';
-
-const TRIO_ITEMS = [
-  {
-    id: 'natural-black',
-    slug: 'natural-black',
-    name: 'Dailyfix Beard Colour - 001 Natural Black',
-    price: 450,
-    image: shadeBlackImg
-  },
-  {
-    id: 'black-brown',
-    slug: 'black-brown',
-    name: 'Dailyfix Beard Colour - 002 Black Brown',
-    price: 450,
-    image: shadeBrownBlackImg
-  },
-  {
-    id: 'dark-brown',
-    slug: 'dark-brown',
-    name: 'Dailyfix Beard Colour - 003 Dark Brown',
-    price: 450,
-    image: shadeDarkBrownImg
-  }
-];
 
 const PRODUCTS = [
   {
@@ -57,21 +32,6 @@ const PRODUCTS = [
       price: 450,
       image: shadeBlackImg
     }
-  },
-  {
-    id: 'prod-trio-showcase',
-    badge: 'HOT DROP',
-    featureBar: 'ALL 3 SHADES TRIO',
-    title: 'Where Confidence Meets Natural Look',
-    subtitle: 'Includes 001 Natural Black, 002 Black Brown & 003 Dark Brown',
-    image: threeShadesShowcase,
-    alt: 'Dailyfix 3 Shades Beard Colour Showcase',
-    rating: '4.9',
-    reviews: '2,800',
-    oldPrice: '₹1,797',
-    price: 1350,
-    slug: 'all-shades',
-    isTrio: true
   },
   {
     id: 'prod-002',
@@ -155,30 +115,7 @@ const ProductShowcaseSlider = ({ onAddToCart, onAddTrioToCart }) => {
   };
 
   const handleCardAddToCart = (prod) => {
-    if (prod.isTrio) {
-      if (onAddTrioToCart) {
-        onAddTrioToCart();
-      } else {
-        // Add all three products to cart
-        TRIO_ITEMS.forEach((item) => {
-          addToCart(item, 1);
-        });
-        toast.success('Complete 3-Shade Trio added to cart • ₹1,350', {
-          style: {
-            background: '#143D28',
-            color: '#FFFFFF',
-            borderRadius: '14px',
-            fontSize: '14px',
-            fontWeight: '600',
-            padding: '12px 18px'
-          },
-          iconTheme: {
-            primary: '#4EA874',
-            secondary: '#143D28'
-          }
-        });
-      }
-    } else {
+    if (prod.productData) {
       if (onAddToCart) {
         onAddToCart(prod.productData);
       } else {
@@ -240,7 +177,7 @@ const ProductShowcaseSlider = ({ onAddToCart, onAddTrioToCart }) => {
                     <span>{prod.badge}</span>
                   </div>
 
-                  <Link to={prod.isTrio ? '/shop' : `/product/${prod.slug}`}>
+                  <Link to={`/product/${prod.slug}`}>
                     <img
                       src={prod.image}
                       alt={prod.alt}
@@ -259,7 +196,7 @@ const ProductShowcaseSlider = ({ onAddToCart, onAddTrioToCart }) => {
                 <div className={styles.infoArea}>
                   <div className={styles.titleArea}>
                     <Link
-                      to={prod.isTrio ? '/shop' : `/product/${prod.slug}`}
+                      to={`/product/${prod.slug}`}
                       className="no-underline"
                     >
                       <h3 className={styles.cardTitle}>{prod.title}</h3>
@@ -288,7 +225,7 @@ const ProductShowcaseSlider = ({ onAddToCart, onAddTrioToCart }) => {
                       onClick={() => handleCardAddToCart(prod)}
                       className={styles.addToCartBtn}
                     >
-                      <span>{prod.isTrio ? 'ADD TRIO TO CART • ₹1,350' : 'ADD TO CART'}</span>
+                      <span>ADD TO CART</span>
                     </button>
                   </div>
                 </div>

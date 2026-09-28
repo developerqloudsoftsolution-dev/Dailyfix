@@ -1,0 +1,471 @@
+/* ThreeShadesShowcaseSection.module.css */
+/* Modern Minimalist Showcase with Animated Rainbow Border */
+
+.sectionWrapper {
+  position: relative;
+  width: 100%;
+  padding: 5rem 1.5rem 5.5rem 1.5rem;
+  background: linear-gradient(180deg, #FBF9F4 0%, #F5F1E6 100%);
+  overflow: hidden;
+  z-index: 3;
+  border-top: 1px solid rgba(20, 61, 40, 0.08);
+  border-bottom: 1px solid rgba(20, 61, 40, 0.08);
+}
+
+/* Subtle ambient backdrop glows */
+.ambientGlowLeft {
+  position: absolute;
+  top: 20%;
+  left: -5%;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(45, 125, 82, 0.12) 0%, transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.ambientGlowRight {
+  position: absolute;
+  bottom: 15%;
+  right: -5%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(20, 61, 40, 0.08) 0%, transparent 70%);
+  filter: blur(50px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.container {
+  max-width: 1260px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+/* Responsive 2-Column Grid (Image Centered/Hero on mobile, balanced on desktop) */
+.showcaseGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+
+@media (min-width: 1024px) {
+  .showcaseGrid {
+    grid-template-columns: 1.15fr 1fr;
+    gap: 4.5rem;
+  }
+}
+
+/* ========================================================
+   ANIMATED RAINBOW BORDER IMAGE STAGE
+======================================================== */
+.visualColumn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+/* Rainbow Glow Wrapper */
+.rainbowGlowWrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Ambient Rainbow Aura (Soft glow behind the card) */
+.rainbowAura {
+  position: absolute;
+  inset: -10px;
+  border-radius: 34px;
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    #ff3366 0deg,
+    #ff9933 45deg,
+    #ffea00 90deg,
+    #00e676 135deg,
+    #00e5ff 180deg,
+    #7c4dff 225deg,
+    #ff007f 270deg,
+    #ff3366 360deg
+  );
+  filter: blur(24px);
+  opacity: 0.55;
+  animation: spinRainbow 6s linear infinite;
+  z-index: 1;
+  transition: opacity 0.4s ease, filter 0.4s ease;
+  pointer-events: none;
+}
+
+.rainbowGlowWrapper:hover .rainbowAura {
+  opacity: 0.85;
+  filter: blur(32px);
+}
+
+/* Outer frame with animated rainbow border */
+.rainbowBorderFrame {
+  position: relative;
+  width: 100%;
+  border-radius: 26px;
+  padding: 3.5px; /* Thickness of animated rainbow border */
+  overflow: hidden;
+  z-index: 2;
+  box-shadow: 
+    0 24px 60px -15px rgba(20, 61, 40, 0.22),
+    0 8px 24px rgba(0, 0, 0, 0.08);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+
+.rainbowGlowWrapper:hover .rainbowBorderFrame {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 32px 75px -15px rgba(20, 61, 40, 0.28),
+    0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* Spinning Conic Gradient Layer */
+.rainbowSpinningTrack {
+  position: absolute;
+  top: -150%;
+  left: -150%;
+  width: 400%;
+  height: 400%;
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    #ff3366 0deg,
+    #ff9933 45deg,
+    #ffea00 90deg,
+    #00e676 135deg,
+    #00e5ff 180deg,
+    #7c4dff 225deg,
+    #ff007f 270deg,
+    #ff3366 360deg
+  );
+  animation: spinRainbow 6s linear infinite;
+  z-index: 1;
+}
+
+@keyframes spinRainbow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Inner Card that houses the poster cleanly */
+.imageStage {
+  position: relative;
+  width: 100%;
+  border-radius: 23px;
+  overflow: hidden;
+  background-color: #0D2417;
+  z-index: 2;
+  display: block;
+}
+
+.posterImage {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rainbowGlowWrapper:hover .posterImage {
+  transform: scale(1.02);
+}
+
+/* ========================================================
+   RIGHT COLUMN: MINIMAL CONTENT & DIRECT CTA
+======================================================== */
+.contentColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.eyebrowTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.95rem;
+  border-radius: 9999px;
+  background: #EAF5EE;
+  border: 1px solid rgba(45, 125, 82, 0.28);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #143D28;
+  align-self: flex-start;
+  margin-bottom: 0.85rem;
+}
+
+.mainHeading {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2rem, 3.4vw, 2.85rem);
+  font-weight: 700;
+  line-height: 1.18;
+  color: #143D28;
+  letter-spacing: -0.015em;
+  margin-bottom: 0.85rem;
+}
+
+.headingHighlight {
+  color: #2D7D52;
+  font-style: italic;
+}
+
+.sectionLead {
+  font-size: clamp(0.92rem, 1.2vw, 1.02rem);
+  line-height: 1.6;
+  color: #556E5E;
+  margin-bottom: 1.75rem;
+  max-width: 520px;
+}
+
+/* Sleek Minimal Trio Card */
+.trioCard {
+  background: #FFFFFF;
+  border: 1.5px solid rgba(45, 125, 82, 0.2);
+  border-radius: 18px;
+  padding: 1.4rem 1.5rem;
+  box-shadow: 0 10px 30px -5px rgba(20, 61, 40, 0.08);
+  margin-bottom: 1.5rem;
+  transition: all 0.25s ease;
+}
+
+.trioCard:hover {
+  border-color: #2D7D52;
+  box-shadow: 0 14px 36px -5px rgba(20, 61, 40, 0.12);
+}
+
+.trioCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.trioCardTitle {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #143D28;
+}
+
+.trioSaveBadge {
+  background: #EAF5EE;
+  color: #143D28;
+  border: 1px solid rgba(45, 125, 82, 0.3);
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.trioPriceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  margin-bottom: 1.15rem;
+}
+
+.trioCurrentPrice {
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: #143D28;
+}
+
+.trioOldPrice {
+  font-size: 1rem;
+  color: #8BA894;
+  text-decoration: line-through;
+  font-weight: 500;
+}
+
+.trioPriceNote {
+  font-size: 0.75rem;
+  color: #637D6C;
+  font-weight: 600;
+}
+
+/* Primary Action Button */
+.btnBuyTrio {
+  width: 100%;
+  background: #2D7D52;
+  color: #FFFFFF;
+  border: none;
+  padding: 0.95rem 1.25rem;
+  border-radius: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(45, 125, 82, 0.25);
+  transition: all 0.25s ease;
+}
+
+.btnBuyTrio:hover {
+  background: #143D28;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(20, 61, 40, 0.35);
+}
+
+.btnBuyTrio:active {
+  transform: translateY(0);
+}
+
+/* Minimal 3-Shade Quick Chips */
+.quickShadesTitle {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #637D6C;
+  margin-bottom: 0.65rem;
+}
+
+.shadeChipsRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .shadeChipsRow {
+    flex-direction: row;
+  }
+}
+
+.shadeChip {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.85rem;
+  background: #FFFFFF;
+  border: 1px solid rgba(20, 61, 40, 0.12);
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.shadeChip:hover {
+  border-color: #2D7D52;
+  background: #F9FCFA;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(45, 125, 82, 0.1);
+}
+
+.shadeChipLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.shadeDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+
+.shadeChipName {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #143D28;
+}
+
+.shadeChipBtn {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #2D7D52;
+  background: #EAF5EE;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.shadeChip:hover .shadeChipBtn {
+  background: #2D7D52;
+  color: #FFFFFF;
+}
+
+/* Minimal Checkmark Trust Row */
+.trustCheckmarks {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.trustCheckItem {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #143D28;
+}
+
+.trustCheckIcon {
+  color: #2D7D52;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .sectionWrapper {
+    padding: 3.5rem 1rem 4rem 1rem;
+  }
+
+  .rainbowGlowWrapper {
+    max-width: 360px;
+  }
+
+  .rainbowBorderFrame {
+    padding: 3px;
+    border-radius: 20px;
+  }
+
+  .imageStage {
+    border-radius: 17px;
+  }
+
+  .mainHeading {
+    font-size: 1.85rem;
+  }
+
+  .trioCard {
+    padding: 1.15rem 1.15rem;
+  }
+
+  .btnBuyTrio {
+    font-size: 0.82rem;
+    padding: 0.85rem 1rem;
+  }
+
+  .trustCheckmarks {
+    gap: 0.75rem;
+  }
+}
