@@ -40,7 +40,7 @@ import beardVideo from '../assets/Untitled design (3).mp4';
 import InstagramFeed from '../components/Instagramfeed.jsx';
 import Marketplaces from '../components/Marketplaces.jsx';
 import HomeFAQ from '../components/HomeFAQ.jsx';
-import FounderCardWithoutImage from '../components/founder/FounderCardWithoutImage.jsx';
+import FounderCardWithImage from '../components/founder/FounderCardWithImage.jsx';
 import HeroSideBySideVideos from '../components/HeroSideBySideVideos.jsx';
 import ProductShowcaseSlider from '../components/ProductShowcaseSlider.jsx';
 import ThreeShadesShowcaseSection from '../components/ThreeShadesShowcaseSection.jsx';
@@ -853,8 +853,8 @@ const Home = () => {
       {/* ========================================================
           SECTION 7: THE FACE BEHIND DAILYFIX (FOUNDER KEYNOTE)
       ========================================================= */}
-      <section id="founder-section" aria-label="Founder Profile with Brand Crest" className="py-12 sm:py-16 lg:py-20 px-4 sm:px-8 max-w-7xl mx-auto relative z-10">
-        <FounderCardWithoutImage />
+      <section id="founder-section" aria-label="Founder Profile" className="py-12 sm:py-16 lg:py-20 px-4 sm:px-8 max-w-7xl mx-auto relative z-10">
+        <FounderCardWithImage />
       </section>
 
       {/* ========================================================

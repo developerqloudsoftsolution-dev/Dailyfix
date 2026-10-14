@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Linkedin, Instagram, ArrowUpRight, Sparkles, ShieldCheck, Award } from 'lucide-react';
-import founderImg from '../../assets/images/rohit-jaiswal.jpg';
+const founderImg = '/images/founder.png';
 
 const LINKEDIN_URL = 'https://in.linkedin.com/in/rohit-jaiswal-694843430';
 const INSTAGRAM_URL = 'https://www.instagram.com/_._rohitjaiswal_._?stkn=MTM3cXo1cTM5NjdrZA%3D%3D';
