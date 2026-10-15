@@ -80,11 +80,11 @@ export default function FounderCardWithImage({
                   </div>
 
                   {/* Bottom Founder Identity */}
-                  <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <p className="font-serif text-xl sm:text-2xl font-bold tracking-tight">
+                  <div className="absolute bottom-3 left-4 right-20 sm:right-28 text-white z-10 pointer-events-none">
+                    <p className="font-serif text-lg sm:text-2xl font-bold tracking-tight drop-shadow-md truncate">
                       {name}
                     </p>
-                    <p className="text-xs font-mono uppercase tracking-widest text-emerald-300 mt-0.5">
+                    <p className="text-[11px] sm:text-xs font-mono uppercase tracking-widest text-emerald-300 mt-0.5 drop-shadow-sm truncate">
                       {role} • {company}
                     </p>
                   </div>
@@ -94,17 +94,17 @@ export default function FounderCardWithImage({
               {/* Floating Keynote Precision Badge */}
               <motion.div
                 whileHover={{ scale: 1.05, y: -2 }}
-                className="absolute -bottom-5 -right-2 sm:-bottom-6 sm:-right-4 backdrop-blur-xl bg-white/95 p-3.5 sm:p-4 rounded-2xl shadow-xl border border-[#143D28]/15 max-w-[210px] z-20 transition-all duration-300"
+                className="absolute -bottom-6 -right-2 sm:-bottom-7 sm:-right-4 backdrop-blur-xl bg-white/95 p-2.5 sm:p-3.5 rounded-2xl shadow-xl border border-[#143D28]/15 max-w-[170px] sm:max-w-[200px] z-20 transition-all duration-300"
               >
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-lg bg-[#EAF5EE] text-[#2D7D52] flex items-center justify-center flex-shrink-0">
-                    <ShieldCheck size={15} />
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg bg-[#EAF5EE] text-[#2D7D52] flex items-center justify-center flex-shrink-0">
+                    <ShieldCheck size={14} />
                   </div>
-                  <p className="font-mono text-xs font-bold uppercase tracking-wider text-[#143D28]">
+                  <p className="font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider text-[#143D28]">
                     Zero Compromise
                   </p>
                 </div>
-                <p className="text-[11px] text-[#4A6352] mt-1.5 leading-snug">
+                <p className="text-[10px] sm:text-[11px] text-[#4A6352] mt-1 leading-snug">
                   Calibrated for natural blend & skin safety.
                 </p>
               </motion.div>
