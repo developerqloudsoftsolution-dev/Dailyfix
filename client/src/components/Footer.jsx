@@ -229,9 +229,22 @@ const Footer = () => {
 
         {/* Bottom Trust Watermark & Copyright */}
         <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-[#A3C9B0] text-xs">
-            © {new Date().getFullYear()} Dailyfix Grooming Essentials. All rights reserved.
-          </p>
+          <div className="text-center md:text-left">
+            <p className="text-[#A3C9B0] text-xs">
+              © {new Date().getFullYear()} Dailyfix Grooming Essentials. All rights reserved.
+            </p>
+            <p className="text-[#A3C9B0] text-xs mt-1">
+              Designed &amp; Maintained by{' '}
+              <a
+                href="https://qloudsoft.in/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#4EA874] hover:text-white underline hover:no-underline transition-colors font-medium"
+              >
+                Qloudsoft Solutions
+              </a>
+            </p>
+          </div>
 
           <div className="flex items-center gap-3 text-xs text-[#A3C9B0] font-semibold">
             <span>Ammonia-Free</span>
@@ -241,7 +254,7 @@ const Footer = () => {
             <span>Dermatologist Approved</span>
           </div>
 
-          <div className="flex flex-wrap gap-4 sm:gap-6 text-xs text-[#A3C9B0]">
+          <div className="flex flex-wrap justify-center md:justify-end gap-4 sm:gap-6 text-xs text-[#A3C9B0]">
             <Link to="/shipping-policy" className="hover:text-white transition-colors">
               Shipping & Delivery
             </Link>

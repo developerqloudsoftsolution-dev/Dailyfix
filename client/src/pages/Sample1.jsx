@@ -666,9 +666,22 @@ const Sample1 = () => {
         </div>
 
         <div className={styles.footerBottom}>
-          <p className={styles.footerCopyright}>
-            © {new Date().getFullYear()} Dailyfix Grooming Essentials. All rights reserved.
-          </p>
+          <div className="text-center sm:text-left">
+            <p className={styles.footerCopyright}>
+              © {new Date().getFullYear()} Dailyfix Grooming Essentials. All rights reserved.
+            </p>
+            <p className="text-xs text-[#637D6C] mt-1">
+              Designed &amp; Maintained by{' '}
+              <a
+                href="https://qloudsoft.in/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#4EA874] hover:underline transition-colors font-medium"
+              >
+                Qloudsoft Solutions
+              </a>
+            </p>
+          </div>
           <div className="flex items-center gap-4 text-xs text-[#637D6C]">
             <span>Ammonia-Free</span>
             <span>•</span>

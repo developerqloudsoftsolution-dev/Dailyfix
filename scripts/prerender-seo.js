@@ -989,6 +989,7 @@ ${sectionsHtml}
         <a href="/terms-of-service">Terms &amp; Conditions</a>
       </nav>
       <p>&copy; 2026 Dailyfix Grooming Essentials. All rights reserved.</p>
+      <p>Designed &amp; Maintained by <a href="https://qloudsoft.in/" target="_blank" rel="noopener noreferrer">Qloudsoft Solutions</a></p>
       <nav aria-label="Official Marketplace Channels">
         <a href="https://www.amazon.in/s?k=dailyfix+beard+colour" target="_blank" rel="noopener noreferrer">Amazon India</a>
         <a href="https://www.flipkart.com/search?q=dailyfix+beard+colour" target="_blank" rel="noopener noreferrer">Flipkart</a>
